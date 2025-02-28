@@ -1,0 +1,128 @@
+@use "../../../styles/variables" as *;
+@use "../../../styles/mixins" as *;
+
+.container {
+  width: 100%;
+  height: 100%;
+  padding: 20px;
+
+  h2 {
+    color: $clr-light;
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+    text-shadow: 2px 2px 5px black;
+    text-transform: capitalize;
+  }
+
+  .local_auth {
+    position: relative;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    .error {
+      position: absolute;
+      top: 32%;
+      width: 80%;
+      margin: 0 auto;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: $clr-danger-400;
+      color: $clr-light;
+      padding: 10px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+    }
+
+    form {
+      width: 80%;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      margin-top: 80px;
+
+      input {
+        @include input();
+        &:not(:last-child) {
+          margin-bottom: 10px;
+        }
+      }
+
+      button {
+        @include btn();
+        margin-top: 20px;
+        text-transform: uppercase;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      p {
+        width: flex;
+        color: $clr-light;
+        align-self: flex-end;
+        width: fit-content;
+        margin-top: 30px;
+        text-align: right;
+        cursor: pointer;
+        transition: all 0.1s ease-in-out;
+
+        &:hover {
+          color: $clr-primary-600;
+          text-decoration: underline;
+        }
+      }
+    }
+  }
+
+  .divider {
+    width: 80%;
+    margin: 50px auto;
+    display: flex;
+    align-items: center;
+
+    .line {
+      flex: 1;
+      height: 2px;
+      background-color: $clr-light-faded;
+      margin: auto;
+    }
+
+    span {
+      font-size: 1.3rem;
+      text-transform: uppercase;
+      margin: 0 10px;
+      color: $clr-light;
+    }
+  }
+
+  .signup {
+    width: 100%;
+    margin: 0 auto;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    margin-top: 50px;
+
+    p {
+      color: $clr-light;
+      margin-right: 10px;
+    }
+
+    span {
+      color: $clr-light;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.1s ease-in-out;
+
+      &:hover {
+        color: $clr-primary-600;
+        text-decoration: underline;
+      }
+    }
+  }
+}

@@ -1,0 +1,41 @@
+@use "../../styles/variables" as *;
+@use "../../styles/mixins" as *;
+
+.container {
+  @include bgColor(light);
+  width: 200px;
+  position: absolute;
+  top: 100%;
+  border-radius: 10px;
+  box-shadow: 0 0 15px black;
+  overflow: hidden;
+
+  .link {
+    display: block;
+    text-decoration: none;
+    padding: 10px;
+    color: $clr-dark;
+
+    &:hover {
+      background-color: $clr-dark-faded;
+      color: $clr-darker;
+      font-weight: 700;
+    }
+  }
+
+  .logout {
+    width: 100%;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: $clr-dark;
+    cursor: pointer;
+
+    &:hover {
+      background-color: $clr-dark-faded;
+      color: $clr-darker;
+      font-weight: 700;
+    }
+  }
+}

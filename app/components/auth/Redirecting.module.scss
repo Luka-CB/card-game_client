@@ -1,0 +1,36 @@
+@use "../../styles/mixins" as *;
+
+.container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  .wrapper {
+    @include bgColor();
+    width: 50%;
+    height: 500px;
+    box-shadow: 0 0 15px black;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+
+    .loader {
+      width: 250px;
+      height: 100px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    span {
+      font-size: 1.3rem;
+      color: aliceblue;
+      font-weight: bold;
+    }
+  }
+}

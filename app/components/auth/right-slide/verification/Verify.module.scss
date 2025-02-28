@@ -1,0 +1,99 @@
+@use "../../../../styles/variables" as *;
+@use "../../../../styles/mixins" as *;
+
+.loader {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.container {
+  width: 100%;
+  height: 100%;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  h3 {
+    background-color: $clr-success-800;
+    color: $clr-light;
+    padding: 10px;
+    width: 80%;
+    text-align: center;
+    border-radius: 6px;
+    box-shadow: 0 0 5px $clr-success-400;
+  }
+
+  p {
+    color: $clr-light;
+    text-align: center;
+    margin-top: 100px;
+  }
+
+  small {
+    margin-top: 50px;
+    color: $clr-primary-200;
+  }
+
+  button {
+    @include btn();
+    margin-top: 10px;
+    width: 250px;
+    background-color: transparent;
+    color: $clr-light;
+    border-color: $clr-primary-800;
+  }
+
+  .notice {
+    margin-top: 20px;
+    text-align: center;
+
+    span {
+      display: block;
+    }
+
+    .text_one {
+      color: $clr-warning-200;
+      font-size: 0.7rem;
+
+      .icon {
+        font-size: large;
+      }
+
+      b {
+        font-size: 0.8rem;
+        color: $clr-warning-400;
+      }
+    }
+
+    .text_two {
+      color: $clr-light;
+      font-size: 0.7rem;
+      margin-top: 10px;
+
+      b {
+        font-size: 0.8rem;
+        color: $clr-light;
+      }
+    }
+
+    .text_three {
+      margin-top: 20px;
+      color: $clr-light;
+      font-size: 0.8rem;
+
+      a {
+        color: $clr-primary-600;
+        font-size: 0.9rem;
+
+        &:hover {
+          color: $clr-primary-400;
+        }
+      }
+    }
+  }
+}

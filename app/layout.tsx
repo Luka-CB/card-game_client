@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import "@/app/styles/globals.scss";
+import ClientLayout from "./clientLayout";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -11,11 +11,5 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  return (
-    <html lang="en">
-      <body>
-        <main>{children}</main>
-      </body>
-    </html>
-  );
+  return <ClientLayout>{children}</ClientLayout>;
 }

@@ -1,0 +1,27 @@
+@use "../../../styles/variables" as *;
+@use "../../../styles/mixins" as *;
+
+.social_auth {
+  width: 80%;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  button {
+    @include btn();
+    width: 70%;
+    margin: 10px 0;
+    background-color: $clr-light;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .icon {
+      font-size: 1.5rem;
+      margin-right: 10px;
+      color: rgb(55, 132, 221);
+    }
+  }
+}

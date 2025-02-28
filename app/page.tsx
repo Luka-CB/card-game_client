@@ -3,6 +3,7 @@ import styles from "./page.module.scss";
 import Banner from "@/app/components/home/Banner";
 import Image from "next/image";
 import { FaInfo } from "react-icons/fa6";
+import Auth from "@/app/components/auth/Auth";
 
 export default function Home() {
   return (
@@ -37,6 +38,7 @@ export default function Home() {
           </button>
         </div>
       </div>
+      <Auth />
     </main>
   );
 }
