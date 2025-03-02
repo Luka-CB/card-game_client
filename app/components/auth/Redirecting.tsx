@@ -1,11 +1,11 @@
 "use client";
 
-import useSessionUserStore from "@/app/store/sessionUserStore";
+import useSessionUserStore from "@/app/store/user/sessionUserStore";
 import Loader from "../loaders/Loader";
 import styles from "./Redirecting.module.scss";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import useUserStore from "@/app/store/userStore";
+import useUserStore from "@/app/store/user/userStore";
 
 const Redirecting = () => {
   const { status, getSessionUser, data } = useSessionUserStore();

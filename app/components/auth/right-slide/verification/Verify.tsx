@@ -1,17 +1,17 @@
 "use client";
 
-import useSignupStore from "@/app/store/signupStore";
+import useSignupStore from "@/app/store/auth/signupStore";
 import Loader from "../../../loaders/Loader";
 import styles from "./Verify.module.scss";
 import { useEffect } from "react";
-import useUserStore from "@/app/store/userStore";
+import useUserStore from "@/app/store/user/userStore";
 import Link from "next/link";
 import { CiWarning } from "react-icons/ci";
-import useChangeEmailStore from "@/app/store/changeEmailStore";
-import useSendEmailStore from "@/app/store/sendEmailStore";
+import useChangeEmailStore from "@/app/store/email/changeEmailStore";
+import useSendVerifyEmailStore from "@/app/store/email/sendVerifyEmailStore";
 
 const Verify = () => {
-  const { email, status, sendEmail } = useSendEmailStore();
+  const { email, status, sendEmail } = useSendVerifyEmailStore();
   const { status: signupStatus, reset: signupReset } = useSignupStore();
   const { status: changeEmailStatus, reset: changeEmailReset } =
     useChangeEmailStore();

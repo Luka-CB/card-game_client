@@ -1,9 +1,9 @@
 "use client";
 
 import { FormEvent, useEffect, useState } from "react";
-import useUserStore from "@/app/store/userStore";
+import useUserStore from "@/app/store/user/userStore";
 import styles from "./ChangeEmail.module.scss";
-import useChangeEmailStore from "@/app/store/changeEmailStore";
+import useChangeEmailStore from "@/app/store/email/changeEmailStore";
 import BtnLoader from "../../loaders/BtnLoader";
 import { useRouter, useSearchParams } from "next/navigation";
 import { IoMdArrowRoundBack } from "react-icons/io";

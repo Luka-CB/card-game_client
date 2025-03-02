@@ -1,7 +1,7 @@
 "use client";
 
 import { create } from "zustand";
-import api from "../utils/axios";
+import api from "../../utils/axios";
 import Cookies from "js-cookie";
 import { AxiosError } from "axios";
 import useUserStore, { userIFace } from "./userStore";

@@ -5,6 +5,24 @@
   width: 100%;
   height: 100%;
   padding: 20px;
+  position: relative;
+
+  .error {
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80%;
+    margin: 0 auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: $clr-danger-400;
+    color: $clr-light;
+    padding: 10px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+  }
 
   h2 {
     color: $clr-light;
@@ -23,21 +41,6 @@
     justify-content: center;
     align-items: center;
 
-    .error {
-      position: absolute;
-      top: 32%;
-      width: 80%;
-      margin: 0 auto;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      background-color: $clr-danger-400;
-      color: $clr-light;
-      padding: 10px;
-      border-radius: 10px;
-      margin-bottom: 20px;
-    }
-
     form {
       width: 80%;
       margin: 0 auto;
@@ -52,6 +55,35 @@
         }
       }
 
+      .input_wrapper {
+        width: 100%;
+        position: relative;
+
+        .password_input {
+          width: 100%;
+        }
+
+        .icon {
+          position: absolute;
+          top: 0;
+          right: 0;
+          width: 40px;
+          height: 50px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 1.6rem;
+          margin-left: 10px;
+          color: $clr-light;
+          transition: all 0.1s ease-in-out;
+          cursor: pointer;
+
+          &:hover {
+            color: $clr-primary-400;
+          }
+        }
+      }
+
       button {
         @include btn();
         margin-top: 20px;
@@ -61,8 +93,9 @@
         justify-content: center;
       }
 
-      p {
+      a {
         width: flex;
+        text-decoration: none;
         color: $clr-light;
         align-self: flex-end;
         width: fit-content;

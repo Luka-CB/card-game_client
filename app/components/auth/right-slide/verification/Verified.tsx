@@ -5,8 +5,8 @@ import { FaCheck } from "react-icons/fa";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import Loader from "@/app/components/loaders/Loader";
-import useVerifyStore from "@/app/store/verifyStore";
-import useUserStore from "@/app/store/userStore";
+import useVerifyStore from "@/app/store/email/verifyStore";
+import useUserStore from "@/app/store/user/userStore";
 import { useRouter, useSearchParams } from "next/navigation";
 
 const Verified = () => {

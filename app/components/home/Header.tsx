@@ -1,11 +1,11 @@
 "use client";
 
-import useUserStore from "@/app/store/userStore";
+import useUserStore from "@/app/store/user/userStore";
 import styles from "./Header.module.scss";
 import { FaCaretDown } from "react-icons/fa6";
 import Image from "next/image";
 import UserOption from "./UserOption";
-import useUserOptionStore from "@/app/store/userOptionStore";
+import useUserOptionStore from "@/app/store/user/userOptionStore";
 
 const Header = () => {
   const { user } = useUserStore();

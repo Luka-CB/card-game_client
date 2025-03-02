@@ -1,7 +1,7 @@
 "use client";
 
 import { create } from "zustand";
-import api from "../utils/axios";
+import api from "../../utils/axios";
 
 interface ChangeEmailStore {
   status: "idle" | "loading" | "success" | "failed";
@@ -14,7 +14,7 @@ const useChangeEmailStore = create<ChangeEmailStore>((set) => ({
   updateEmail: async (email: string) => {
     set({ status: "loading" });
     try {
-      const { data } = await api.put("/auth/change-email", { email });
+      const { data } = await api.put("/emails/change-email", { email });
       if (data) {
         set({ status: "success" });
       }

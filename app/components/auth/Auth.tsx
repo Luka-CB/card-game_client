@@ -7,13 +7,23 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Signup from "./left-slide/Signup";
 import { useEffect } from "react";
 import Verify from "./right-slide/verification/Verify";
-import useUserStore from "@/app/store/userStore";
+import useUserStore from "@/app/store/user/userStore";
 import ChangeEmail from "./right-slide/ChangeEmail";
 import Verified from "./right-slide/verification/Verified";
 import Redirecting from "./Redirecting";
+import Error from "./Error";
+import ChangePassword from "./left-slide/forgotPassword/ChangePassword";
+import ConfirmEmail from "./left-slide/forgotPassword/ConfirmEmail";
 
-const leftSlideParams = ["signin", "signup", "change-password"];
+const leftSlideParams = ["signin", "signup", "confirm-email"];
 const rightSlideParams = ["verify", "change-email"];
+const textParams = [
+  "verified",
+  "redirecting",
+  "error",
+  "change-password",
+  "confirm-email",
+];
 
 const Auth = () => {
   const router = useRouter();
@@ -59,7 +69,13 @@ const Auth = () => {
               }}
               className={styles.auth_wrapper}
             >
-              {auth === "signup" ? <Signup /> : <Signin />}
+              {auth === "confirm-email" ? (
+                <ConfirmEmail />
+              ) : auth === "signup" ? (
+                <Signup />
+              ) : (
+                <Signin />
+              )}
             </motion.div>
           ) : null}
 
@@ -103,7 +119,7 @@ const Auth = () => {
           ) : null}
         </AnimatePresence>
 
-        {auth !== "verified" && auth !== "redirecting" ? (
+        {auth && !textParams.includes(auth) ? (
           <AnimatePresence mode="wait">
             {auth === "signin" || auth === "signup" ? (
               <motion.div
@@ -146,6 +162,8 @@ const Auth = () => {
         ) : null}
 
         {auth === "redirecting" ? <Redirecting /> : null}
+        {auth === "error" ? <Error /> : null}
+        {auth === "change-password" ? <ChangePassword /> : null}
       </motion.main>
     );
   }

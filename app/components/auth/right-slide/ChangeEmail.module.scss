@@ -46,43 +46,4 @@
       color: $clr-light;
     }
   }
-
-  .go_back_wrapper {
-    width: 100%;
-    margin-top: 50px;
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-
-    .go_back {
-      display: flex;
-      align-items: center;
-      cursor: pointer;
-
-      .icon {
-        margin-right: 5px;
-        opacity: 0;
-        color: $clr-primary-600;
-        transform: translateX(6px);
-        transition: all 0.2s ease-in-out;
-      }
-
-      span {
-        color: $clr-light;
-        transition: all 0.2s ease-in-out;
-      }
-
-      &:hover {
-        .icon {
-          opacity: 1;
-          transform: translateX(0);
-        }
-
-        span {
-          color: $clr-lighter;
-          transform: translateX(3px);
-        }
-      }
-    }
-  }
 }

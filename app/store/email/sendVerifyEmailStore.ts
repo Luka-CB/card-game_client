@@ -1,21 +1,21 @@
 "use client";
 
 import { create } from "zustand";
-import api from "../utils/axios";
+import api from "../../utils/axios";
 
-interface SendEmailStore {
+interface SendVerifyEmailStore {
   email: string | null;
   status: "idle" | "loading" | "success" | "failed";
   sendEmail: () => void;
 }
 
-const useSendEmailStore = create<SendEmailStore>((set) => ({
+const useSendVerifyEmailStore = create<SendVerifyEmailStore>((set) => ({
   email: null,
   status: "idle",
   sendEmail: async () => {
     set({ status: "loading" });
     try {
-      const { data } = await api.post("/auth/send-email");
+      const { data } = await api.post("/emails/send-email/verify-email");
 
       if (data) {
         set({ email: data.email, status: "success" });
@@ -27,4 +27,4 @@ const useSendEmailStore = create<SendEmailStore>((set) => ({
   },
 }));
 
-export default useSendEmailStore;
+export default useSendVerifyEmailStore;

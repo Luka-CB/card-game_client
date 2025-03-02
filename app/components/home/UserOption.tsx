@@ -3,8 +3,8 @@
 import Link from "next/link";
 import styles from "./UserOption.module.scss";
 import { AnimatePresence, motion } from "framer-motion";
-import useUserOptionStore from "@/app/store/userOptionStore";
-import useLogoutStore from "@/app/store/logoutStore";
+import useUserOptionStore from "@/app/store/user/userOptionStore";
+import useLogoutStore from "@/app/store/auth/logoutStore";
 import BtnLoader from "../loaders/BtnLoader";
 import { useEffect } from "react";
 

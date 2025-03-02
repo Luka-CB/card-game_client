@@ -1,7 +1,7 @@
 "use client";
 
 import "@/app/styles/globals.scss";
-import useUserOptionStore from "./store/userOptionStore";
+import useUserOptionStore from "./store/user/userOptionStore";
 
 export default function ClientLayout({
   children,

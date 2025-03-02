@@ -1,7 +1,7 @@
 "use client";
 
 import { create } from "zustand";
-import api from "../utils/axios";
+import api from "../../utils/axios";
 
 interface VerifyStore {
   status: "idle" | "loading" | "success" | "failed";
@@ -14,7 +14,7 @@ const useVerifyStore = create<VerifyStore>((set) => ({
   verifyEmail: async (token: string) => {
     set({ status: "loading" });
     try {
-      const { data } = await api.put(`/auth/verify?token=${token}`);
+      const { data } = await api.put(`/emails/verify?token=${token}`);
 
       if (data) {
         set({ status: "success" });

@@ -1,10 +1,9 @@
 "use client";
 
-import { useState } from "react";
 import styles from "./Avatar.module.scss";
 import { MdOutlineAddPhotoAlternate } from "react-icons/md";
 import Image from "next/image";
-import useAvatarStore from "@/app/store/avatarStore";
+import useAvatarStore from "@/app/store/user/avatarStore";
 
 const Avatar = () => {
   const { avatar, setAvatar } = useAvatarStore();

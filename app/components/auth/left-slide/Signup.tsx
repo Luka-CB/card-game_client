@@ -4,10 +4,11 @@ import styles from "./Sign.module.scss";
 import { useRouter, useSearchParams } from "next/navigation";
 import Avatar from "./Avatar";
 import { useEffect, useState } from "react";
-import useSignupStore from "@/app/store/signupStore";
-import useAvatarStore from "@/app/store/avatarStore";
+import useSignupStore from "@/app/store/auth/signupStore";
+import useAvatarStore from "@/app/store/user/avatarStore";
 import BtnLoader from "../../loaders/BtnLoader";
 import Oauth from "./Oauth";
+import { IoMdEye, IoIosEyeOff } from "react-icons/io";
 
 const Signup = () => {
   const router = useRouter();
@@ -20,6 +21,9 @@ const Signup = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+
+  const [visiblePassword, setVisiblePassword] = useState(false);
+  const [visibleConfirmPassword, setVisibleConfirmPassword] = useState(false);
 
   const handleRoute = (routeName: string) => {
     const newParams = new URLSearchParams(searchParams.toString());
@@ -61,10 +65,10 @@ const Signup = () => {
 
   return (
     <div className={styles.container}>
+      {error && <p className={styles.error}>{error}</p>}
       <h2>Sign up</h2>
       <div className={styles.local_auth}>
         <Avatar />
-        {error && <p className={styles.error}>{error}</p>}
         <form onSubmit={handleSubmit}>
           <input
             type="text"
@@ -80,20 +84,60 @@ const Signup = () => {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
-          <input
-            type="password"
-            placeholder="Password"
-            required
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-          <input
-            type="password"
-            placeholder="Confirm Password"
-            required
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-          />
+          <div className={styles.input_wrapper}>
+            <input
+              type={visiblePassword ? "text" : "password"}
+              placeholder="Password"
+              className={styles.password_input}
+              required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            {visiblePassword ? (
+              <div
+                onClick={() => setVisiblePassword(false)}
+                className={styles.icon}
+                title="hide password"
+              >
+                <IoMdEye />
+              </div>
+            ) : (
+              <div
+                onClick={() => setVisiblePassword(true)}
+                className={styles.icon}
+                title="show password"
+              >
+                <IoIosEyeOff />
+              </div>
+            )}
+          </div>
+          <div className={styles.input_wrapper}>
+            <input
+              type={visibleConfirmPassword ? "text" : "password"}
+              placeholder="Confirm Password"
+              className={styles.password_input}
+              required
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+            />
+            {visibleConfirmPassword ? (
+              <div
+                onClick={() => setVisibleConfirmPassword(false)}
+                className={styles.icon}
+                title="hide password"
+              >
+                <IoMdEye />
+              </div>
+            ) : (
+              <div
+                onClick={() => setVisibleConfirmPassword(true)}
+                className={styles.icon}
+                title="show password"
+              >
+                <IoIosEyeOff />
+              </div>
+            )}
+          </div>
           <button type="submit" disabled={status === "loading"}>
             {status === "loading" ? <BtnLoader /> : "Sign Up"}
           </button>

@@ -1,7 +1,7 @@
 "use client";
 
 import { create } from "zustand";
-import api from "../utils/axios";
+import api from "../../utils/axios";
 import Cookies from "js-cookie";
 
 interface LogoutStore {
