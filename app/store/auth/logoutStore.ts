@@ -2,7 +2,6 @@
 
 import { create } from "zustand";
 import api from "../../utils/axios";
-import Cookies from "js-cookie";
 
 interface LogoutStore {
   status: "idle" | "loading" | "success" | "failed";
@@ -17,8 +16,6 @@ const useLogoutStore = create<LogoutStore>((set) => ({
       const { data } = await api.get(`/auth/logout`);
 
       if (data) {
-        localStorage.removeItem("user");
-        Cookies.remove("accessToken");
         set({ status: "success" });
       }
     } catch (error) {

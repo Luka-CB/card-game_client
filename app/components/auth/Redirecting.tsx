@@ -1,6 +1,5 @@
 "use client";
 
-import useSessionUserStore from "@/app/store/user/sessionUserStore";
 import Loader from "../loaders/Loader";
 import styles from "./Redirecting.module.scss";
 import { useEffect } from "react";
@@ -8,20 +7,19 @@ import { useRouter } from "next/navigation";
 import useUserStore from "@/app/store/user/userStore";
 
 const Redirecting = () => {
-  const { status, getSessionUser, data } = useSessionUserStore();
+  const { getUser, user } = useUserStore();
 
   const router = useRouter();
 
   useEffect(() => {
-    if (status === "success") {
-      router.push("/");
-      useUserStore.setState({ user: data });
-    }
-  }, [status, router]);
+    getUser();
+  }, [getUser]);
 
   useEffect(() => {
-    getSessionUser();
-  }, []);
+    if (user) {
+      router.push("/");
+    }
+  }, [user, router]);
 
   return (
     <div className={styles.container}>

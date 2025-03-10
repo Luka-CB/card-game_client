@@ -29,7 +29,7 @@ const Auth = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const auth = searchParams.get("auth");
-  const { user, loading } = useUserStore();
+  const { loading, user } = useUserStore();
 
   useEffect(() => {
     if (!loading && !user && !auth) {
@@ -45,7 +45,7 @@ const Auth = () => {
     }
   }, [user, router, auth, loading]);
 
-  if (!user || !user.isVerified) {
+  if (!user || !user.isVerified || auth === "redirecting") {
     return (
       <motion.main
         initial={{ backdropFilter: "blur(0)" }}

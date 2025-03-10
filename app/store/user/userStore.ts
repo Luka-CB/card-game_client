@@ -1,59 +1,48 @@
 "use client";
 
+import api from "@/app/utils/axios";
 import { create } from "zustand";
 
 export interface userIFace {
   _id: string;
   username: string;
   avatar: string;
-  email?: string;
-  isVerified?: boolean;
+  email: string;
+  isVerified: boolean;
 }
 
 interface UserStore {
   user: userIFace | null;
   loading: boolean;
-  setEmail: (email: string) => void;
-  setIsVerified: (isVerified: boolean) => void;
+  setUser: (user: userIFace) => void;
+  getUser: () => Promise<void>;
+  setIsVerified: (value: boolean) => void;
 }
 
 const useUserStore = create<UserStore>((set) => ({
   user: null,
   loading: true,
-  setEmail: (email: string) => {
-    set((state) => {
-      if (state.user) {
-        const updatedUser = { ...state.user, email };
-
-        if (typeof window !== "undefined") {
-          localStorage.setItem("user", JSON.stringify(updatedUser));
-        }
-        return { user: updatedUser };
+  setUser: (user: userIFace) => set({ user }),
+  getUser: async () => {
+    try {
+      const { data } = await api.get("/users/session-user");
+      if (data) {
+        set({ user: data, loading: false });
       }
-      return state;
-    });
+    } catch (error) {
+      console.log(error);
+      set({ loading: false });
+    }
   },
-  setIsVerified: (isVerified: boolean) => {
+  setIsVerified: (value: boolean) => {
     set((state) => {
       if (state.user) {
-        const updatedUser = { ...state.user, isVerified };
-
-        if (typeof window !== "undefined") {
-          localStorage.setItem("user", JSON.stringify(updatedUser));
-        }
+        const updatedUser = { ...state.user, isVerified: value };
         return { user: updatedUser };
       }
       return state;
     });
   },
 }));
-
-if (typeof window !== "undefined") {
-  const storedUser = localStorage.getItem("user") || "";
-  useUserStore.setState({
-    user: storedUser ? JSON.parse(storedUser) : null,
-    loading: false,
-  });
-}
 
 export default useUserStore;

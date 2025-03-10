@@ -3,7 +3,6 @@
 import { create } from "zustand";
 import api from "../../utils/axios";
 import { AxiosError } from "axios";
-import { error } from "console";
 
 interface ChangePasswordStore {
   status: "idle" | "loading" | "success" | "failed";

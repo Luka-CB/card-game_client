@@ -9,12 +9,14 @@ import useAvatarStore from "@/app/store/user/avatarStore";
 import BtnLoader from "../../loaders/BtnLoader";
 import Oauth from "./Oauth";
 import { IoMdEye, IoIosEyeOff } from "react-icons/io";
+import useUserStore from "@/app/store/user/userStore";
 
 const Signup = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const { status, signup, error, setError } = useSignupStore();
+  const { status, signup, error, setError, user } = useSignupStore();
+  const { setUser } = useUserStore();
   const { avatar, setAvatar } = useAvatarStore();
 
   const [username, setUsername] = useState("");
@@ -44,6 +46,7 @@ const Signup = () => {
 
   useEffect(() => {
     if (status === "success") {
+      if (user) setUser(user);
       setAvatar("");
       setUsername("");
       setEmail("");
@@ -51,7 +54,7 @@ const Signup = () => {
       setConfirmPassword("");
       handleRoute("verify");
     }
-  }, [setAvatar, status]);
+  }, [setAvatar, status, user]);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();

@@ -11,7 +11,8 @@ import Link from "next/link";
 import { IoMdEye, IoIosEyeOff } from "react-icons/io";
 
 const Signin = () => {
-  const { data, status, error, setError, signin, reset } = useSigninStore();
+  const { user, status, error, setError, signin, reset } = useSigninStore();
+  const { setUser } = useUserStore();
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -35,12 +36,12 @@ const Signin = () => {
   useEffect(() => {
     if (status === "success") {
       router.push("/");
-      useUserStore.setState({ user: data });
+      if (user) setUser(user);
       reset();
       setUsername("");
       setPassword("");
     }
-  }, [status, router]);
+  }, [status, router, user]);
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();

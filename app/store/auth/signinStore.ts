@@ -2,12 +2,11 @@
 
 import { create } from "zustand";
 import api from "../../utils/axios";
-import Cookies from "js-cookie";
 import { AxiosError } from "axios";
 import { userIFace } from "../user/userStore";
 
 interface SigninStore {
-  data: userIFace | null;
+  user: userIFace | null;
   status: "idle" | "loading" | "success" | "failed";
   error: string | null;
   signin: (userData: { username: string; password: string }) => Promise<void>;
@@ -16,7 +15,7 @@ interface SigninStore {
 }
 
 const useSigninStore = create<SigninStore>((set) => ({
-  data: null,
+  user: null,
   status: "idle",
   error: null,
   reset: () => set({ status: "idle", error: null }),
@@ -29,16 +28,11 @@ const useSigninStore = create<SigninStore>((set) => ({
         _id: data._id,
         username: data.username,
         avatar: data.avatar,
+        email: data.email,
         isVerified: data.isVerified,
       };
 
-      set({ status: "success", data: user });
-      Cookies.set("accessToken", data.accessToken, {
-        secure: true,
-        sameSite: "none",
-        expires: 365 * 10,
-      });
-      localStorage.setItem("user", JSON.stringify(user));
+      set({ user, status: "success" });
     } catch (error: AxiosError | any) {
       console.log(error);
       set({ error: error.response.data.error.message, status: "failed" });
