@@ -1,0 +1,84 @@
+@use "../../styles/mixins" as *;
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 2px solid rgb(67, 67, 67);
+  padding: 0 10px 10px 10px;
+  margin-top: 100px;
+
+  .col1 {
+    display: flex;
+    align-items: center;
+
+    .divider {
+      width: 1px;
+      height: 20px;
+      background-color: rgb(96, 96, 96);
+      margin: 0 12px 0 20px;
+    }
+
+    .item {
+      display: flex;
+      align-items: center;
+
+      .indicator {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background-color: var(--clr-success-400);
+        box-shadow: 0 0 5px var(--clr-success-400);
+      }
+
+      .icon {
+        color: var(--clr-primary-200);
+        font-size: 1.5rem;
+        margin-left: 8px;
+      }
+
+      small {
+        color: var(--clr-light);
+        font-size: 0.4rem;
+        margin-left: 5px;
+        margin-top: 10px;
+      }
+
+      b {
+        color: var(--clr-lighter);
+        margin-left: 7px;
+      }
+    }
+  }
+
+  .col2 {
+    .create_btn {
+      @include btn();
+      display: flex;
+      align-items: center;
+      background-color: transparent;
+      border: 2px solid var(--clr-primary-800);
+      padding: 0 10px;
+
+      .icon {
+        color: var(--clr-primary-800);
+      }
+
+      span {
+        color: var(--clr-primary-800);
+        font-size: small;
+        margin-left: 5px;
+      }
+
+      &:hover {
+        background-color: var(--clr-primary-faded);
+        border-color: var(--clr-primary-600);
+
+        .icon,
+        span {
+          color: var(--clr-primary-600);
+        }
+      }
+    }
+  }
+}

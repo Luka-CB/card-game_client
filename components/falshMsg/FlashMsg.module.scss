@@ -1,0 +1,30 @@
+.flash_msg_error {
+  position: absolute;
+  color: var(--clr-light);
+  font-size: large;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+  background-color: rgb(248, 131, 131);
+  padding: 10px;
+  width: 500px;
+  text-align: center;
+  border-radius: 3px;
+  box-shadow: 0 0 8px rgb(248, 131, 131);
+}
+
+.flash_msg_success {
+  position: absolute;
+  color: var(--clr-light);
+  font-size: large;
+  top: 2%;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+  background-color: rgb(81, 142, 81);
+  padding: 10px;
+  width: 500px;
+  text-align: center;
+  border-radius: 3px;
+  box-shadow: 0 0 8px rgb(81, 142, 81);
+}

@@ -1,0 +1,67 @@
+@mixin input() {
+  border: none;
+  outline: none;
+  font-family: inherit;
+  height: 50px;
+  border-radius: 10px;
+  text-indent: 10px;
+  background-color: var(--clr-dark);
+  border: 2px solid var(--clr-light-faded);
+  color: var(--clr-light);
+  transition: all 0.1s ease-in-out;
+
+  &:focus {
+    border: 1px solid var(--clr-light);
+    background-color: var(--clr-darker);
+  }
+}
+
+@mixin btn() {
+  border: none;
+  outline: none;
+  font-family: inherit;
+  height: 40px;
+  border-radius: 10px;
+  background-color: var(--clr-primary-800);
+  border: 2px solid var(--clr-light-faded);
+  color: var(--clr-dark);
+  font-weight: 700;
+  font-size: large;
+  transition: all 0.1s ease-in-out;
+  cursor: pointer;
+
+  &:hover {
+    background-color: var(--clr-primary-600);
+    color: var(--clr-darker);
+  }
+
+  &:active {
+    scale: 0.98;
+    background-color: var(--clr-primary-800);
+    color: rgba(79, 78, 78, 0.775);
+  }
+
+  &:disabled {
+    background-color: var(--clr-primary-faded);
+    color: var(--clr-dark);
+    cursor: not-allowed;
+  }
+}
+
+@mixin bgColor($theme: dark) {
+  @if $theme == light {
+    background: var(--clr-light);
+    background: linear-gradient(
+      270deg,
+      rgb(169, 207, 205) 0%,
+      rgb(214, 217, 223) 100%
+    );
+  } @else {
+    background: rgb(70, 81, 91);
+    background: linear-gradient(
+      270deg,
+      rgb(17, 29, 28) 0%,
+      rgba(19, 20, 22, 1) 100%
+    );
+  }
+}
