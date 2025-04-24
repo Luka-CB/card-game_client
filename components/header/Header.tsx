@@ -32,22 +32,10 @@ const Header = () => {
           {pathname !== "/" && (
             <>
               <Link
-                href="/classic"
-                className={pathname === "/classic" ? styles.active : undefined}
+                href="/games"
+                className={pathname === "/games" ? styles.active : undefined}
               >
-                Classic Games
-              </Link>
-              <Link
-                href="/nines"
-                className={pathname === "/nines" ? styles.active : undefined}
-              >
-                Nines Games
-              </Link>
-              <Link
-                href="/betting"
-                className={pathname === "/betting" ? styles.active : undefined}
-              >
-                Betting Games
+                Games
               </Link>
             </>
           )}

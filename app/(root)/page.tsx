@@ -1,4 +1,3 @@
-import Header from "@/components/header/Header";
 import styles from "./page.module.scss";
 import Banner from "@/components/home/Banner";
 import Image from "next/image";
@@ -11,7 +10,7 @@ export default function Home() {
     <main className={styles.container}>
       <Banner />
       <div className={styles.cards}>
-        <Link href="/classic">
+        <Link href="/games">
           <div className={styles.card}>
             <Image src="/jok.png" alt="joker" width={220} height={220} />
             <h3>Classic Game</h3>
@@ -20,7 +19,7 @@ export default function Home() {
             </button>
           </div>
         </Link>
-        <Link href="/nines">
+        <Link href="/games">
           <div className={styles.card}>
             <Image src="/jok2.png" alt="joker" width={220} height={220} />
             <h3>Only Nines Game</h3>
@@ -29,7 +28,7 @@ export default function Home() {
             </button>
           </div>
         </Link>
-        <Link href="/betting">
+        <Link href="/games">
           <div className={`${styles.card} ${styles.card_fill}`}>
             <Image
               src="/jok-bet.webp"

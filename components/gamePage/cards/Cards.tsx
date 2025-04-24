@@ -1,35 +1,15 @@
 "use client";
 
 import { useEffect } from "react";
-import Card from "./Card";
+import Card from "./card/Card";
 import styles from "./Cards.module.scss";
 import useSocket from "@/hooks/useSocket";
 import useRoomStore from "@/store/gamePage/roomStore";
-import useUserStore from "@/store/user/userStore";
 
-interface propsIFace {
-  type: string;
-}
-
-const Cards: React.FC<propsIFace> = ({ type }) => {
+const Cards = () => {
   const { rooms, setRooms } = useRoomStore();
-  const { user, setIsInRoom } = useUserStore();
-
-  console.log(user);
 
   const socket = useSocket();
-
-  useEffect(() => {
-    if (rooms.length > 0 && user) {
-      const roomUsers = rooms.map((room) => room.users).flat();
-      const isUserInRoom = roomUsers.some(
-        (roomUser) => roomUser.id === user._id
-      );
-      if (isUserInRoom !== user.isInRoom) {
-        setIsInRoom(isUserInRoom);
-      }
-    }
-  }, [rooms, user]);
 
   useEffect(() => {
     if (!socket) {
@@ -50,9 +30,13 @@ const Cards: React.FC<propsIFace> = ({ type }) => {
 
   return (
     <div className={styles.room_cards}>
-      {rooms?.map((room) => (
-        <Card key={room.id} room={type === room.type ? room : null} />
-      ))}
+      {rooms?.length > 0 ? (
+        rooms
+          .filter((room) => room && room.id) // Filter out invalid rooms
+          .map((room) => <Card key={room.id} room={room} />) // Use room.id as the key
+      ) : (
+        <p className={styles.empty_message}>No rooms available. Create one!</p>
+      )}
     </div>
   );
 };

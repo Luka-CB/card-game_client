@@ -10,15 +10,22 @@ import { v4 as uuidv4 } from "uuid";
 import useSocket from "@/hooks/useSocket";
 import useUserStore from "@/store/user/userStore";
 import useFlashMsgStore from "@/store/flashMsgStore";
+import { getStoredRandomAvatar } from "@/utils/misc";
+import useRoomStore from "@/store/gamePage/roomStore";
 
 const CreateRoom = () => {
   const [currentStatus, setCurrentStatus] = useState("public");
+  const [currentType, setCurrentType] = useState<
+    "classic" | "nines" | "betting"
+  >("classic");
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
   const [bett, setBett] = useState("");
+  const [hisht, setHisht] = useState("200");
 
   const { toggleCreateRoomModal, setToggleCreateRoom } = useCreateRoomStore();
   const { setMsg } = useFlashMsgStore();
+  const { setIsCreatingRoom, rooms } = useRoomStore();
 
   const handleCloseModal = () => setToggleCreateRoom(false, null);
 
@@ -30,13 +37,18 @@ const CreateRoom = () => {
     setName("");
     setPassword("");
     setBett("");
+    setHisht("200");
   };
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (!user) return;
-    if (user.isInRoom) {
+
+    const roomUser = rooms.find((room) =>
+      room?.users.some((u) => u.id === user._id)
+    );
+    if (roomUser) {
       setMsg("You can't be in more than one room at the same time", "error");
       resetModal();
       return;
@@ -46,17 +58,22 @@ const CreateRoom = () => {
       id: uuidv4(),
       name,
       password: currentStatus === "private" ? password : null,
-      bett: toggleCreateRoomModal.type === "betting" ? bett : null,
-      type: toggleCreateRoomModal.type,
+      bett: currentType === "betting" ? bett : null,
+      type: currentType,
       status: currentStatus,
+      hisht,
+      createdAt: new Date(),
+      gameStatus: "waiting",
       users: [
         {
           id: user._id,
           username: user.username,
-          avatar: user.avatar,
+          avatar: user.avatar || getStoredRandomAvatar(),
         },
       ],
     };
+
+    setIsCreatingRoom(true);
 
     if (socket) {
       socket.emit("addRoom", room, user._id);
@@ -101,6 +118,32 @@ const CreateRoom = () => {
               className={styles.close_icon}
               onClick={handleCloseModal}
             />
+            <div className={styles.game_type}>
+              <div
+                className={
+                  currentType === "classic" ? styles.item_active : styles.item
+                }
+                onClick={() => setCurrentType("classic")}
+              >
+                <span>Classic</span>
+              </div>
+              <div
+                className={
+                  currentType === "nines" ? styles.item_active : styles.item
+                }
+                onClick={() => setCurrentType("nines")}
+              >
+                <span>Nines</span>
+              </div>
+              <div
+                className={
+                  currentType === "betting" ? styles.item_active : styles.item
+                }
+                onClick={() => setCurrentType("betting")}
+              >
+                <span>Betting</span>
+              </div>
+            </div>
             <div className={styles.visibility}>
               <div
                 className={
@@ -146,7 +189,7 @@ const CreateRoom = () => {
                   />
                 </div>
               ) : null}
-              {toggleCreateRoomModal.type === "betting" ? (
+              {currentType === "betting" ? (
                 <div className={styles.input_box}>
                   <label htmlFor="bett">Amount of Bett</label>
                   <input
@@ -159,6 +202,31 @@ const CreateRoom = () => {
                   />
                 </div>
               ) : null}
+              <div className={styles.radio_box}>
+                <b>Hisht:</b>
+                <div className={styles.inputs}>
+                  <input
+                    type="radio"
+                    name="hisht"
+                    id="hisht_200"
+                    required
+                    value={200}
+                    checked={hisht === "200"}
+                    onChange={(e) => setHisht(e.target.value)}
+                  />
+                  <label htmlFor="hisht_200">200</label>
+                  <input
+                    type="radio"
+                    name="hisht"
+                    id="hisht_500"
+                    required
+                    value={500}
+                    checked={hisht === "500"}
+                    onChange={(e) => setHisht(e.target.value)}
+                  />
+                  <label htmlFor="hisht_500">500</label>
+                </div>
+              </div>
               <button type="submit" className={styles.submit_btn}>
                 Create
               </button>

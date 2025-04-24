@@ -4,7 +4,7 @@ import { create } from "zustand";
 import api from "../../utils/axios";
 import Cookies from "js-cookie";
 import { AxiosError } from "axios";
-import useUserStore, { userIFace } from "./userStore";
+import { userIFace } from "./userStore";
 
 interface SessionUserStore {
   data: userIFace | null;
@@ -23,6 +23,7 @@ const useSessionUserStore = create<SessionUserStore>((set) => ({
         _id: data._id,
         username: data.username,
         avatar: data.avatar,
+        email: data.email,
         isVerified: data.isVerified,
       };
 

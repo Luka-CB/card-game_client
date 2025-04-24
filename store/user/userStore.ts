@@ -9,7 +9,17 @@ export interface userIFace {
   avatar: string;
   email: string;
   isVerified: boolean;
-  isInRoom: boolean;
+}
+
+interface Room {
+  id: string;
+  name: string;
+  password: string | null;
+  bett: string | null;
+  type: "classic" | "nines" | "betting";
+  status: "public" | "private";
+  hisht: string;
+  createdAt: Date;
 }
 
 interface UserStore {
@@ -18,12 +28,12 @@ interface UserStore {
   setUser: (user: userIFace | null) => void;
   getUser: () => Promise<void>;
   setIsVerified: (value: boolean) => void;
-  setIsInRoom: (value: boolean) => void;
 }
 
 const useUserStore = create<UserStore>((set) => ({
   user: null,
   loading: true,
+  joinedRoom: null,
   setUser: (user: userIFace | null) => set({ user }),
   getUser: async () => {
     try {
@@ -40,15 +50,6 @@ const useUserStore = create<UserStore>((set) => ({
     set((state) => {
       if (state.user) {
         const updatedUser = { ...state.user, isVerified: value };
-        return { user: updatedUser };
-      }
-      return state;
-    });
-  },
-  setIsInRoom: (value: boolean) => {
-    set((state) => {
-      if (state.user) {
-        const updatedUser = { ...state.user, isInRoom: value };
         return { user: updatedUser };
       }
       return state;

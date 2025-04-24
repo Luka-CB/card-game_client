@@ -1,0 +1,19 @@
+.player_hand {
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  position: absolute;
+  bottom: 120%;
+
+  .card {
+    margin-left: -40px;
+    transition: transform 0.3s ease;
+    border-radius: 15px;
+
+    &:hover {
+      transform: translateY(-20px);
+      z-index: 1;
+    }
+  }
+}

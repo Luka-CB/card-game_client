@@ -8,6 +8,7 @@ import { useEffect } from "react";
 import Header from "@/components/header/Header";
 import FlashMsg from "@/components/falshMsg/FlashMsg";
 import useFlashMsgStore from "@/store/flashMsgStore";
+import { usePathname } from "next/navigation";
 
 export default function ClientLayout({
   children,
@@ -17,6 +18,9 @@ export default function ClientLayout({
   const { isOpen, setIsOpen } = useUserOptionStore();
   const { getUser, loading } = useUserStore();
   const { msg } = useFlashMsgStore();
+  const pathname = usePathname();
+
+  const isGameRoom = pathname?.includes("/games/");
 
   const handleClosePopup = () => {
     if (isOpen) setIsOpen(false);
@@ -35,7 +39,7 @@ export default function ClientLayout({
           </div>
         ) : (
           <>
-            <Header />
+            {!isGameRoom && <Header />}
             {msg ? <FlashMsg /> : null}
             <main>{children}</main>
           </>
