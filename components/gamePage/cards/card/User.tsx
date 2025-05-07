@@ -1,8 +1,9 @@
 import Image from "next/image";
 import styles from "../Cards.module.scss";
+import { RoomUser } from "@/utils/interfaces";
 
 interface UserProps {
-  user: { id: string; username: string; avatar: string | null } | null;
+  user: RoomUser | null;
 }
 
 const User: React.FC<UserProps> = ({ user }) => {
@@ -10,7 +11,11 @@ const User: React.FC<UserProps> = ({ user }) => {
     <div className={styles.user} title={user?.username}>
       {user ? (
         <Image
-          src={user.avatar || "/avatars/avatar-1.jpeg"}
+          src={
+            user.status === "left"
+              ? user.botAvatar || "/bots/bot-1.jpeg"
+              : user.avatar || "/avatars/avatar-1.jpeg"
+          }
           alt={user.username || "User"}
           width={200}
           height={200}

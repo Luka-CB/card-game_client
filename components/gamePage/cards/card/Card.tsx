@@ -1,7 +1,11 @@
 import { useEffect } from "react";
 import { FaLock, FaLockOpen } from "react-icons/fa";
 import styles from "../Cards.module.scss";
-import { substringText, getStoredRandomAvatar } from "@/utils/misc";
+import {
+  substringText,
+  getStoredRandomAvatar,
+  getRandomBotAvatar,
+} from "@/utils/misc";
 import { Room } from "@/utils/interfaces";
 import useSocket from "@/hooks/useSocket";
 import useUserStore from "@/store/user/userStore";
@@ -22,13 +26,12 @@ const Card: React.FC<CardProps> = ({ room }) => {
   const { setMsg } = useFlashMsgStore();
   const router = useRouter();
 
+  const roomUser = room?.users.find((roomUser) => roomUser.id === user?._id);
+
   useEffect(() => {
     if (!room && !user) return;
 
-    if (
-      room?.users.some((user) => user.id === user.id) &&
-      room?.users.length === 4
-    ) {
+    if (roomUser && roomUser.status === "active" && room?.users.length === 4) {
       const timeout = setTimeout(() => {
         router.push(`/games/${room.id}`);
       }, 1000);
@@ -39,7 +42,11 @@ const Card: React.FC<CardProps> = ({ room }) => {
 
   const handleLeave = () => {
     if (room && user) {
-      socket?.emit("leaveRoom", room.id, user._id);
+      if (roomUser?.status === "active") {
+        socket?.emit("leaveRoom", room.id, user._id);
+      } else {
+        socket?.emit("updateUserStatus", room.id, user._id, "left");
+      }
     }
   };
 
@@ -54,16 +61,23 @@ const Card: React.FC<CardProps> = ({ room }) => {
       socket?.emit("joinRoom", room.id, user._id, {
         id: user._id,
         username: user.username,
+        status: "active",
         avatar: userAvatar,
+        botAvatar: getRandomBotAvatar(),
       });
     }
   };
 
-  const isUserInRoom = room?.users.some(
-    (roomUser) => roomUser.id === user?._id
-  );
+  const handleRejoin = () => {
+    if (!socket || !room || !user) return;
 
-  const isInProgress = room?.isActive;
+    socket.emit("updateUserStatus", room.id, user._id, "active");
+    const timeout = setTimeout(() => {
+      router.push(`/games/${room.id}`);
+    }, 500);
+
+    return () => clearTimeout(timeout);
+  };
 
   useEffect(() => {
     if (!socket) return;
@@ -79,7 +93,9 @@ const Card: React.FC<CardProps> = ({ room }) => {
 
   return (
     <div
-      className={room?.isActive ? styles.room_card_active : styles.room_card}
+      className={
+        room?.users?.length === 4 ? styles.room_card_active : styles.room_card
+      }
     >
       <PasswordPrompt
         room={room as Room}
@@ -117,17 +133,22 @@ const Card: React.FC<CardProps> = ({ room }) => {
             Hisht: <b>{room?.hisht}</b>
           </span>
         </div>
-        {isUserInRoom ? (
-          <button className={styles.leave_btn} onClick={handleLeave}>
-            Leave
-          </button>
-        ) : (
-          <button
-            className={styles.join_btn}
-            onClick={handleJoin}
-            disabled={isInProgress}
-          >
-            {isInProgress ? "In Progress" : "Join"}
+        {(roomUser?.status === "active" || roomUser?.status === "inactive") && (
+          <div className={styles.btns}>
+            {roomUser.status === "inactive" && (
+              <button className={styles.rejoin_btn} onClick={handleRejoin}>
+                Continue Playing
+              </button>
+            )}
+            <button className={styles.leave_btn} onClick={handleLeave}>
+              Leave
+            </button>
+          </div>
+        )}
+
+        {!roomUser && (
+          <button className={styles.join_btn} onClick={handleJoin}>
+            Join
           </button>
         )}
       </footer>

@@ -1,25 +1,103 @@
-import { DrawnCard, PlayingCard } from "./interfaces";
+import { PlayingCard } from "./interfaces";
 
-export const flattenDrawnCards = (
-  playerOrder: string[],
-  drawnCards: DrawnCard[]
-) => {
-  const sequence: { playerId: string; card: PlayingCard }[] = [];
+interface BotBidProps {
+  hand: PlayingCard[];
+  trumpSuit: string;
+  currentHand: number;
+  isDealer: boolean;
+  previousBids: number[];
+}
 
-  const maxCards = Math.max(...drawnCards.map((player) => player.cards.length));
+export const calculateBotBid = ({
+  hand,
+  trumpSuit,
+  currentHand,
+  isDealer,
+  previousBids,
+}: BotBidProps): number => {
+  const sumPreviousBids = previousBids.reduce((sum, bid) => sum + bid, 0);
+  const strongCards = countStrongCards(hand, trumpSuit);
 
-  for (let cardIndex = 0; cardIndex < maxCards; cardIndex++) {
-    for (const playerId of playerOrder) {
-      const playerCards =
-        drawnCards.find((player) => player.playerId === playerId)?.cards || [];
-      if (cardIndex < playerCards.length) {
-        sequence.push({
-          playerId,
-          card: playerCards[cardIndex],
-        });
+  let potentialBid = calculateBaseBid(strongCards, currentHand);
+
+  potentialBid = adjustBidBasedOnPreviousBids(
+    potentialBid,
+    previousBids,
+    currentHand,
+    isDealer,
+    sumPreviousBids
+  );
+
+  return potentialBid;
+};
+
+interface StrongCards {
+  jokers: number;
+  trumps: number;
+  highCards: number;
+}
+
+const countStrongCards = (
+  hand: PlayingCard[],
+  trumpSuit: string
+): StrongCards => {
+  return hand.reduce(
+    (count: any, card) => {
+      if ("joker" in card && card.joker) {
+        count.jokers++;
+      } else if (card.suit === trumpSuit) {
+        count.trumps++;
+      } else if (["A", "K", "Q", "J"].includes(card.rank)) {
+        count.highCards++;
       }
+      return count;
+    },
+    { jokers: 0, trumps: 0, highCards: 0 }
+  );
+};
+
+const calculateBaseBid = (
+  strongCards: StrongCards,
+  currentHand: number
+): number => {
+  let expectedWins = strongCards.jokers;
+  expectedWins += strongCards.trumps * 0.8;
+  expectedWins += strongCards.highCards * 0.5;
+
+  return Math.min(Math.round(expectedWins), currentHand);
+};
+
+const adjustBidBasedOnPreviousBids = (
+  baseBid: number,
+  previousBids: number[],
+  currentHand: number,
+  isDealer: boolean,
+  sumPreviousBids: number
+): number => {
+  let adjustedBid = baseBid;
+
+  if (isDealer) {
+    if (sumPreviousBids === currentHand) {
+      adjustedBid = Math.max(1, adjustedBid);
+    } else if (sumPreviousBids < currentHand) {
+      const forbiddenBid = currentHand - sumPreviousBids;
+      if (adjustedBid === forbiddenBid) {
+        adjustedBid =
+          Math.abs(forbiddenBid - 1 - baseBid) <
+          Math.abs(forbiddenBid + 1 - baseBid)
+            ? forbiddenBid - 1
+            : Math.min(forbiddenBid + 1, currentHand);
+      }
+    }
+  } else {
+    const averageBidSofar = previousBids.length
+      ? sumPreviousBids / previousBids.length
+      : 0;
+
+    if (averageBidSofar > currentHand / 4) {
+      adjustedBid = Math.max(0, adjustedBid - 1);
     }
   }
 
-  return sequence;
+  return Math.max(0, Math.min(adjustedBid, currentHand));
 };

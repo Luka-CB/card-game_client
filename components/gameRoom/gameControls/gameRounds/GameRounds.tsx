@@ -3,12 +3,15 @@ import { CardDeck } from "@/components/gameRoom/cardDeck";
 import { PlayingCard } from "@/utils/interfaces";
 import Image from "next/image";
 import { motion } from "framer-motion";
+import useWindowSize from "@/hooks/useWindowSize";
 
 interface GameRoundsProps {
   hand: PlayingCard[];
 }
 
 const GameRounds = ({ hand }: GameRoundsProps) => {
+  const windowSize = useWindowSize();
+
   return (
     <motion.div
       initial={{
@@ -16,8 +19,8 @@ const GameRounds = ({ hand }: GameRoundsProps) => {
         x: 0,
         translateY: 100,
       }}
-      animate={{ opacity: 1, translateX: 0, translateY: 0 }}
-      transition={{ duration: 0.8, ease: "easeInOut" }}
+      animate={{ opacity: 1, translateY: 0 }}
+      transition={{ duration: 0.4, damping: 15, type: "spring" }}
       className={styles.player_hand}
     >
       {hand.map((card: PlayingCard) => {
@@ -39,7 +42,44 @@ const GameRounds = ({ hand }: GameRoundsProps) => {
         return (
           <div className={styles.card} key={card.id}>
             {cardImage ? (
-              <Image src={cardImage} alt={card.rank} width={100} height={150} />
+              <Image
+                src={cardImage}
+                alt={card.rank}
+                width={
+                  windowSize.height <= 350
+                    ? 40
+                    : windowSize.height <= 600 && windowSize.height > 350
+                    ? 50
+                    : windowSize.height <= 800 &&
+                      windowSize.height > 600 &&
+                      windowSize.width > 600
+                    ? 70
+                    : windowSize.width <= 600
+                    ? 50
+                    : windowSize.width <= 900 && windowSize.width > 600
+                    ? 70
+                    : windowSize.width < 1300 && windowSize.width > 900
+                    ? 90
+                    : 100
+                }
+                height={
+                  windowSize.height <= 350
+                    ? 60
+                    : windowSize.height <= 600 && windowSize.height > 350
+                    ? 70
+                    : windowSize.height <= 800 &&
+                      windowSize.height > 600 &&
+                      windowSize.width > 600
+                    ? 100
+                    : windowSize.width <= 600
+                    ? 70
+                    : windowSize.width <= 900 && windowSize.width > 600
+                    ? 100
+                    : windowSize.width < 1300 && windowSize.width > 900
+                    ? 130
+                    : 150
+                }
+              />
             ) : (
               <Image
                 src={
@@ -48,8 +88,40 @@ const GameRounds = ({ hand }: GameRoundsProps) => {
                     : jokerImageRed || "/cards/joker-red.png"
                 }
                 alt="Joker"
-                width={100}
-                height={150}
+                width={
+                  windowSize.height <= 350
+                    ? 40
+                    : windowSize.height <= 600 && windowSize.height > 350
+                    ? 50
+                    : windowSize.height <= 800 &&
+                      windowSize.height > 600 &&
+                      windowSize.width > 600
+                    ? 70
+                    : windowSize.width <= 600
+                    ? 50
+                    : windowSize.width <= 900 && windowSize.width > 600
+                    ? 70
+                    : windowSize.width < 1300 && windowSize.width > 900
+                    ? 90
+                    : 100
+                }
+                height={
+                  windowSize.height <= 350
+                    ? 60
+                    : windowSize.height <= 600 && windowSize.height > 350
+                    ? 70
+                    : windowSize.height <= 800 &&
+                      windowSize.height > 600 &&
+                      windowSize.width > 600
+                    ? 100
+                    : windowSize.width <= 600
+                    ? 70
+                    : windowSize.width <= 900 && windowSize.width > 600
+                    ? 100
+                    : windowSize.width < 1300 && windowSize.width > 900
+                    ? 130
+                    : 150
+                }
               />
             )}
           </div>

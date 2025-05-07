@@ -1,0 +1,671 @@
+.players {
+  .player {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    transition: transform 0.3s ease;
+
+    .count_down {
+      position: absolute;
+      z-index: 1;
+      width: 100px;
+      height: 100px;
+    }
+
+    .left_clock {
+      top: 50%;
+      left: 120%;
+      transform: translateY(-50%);
+    }
+
+    .top_clock {
+      top: 120%;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .right_clock {
+      top: 50%;
+      right: 120%;
+      transform: translateY(-50%);
+    }
+
+    .player_info {
+      display: flex;
+      align-items: center;
+      width: 180px;
+      gap: 0.5rem;
+      background-color: rgba(0, 0, 0, 0.4);
+      padding: 1rem;
+      border-radius: 10px;
+      backdrop-filter: blur(5px);
+
+      .avatar_container {
+        position: relative;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        overflow: hidden;
+        border: 3px solid var(--clr-primary);
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+
+        .avatar {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+
+        .crown {
+          position: absolute;
+          top: -10px;
+          left: 50%;
+          transform: translateX(-50%);
+          color: gold;
+          font-size: 1.5rem;
+          filter: drop-shadow(0 0 3px rgba(0, 0, 0, 0.5));
+        }
+      }
+
+      .name {
+        display: flex;
+        flex-direction: column;
+
+        .username {
+          color: var(--clr-light);
+          font-size: 0.7rem;
+          font-weight: 500;
+          text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+        }
+
+        .you {
+          margin-top: 10px;
+          color: var(--clr-primary-200);
+          width: 50px;
+          text-align: center;
+          font-size: 0.7rem;
+          font-weight: 600;
+          background-color: rgba(255, 255, 255, 0.1);
+          padding: 0.2rem 0;
+          border-radius: 3px;
+        }
+      }
+
+      .bid {
+        color: var(--clr-primary-200);
+        position: absolute;
+        top: 0;
+        right: 5px;
+
+        b {
+          font-size: 1.2rem;
+          margin-right: 2px;
+        }
+
+        span {
+          margin-left: 3px;
+        }
+      }
+    }
+  }
+
+  .bottom {
+    bottom: 4%;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .left {
+    left: 20;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  .top {
+    top: 4%;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .right {
+    right: 1%;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+}
+
+@media (min-width: 2000px) {
+  .players {
+    .bottom {
+      bottom: 4%;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .left {
+      left: 5%;
+      top: 50%;
+      transform: translateY(-50%);
+
+      .player_info {
+        width: 280px;
+
+        .avatar_container {
+          width: 70px;
+          height: 70px;
+        }
+
+        .name {
+          .username {
+            font-size: 1.1rem;
+          }
+        }
+
+        .bid {
+          font-size: 1.4rem;
+
+          b {
+            font-size: 1.4rem;
+          }
+
+          span {
+            font-size: 1.3rem;
+          }
+        }
+      }
+    }
+
+    .top {
+      top: 4%;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .right {
+      right: 5%;
+      top: 50%;
+      transform: translateY(-50%);
+
+      .player_info {
+        width: 280px;
+
+        .avatar_container {
+          width: 70px;
+          height: 70px;
+        }
+
+        .name {
+          .username {
+            font-size: 1.1rem;
+          }
+        }
+
+        .bid {
+          font-size: 1.4rem;
+
+          b {
+            font-size: 1.4rem;
+          }
+
+          span {
+            font-size: 1.3rem;
+          }
+        }
+      }
+    }
+  }
+}
+
+/* Large Tablets / Small Desktops */
+@media (max-width: 1500px) {
+  .players {
+    .player {
+      position: absolute;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+
+      .player_info {
+        flex-direction: column;
+        align-items: flex-start;
+        width: 120px;
+        height: auto;
+        padding: 5px;
+
+        .avatar_container {
+          width: 40px;
+          height: 40px;
+
+          .crown {
+            top: -15px;
+          }
+        }
+
+        .name {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          width: 100%;
+
+          .you {
+            margin-top: 5px;
+          }
+        }
+      }
+    }
+
+    .bottom {
+      bottom: 1.5%;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+  }
+}
+
+@media (max-width: 1200px) {
+  .players {
+    .player {
+      position: absolute;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+
+      .player_info {
+        flex-direction: column;
+        align-items: flex-start;
+        width: 120px;
+        height: auto;
+        padding: 5px;
+
+        .avatar_container {
+          width: 40px;
+          height: 40px;
+
+          .crown {
+            top: -15px;
+          }
+        }
+
+        .name {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          width: 100%;
+
+          .you {
+            margin-top: 5px;
+          }
+        }
+      }
+    }
+  }
+}
+
+/* Tablets */
+@media (max-width: 992px) {
+  .players {
+    .player {
+      gap: 0.3rem;
+
+      .count_down {
+        width: 70px;
+        height: 70px;
+      }
+    }
+
+    .bottom {
+      bottom: 2%;
+    }
+
+    .left {
+      left: 2%;
+    }
+
+    .top {
+      top: 2%;
+    }
+
+    .right {
+      right: 2%;
+    }
+  }
+}
+
+@media (max-width: 800px) or (max-height: 800px) {
+  .players {
+    .player {
+      position: absolute;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      transition: transform 0.3s ease;
+
+      .player_info {
+        align-items: center;
+        width: auto;
+        background-color: transparent;
+        padding: 0;
+        backdrop-filter: none;
+      }
+    }
+
+    .bottom {
+      bottom: 5%;
+      left: 50%;
+      transform: translateX(-50%);
+
+      .player_info {
+        flex-direction: column-reverse;
+
+        .avatar_container {
+          width: 50px;
+          height: 50px;
+        }
+
+        .name {
+          margin-bottom: 10px;
+
+          .you {
+            position: absolute;
+            bottom: 0;
+            background-color: var(--clr-light);
+            color: var(--clr-dark);
+            border-bottom-left-radius: 30px;
+            border-bottom-right-radius: 30px;
+            box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.5);
+          }
+        }
+
+        .bid {
+          position: absolute;
+          right: 130%;
+          top: 30%;
+        }
+      }
+    }
+
+    .left {
+      left: 2%;
+      top: 50%;
+      transform: translateY(-50%);
+      flex-direction: row;
+      width: 150px;
+
+      .player_info {
+        flex-direction: row;
+        align-items: center;
+
+        .name {
+          position: absolute;
+          left: 15%;
+          top: 70%;
+        }
+
+        .bid {
+          left: 50%;
+          top: -10%;
+        }
+      }
+    }
+
+    .top {
+      top: 6%;
+      left: 50%;
+      transform: translateX(-50%);
+
+      .player_info {
+        .bid {
+          left: 120%;
+          top: 50%;
+        }
+      }
+    }
+
+    .right {
+      right: 2%;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 150px;
+      align-items: flex-end;
+
+      .player_info {
+        flex-direction: row;
+        justify-content: flex-end;
+
+        .name {
+          position: absolute;
+          right: 25;
+          top: 70%;
+        }
+
+        .bid {
+          left: 25%;
+          top: -10%;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 600px) {
+  .players {
+    .bottom {
+      bottom: 15%;
+    }
+
+    .left {
+      left: 1%;
+      width: auto;
+
+      .player_info {
+        .name {
+          display: none;
+        }
+
+        .bid {
+          left: 130%;
+          top: 50%;
+          transform: translateY(-50%);
+        }
+      }
+    }
+
+    .top {
+      top: 16%;
+      .player_info {
+        .name {
+          display: none;
+        }
+
+        .bid {
+          left: 10%;
+          top: 120%;
+        }
+      }
+    }
+
+    .right {
+      right: 1%;
+      width: auto;
+
+      .player_info {
+        .name {
+          display: none;
+        }
+
+        .bid {
+          left: -120%;
+          top: 50%;
+          transform: translateY(-50%);
+        }
+      }
+    }
+  }
+}
+
+@media (orientation: landscape) and (max-height: 800px) {
+  .players {
+    .bottom {
+      bottom: 2%;
+    }
+
+    .left {
+      left: 9%;
+    }
+
+    .top {
+      top: 6%;
+    }
+
+    .right {
+      right: 9%;
+    }
+  }
+}
+
+@media (orientation: landscape) and (max-height: 700px) {
+  .players {
+    .bottom {
+      bottom: 3%;
+
+      .player_info {
+        .avatar_container {
+          width: 50px;
+          height: 50px;
+        }
+      }
+    }
+
+    .left {
+      left: 9%;
+    }
+
+    .top {
+      top: 4%;
+    }
+
+    .right {
+      right: 9%;
+    }
+  }
+}
+
+@media (orientation: landscape) and (max-height: 400px) {
+  .players {
+    .bottom {
+      bottom: 2%;
+      .player_info {
+        .avatar_container {
+          width: 40px;
+          height: 40px;
+        }
+      }
+    }
+
+    .top {
+      top: 2%;
+    }
+  }
+}
+
+@media (orientation: landscape) and (max-width: 800px) and (max-height: 800px) {
+  .players {
+    .left {
+      left: 2%;
+    }
+
+    .right {
+      right: 2%;
+    }
+  }
+}
+
+@media (max-width: 800px) {
+  .players {
+    .player {
+      .count_down {
+        position: absolute;
+        z-index: 1;
+      }
+
+      .left_clock {
+        left: 100%;
+      }
+
+      .top_clock {
+        top: 120%;
+        left: 50%;
+        transform: translateX(-50%);
+      }
+
+      .right_clock {
+        right: 100%;
+      }
+    }
+  }
+}
+
+@media (max-width: 600px) {
+  .players {
+    .player {
+      .left_clock {
+        left: 250%;
+      }
+
+      .top_clock {
+        top: 200%;
+      }
+
+      .right_clock {
+        right: 250%;
+      }
+    }
+  }
+}
+
+@media (orientation: landscape) and (max-height: 800px) {
+  .players {
+    .player {
+      .left_clock {
+        left: 100%;
+      }
+
+      .top_clock {
+        top: 120%;
+        left: 50%;
+        transform: translateX(-50%);
+      }
+
+      .right_clock {
+        right: 100%;
+      }
+    }
+  }
+}
+
+@media (orientation: landscape) and (max-height: 500px) {
+  .players {
+    .player {
+      .count_down {
+        width: 70px;
+        height: 70px;
+      }
+    }
+  }
+}
+
+@media (orientation: landscape) and (max-height: 400px) {
+  .players {
+    .player {
+      .top_clock {
+        top: 100%;
+        left: -70%;
+        transform: translateX(-50%);
+      }
+    }
+  }
+}

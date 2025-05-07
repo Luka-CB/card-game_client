@@ -1,24 +1,59 @@
 import { PlayingCard } from "@/utils/interfaces";
 import styles from "./DrawnCards.module.scss";
-import DrawnCard from "./DrawnCard";
+import DetermineDealerCard from "./DetermineDealerCard";
+import DealtCards from "./dealtCards/DealtCards";
+import { motion } from "framer-motion";
 
 interface DrawnCardsProps {
   drawnCards: PlayingCard[];
   playerPositionIndex: number;
+  playerId: string;
+  dealingCards: Record<string, number>;
+  gameInfo: {
+    dealerId: string | null;
+    status: string;
+  };
 }
 
-const DrawnCards = ({ drawnCards, playerPositionIndex }: DrawnCardsProps) => {
+const DrawnCards = ({
+  drawnCards,
+  playerPositionIndex,
+  playerId,
+  dealingCards,
+  gameInfo,
+}: DrawnCardsProps) => {
+  const playerPosition =
+    playerPositionIndex === 0
+      ? styles.bottom_drawn_cards
+      : playerPositionIndex === 1
+      ? styles.left_drawn_cards
+      : playerPositionIndex === 2
+      ? styles.top_drawn_cards
+      : styles.right_drawn_cards;
+
   return (
-    <div className={styles.drawnCards_Container}>
-      {drawnCards.map((card: PlayingCard, index) => (
-        <DrawnCard
-          key={`${card.id}-${index}`}
-          card={card}
-          index={index}
+    <motion.div className={`${styles.drawn_cards} ${playerPosition}`}>
+      {!gameInfo?.dealerId && (
+        <div className={styles.determine_dealer_cards}>
+          {drawnCards.map((card: PlayingCard, index) => (
+            <DetermineDealerCard
+              key={`${card.id}-${index}`}
+              card={card}
+              index={index}
+              playerPositionIndex={playerPositionIndex}
+            />
+          ))}
+        </div>
+      )}
+
+      {gameInfo?.dealerId && gameInfo?.status === "dealing" && (
+        <DealtCards
+          dealingCards={dealingCards}
           playerPositionIndex={playerPositionIndex}
+          playerId={playerId}
         />
-      ))}
-    </div>
+      )}
+    </motion.div>
   );
 };
 

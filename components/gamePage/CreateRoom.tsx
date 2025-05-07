@@ -10,7 +10,7 @@ import { v4 as uuidv4 } from "uuid";
 import useSocket from "@/hooks/useSocket";
 import useUserStore from "@/store/user/userStore";
 import useFlashMsgStore from "@/store/flashMsgStore";
-import { getStoredRandomAvatar } from "@/utils/misc";
+import { getRandomBotAvatar, getStoredRandomAvatar } from "@/utils/misc";
 import useRoomStore from "@/store/gamePage/roomStore";
 
 const CreateRoom = () => {
@@ -63,12 +63,13 @@ const CreateRoom = () => {
       status: currentStatus,
       hisht,
       createdAt: new Date(),
-      gameStatus: "waiting",
       users: [
         {
           id: user._id,
           username: user.username,
+          status: "active",
           avatar: user.avatar || getStoredRandomAvatar(),
+          botAvatar: getRandomBotAvatar(),
         },
       ],
     };

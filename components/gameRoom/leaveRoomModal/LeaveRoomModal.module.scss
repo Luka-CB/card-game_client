@@ -16,7 +16,7 @@
 .modal {
   @include bgColor(light);
   border-radius: 8px;
-  padding: 20px;
+  padding: 10px;
   width: 90%;
   max-width: 400px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -72,4 +72,24 @@
 
 .cancel_btn:hover {
   background-color: var(--clr-darker);
+}
+
+@media (max-width: 900px) {
+  .modal {
+    width: 300px;
+  }
+
+  .modal h2 {
+    font-size: 1.2rem;
+  }
+
+  .modal p {
+    font-size: 0.9rem;
+  }
+
+  .confirm_btn,
+  .cancel_btn {
+    font-size: 0.9rem;
+    padding: 8px 0;
+  }
 }

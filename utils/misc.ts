@@ -44,3 +44,10 @@ export const clearStoredRandomAvatar = () => {
   localStorage.removeItem("randomAvatar");
   localStorage.removeItem("userAvatars");
 };
+
+export const getRandomBotAvatar = () => {
+  if (typeof window === "undefined") return null;
+
+  const avatarNumber = Math.floor(Math.random() * 21) + 1;
+  return `/bots/bot-${avatarNumber}.jpeg`;
+};

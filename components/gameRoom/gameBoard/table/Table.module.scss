@@ -1,0 +1,142 @@
+.table {
+  position: relative;
+  width: 100%;
+  max-width: 1400px;
+  min-width: 300px;
+  height: 80vh;
+  background-color: var(--clr-success-800);
+  border-radius: 100px;
+  border: 20px solid var(--clr-dark-faded);
+  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  .hisht {
+    position: absolute;
+    bottom: 5%;
+    right: 10%;
+    font-size: 1.5rem;
+    color: var(--clr-primary-800);
+    cursor: default;
+  }
+
+  .table_surface {
+    position: relative;
+    width: 95%;
+    height: 95%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .game_info {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--clr-light);
+      text-align: center;
+
+      .game_type {
+        font-size: 10rem;
+        font-weight: 600;
+        transform: rotate(-30deg);
+        letter-spacing: 0.2em;
+        color: rgba(128, 128, 128, 0.03);
+        cursor: default;
+      }
+    }
+  }
+}
+
+/* Large Tablets / Small Desktops */
+@media (max-width: 1500px) {
+  .table {
+    border-width: 15px;
+  }
+}
+
+@media (max-width: 1200px) {
+  .table {
+    border-radius: 50px;
+
+    .hisht {
+      bottom: 1%;
+      right: 2%;
+      font-size: 1rem;
+    }
+
+    .table_surface {
+      .game_info {
+        .game_type {
+          font-size: 5rem;
+        }
+      }
+    }
+  }
+}
+
+/* Tablets */
+@media (max-width: 992px) {
+  .table {
+    width: 90%;
+    height: 80vh;
+    border-width: 10px;
+    border-radius: 30px;
+
+    .hisht {
+      position: absolute;
+      bottom: 2%;
+      right: 3%;
+      font-size: 1rem;
+    }
+
+    .table_surface {
+      .game_info {
+        .game_type {
+          font-size: 6rem;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 600px) {
+  .table {
+    height: 60vh;
+
+    .table_surface {
+      .game_info {
+        .game_type {
+          font-size: 3rem;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 400px) {
+  .game_room {
+    .table {
+      .hisht {
+        top: 1%;
+        left: 3%;
+        font-size: 0.8rem;
+      }
+    }
+  }
+}
+
+@media (orientation: landscape) and (max-height: 800px) {
+  .game_room {
+    .table {
+      .table_surface {
+        .game_info {
+          .game_type {
+            font-size: 4rem;
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,21 +1,25 @@
 "use client";
 
 import styles from "./page.module.scss";
-import { FaCrown, FaTimesCircle } from "react-icons/fa";
-import Image from "next/image";
-import { GameInfo, PlayingCard, Room } from "@/utils/interfaces";
+import { FaTimesCircle } from "react-icons/fa";
+import {
+  GameInfo,
+  PlayingCard,
+  Room,
+  RoomUser,
+  ScoreBoard,
+} from "@/utils/interfaces";
 import useUserStore from "@/store/user/userStore";
 import useSocket from "@/hooks/useSocket";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Loader from "@/components/loaders/Loader";
-import { substringText } from "@/utils/misc";
 import LeaveRoomModal from "@/components/gameRoom/leaveRoomModal/LeaveRoomModal";
-import GameRounds from "@/components/gameRoom/gameControls/gameRounds/GameRounds";
-import DrawnCards from "@/components/gameRoom/gameControls/drawnCards/DrawnCards";
-import { motion } from "framer-motion";
-import DealtCards from "@/components/gameRoom/gameControls/dealtCards/DealtCards";
-import CardDeck from "@/components/gameRoom/gameControls/cardDeck/CardDeck";
+import Popup from "@/components/popup/Popup";
+import useWindowSize from "@/hooks/useWindowSize";
+import Players from "@/components/gameRoom/gameBoard/players/Players";
+import Table from "@/components/gameRoom/gameBoard/table/Table";
+import BusyBg from "@/components/gameRoom/busyMode/BusyBg";
 
 const GameRoom: React.FC = () => {
   const [room, setRoom] = useState<Room | null>(null);
@@ -33,12 +37,21 @@ const GameRoom: React.FC = () => {
   const visibleRef = useRef<Record<string, PlayingCard[]>>({});
   const animationStarted = useRef(false);
 
+  const windowSize = useWindowSize();
+
+  const stateChangeRef = useRef<{
+    lastGameInfo: GameInfo | null;
+    isProcessing: boolean;
+  }>({
+    lastGameInfo: null,
+    isProcessing: false,
+  });
+
   const [dealingCards, setDealingCards] = useState<Record<string, number>>({});
 
   const [visibleCards, setVisibleCards] = useState<
     Record<string, PlayingCard[]>
   >({});
-  const [dealerId, setDealerId] = useState<string | null>(null);
 
   const router = useRouter();
 
@@ -46,10 +59,14 @@ const GameRoom: React.FC = () => {
     if (socket && room && roomId) {
       animationStarted.current = false;
 
-      if (room.users.length === 1) {
+      const activeUsers = room.users.filter(
+        (user) => user.status === "active" || user.status === "busy"
+      );
+
+      if (activeUsers?.length === 1) {
         socket.emit("destroyRoom", roomId);
       } else {
-        socket.emit("leaveRoom", roomId, user?._id);
+        socket.emit("updateUserStatus", roomId, user?._id, "inactive");
       }
 
       router.push("/games");
@@ -80,10 +97,39 @@ const GameRoom: React.FC = () => {
   }, [user, room]);
 
   useEffect(() => {
+    if (!socket || !roomId || !room) return;
+
+    if (gameInfo?.scoreBoard) return;
+
+    const players =
+      room?.users.map((user) => ({
+        playerId: user.id,
+        playerName: user.username,
+      })) || [];
+
+    if (players.length) {
+      socket.emit("updateGameScoreBoard", roomId, players);
+    }
+
+    return () => {
+      socket.off("updateGameScoreBoard");
+    };
+  }, [socket, roomId, room, gameInfo]);
+
+  useEffect(() => {
     if (!socket || !roomId) return;
 
     const handleGameInfo = (data: GameInfo) => {
       if (data.roomId !== roomId) return;
+
+      if (
+        stateChangeRef.current.lastGameInfo &&
+        JSON.stringify(stateChangeRef.current.lastGameInfo) ===
+          JSON.stringify(data)
+      )
+        return;
+
+      stateChangeRef.current.lastGameInfo = data;
       setGameInfo(data);
     };
 
@@ -92,6 +138,7 @@ const GameRoom: React.FC = () => {
 
     return () => {
       socket.off("getGameInfo", handleGameInfo);
+      stateChangeRef.current.lastGameInfo = null;
     };
   }, [socket, roomId]);
 
@@ -127,7 +174,6 @@ const GameRoom: React.FC = () => {
     };
 
     const handleDone = ({ dealerId }: { dealerId: string }) => {
-      setDealerId(dealerId);
       setRevealInProgress(false);
       animationStarted.current = false;
       setInitialLiadComplete(true);
@@ -175,21 +221,10 @@ const GameRoom: React.FC = () => {
       }, 1500);
     }
 
-    if (
-      gameInfo.status === "trump" &&
-      gameInfo.dealerId &&
-      gameInfo.currentHand
-    ) {
-      timeout = setTimeout(() => {
-        socket?.emit("getTrumpCard", roomId);
-      }, 2000);
-    }
-
     return () => {
       clearTimeout(timeout);
       socket.off("determineDealer");
       socket.off("startRound");
-      socket.off("getTrumpCard");
     };
   }, [gameInfo, socket, roomId, room, user]);
 
@@ -237,7 +272,7 @@ const GameRoom: React.FC = () => {
           currentHand:
             gameInfo.currentHand === null ? 1 : gameInfo.currentHand + 1,
         });
-      }, 2000);
+      }, 1000);
     }
 
     return () => {
@@ -247,21 +282,52 @@ const GameRoom: React.FC = () => {
   }, [socket, gameInfo, roomId]);
 
   useEffect(() => {
+    if (!socket || !gameInfo || !roomId) return;
+
+    let timeout: NodeJS.Timeout;
+
+    if (
+      gameInfo.status === "trump" &&
+      !gameInfo.trumpCard &&
+      !stateChangeRef.current.isProcessing
+    ) {
+      stateChangeRef.current.isProcessing = true;
+
+      timeout = setTimeout(() => {
+        socket?.emit("getTrumpCard", roomId);
+      }, 1500);
+    }
+
+    return () => {
+      clearTimeout(timeout);
+      stateChangeRef.current.isProcessing = false;
+      socket.off("updateGameInfo");
+    };
+  }, [socket, gameInfo, roomId]);
+
+  useEffect(() => {
     if (!socket || !gameInfo) return;
 
     let timeout: NodeJS.Timeout;
 
-    if (gameInfo?.trumpCard && gameInfo.status === "trump") {
+    if (
+      gameInfo?.trumpCard &&
+      gameInfo.status === "trump" &&
+      !stateChangeRef.current.isProcessing
+    ) {
+      stateChangeRef.current.isProcessing = true;
+
       timeout = setTimeout(() => {
         socket?.emit("updateGameInfo", roomId, {
-          status: "playing",
+          status: "bid",
         });
-      }, 1000);
+      }, 1500);
     }
 
     return () => {
       clearTimeout(timeout);
       socket.off("updateGameInfo");
+      stateChangeRef.current.isProcessing = false;
     };
   }, [socket, gameInfo, roomId]);
 
@@ -288,12 +354,6 @@ const GameRoom: React.FC = () => {
     };
   }, []);
 
-  const handleStartRound = () => {
-    if (!socket || !room) return;
-    // socket?.emit("startRound", room?.id, 9);
-    socket?.emit("determineDealer", room?.id);
-  };
-
   const animateDealing = async (
     players: typeof rotatedPlayers,
     cardsPerPlayer: number,
@@ -304,8 +364,8 @@ const GameRoom: React.FC = () => {
     const dealingState: Record<string, number> = {};
     const dealerIndex = players.findIndex((p) => p.id === dealerId);
 
-    const nextDealerIndex = (dealerIndex + 1) % players.length;
-    const nextDealerId = players[nextDealerIndex]?.id || dealerId;
+    const nextPlayerIndex = (dealerIndex + 1) % players.length;
+    const nextPlayerId = players[nextPlayerIndex].id;
 
     const dealingOrder = [
       ...players.slice(dealerIndex + 1),
@@ -323,6 +383,9 @@ const GameRoom: React.FC = () => {
     setTimeout(() => {
       socket.emit("updateGameInfo", roomId, {
         status: "trump",
+        activePlayerIndex: nextPlayerIndex,
+        activePlayerId: nextPlayerId,
+        players: players.map((player) => player.id),
       });
     }, 1000);
   };
@@ -343,33 +406,60 @@ const GameRoom: React.FC = () => {
     );
   }
 
-  const getPlayerPosition = (index: number) => {
-    switch (index) {
-      case 0:
-        return styles.bottom;
-      case 1:
-        return styles.left;
-      case 2:
-        return styles.top;
-      case 3:
-        return styles.right;
-      default:
-        return "";
-    }
-  };
+  const getBids = (playerId: string) => {
+    if (!gameInfo?.scoreBoard) return null;
 
-  console.log(gameInfo);
+    const playerScore = gameInfo.scoreBoard.find(
+      (score) => score.playerId === playerId
+    );
+
+    if (!playerScore || !playerScore.scores) return null;
+
+    const currentHand = gameInfo.currentHand || 0;
+    const currentBid =
+      playerScore.scores.find((score) => score.gameHand === currentHand)?.bid ||
+      0;
+
+    return currentBid === 0 ? "-" : currentBid;
+  };
 
   return (
     <div className={styles.game_room}>
-      <button
-        className={styles.close_btn}
-        onClick={() => setShowLeaveModal(true)}
-        disabled={revealInProgress}
-      >
-        <FaTimesCircle className={styles.close_icon} />
-        <span>Leave Room</span>
-      </button>
+      {windowSize.width < 1200 && windowSize.height < 700 ? (
+        <button
+          className={styles.close_btn_sm}
+          onClick={() => setShowLeaveModal(true)}
+          disabled={
+            gameInfo?.status === "dealing" ||
+            gameInfo?.status === "trump" ||
+            gameInfo?.status === "bid"
+          }
+        >
+          <FaTimesCircle className={styles.close_icon} />
+        </button>
+      ) : (
+        <button
+          className={styles.close_btn}
+          onClick={() => setShowLeaveModal(true)}
+          disabled={
+            gameInfo?.status === "dealing" ||
+            gameInfo?.status === "trump" ||
+            gameInfo?.status === "bid"
+          }
+        >
+          <FaTimesCircle className={styles.close_icon} />
+          <span>Leave Room</span>
+        </button>
+      )}
+
+      {room?.users?.find((roomUser) => roomUser.id === user?._id)?.status ===
+      "busy" ? (
+        <BusyBg
+          roomId={room?.id}
+          userId={user?._id as string}
+          setShowLeaveModal={setShowLeaveModal}
+        />
+      ) : null}
 
       {showLeaveModal && (
         <LeaveRoomModal
@@ -378,77 +468,39 @@ const GameRoom: React.FC = () => {
         />
       )}
 
-      <div className={styles.table}>
-        <button className={styles.start_btn} onClick={handleStartRound}>
-          Start Round
-        </button>
-        <span className={styles.hisht}>Hisht: {room?.hisht}</span>
-        <div className={styles.table_surface}>
-          <div className={styles.game_wrapper}>
-            <CardDeck gameInfo={gameInfo} />
-            {rotatedPlayers.map((player, index) => (
-              <div
-                key={player.id}
-                className={`${styles.drawn_card} ${getPlayerPosition(
-                  index
-                )}_drawn_card`}
-              >
-                {!gameInfo?.dealerId && (
-                  <DrawnCards
-                    drawnCards={visibleCards[player.id] || []}
-                    playerPositionIndex={index}
-                  />
-                )}
+      {gameInfo?.status === "bid" && gameInfo?.activePlayerId === user?._id && (
+        <Popup primaryText="It's your turn" secondaryText={user?.username} />
+      )}
 
-                {gameInfo?.dealerId && gameInfo?.status === "dealing" && (
-                  <DealtCards
-                    dealingCards={dealingCards}
-                    playerPositionIndex={index}
-                    playerId={player.id}
-                  />
-                )}
-              </div>
-            ))}
-          </div>
-          <div className={styles.game_info}>
-            <span className={styles.game_type}>{room?.type}</span>
-          </div>
-        </div>
-      </div>
+      <Table
+        gameInfo={gameInfo}
+        user={user}
+        room={room}
+        visibleCards={visibleCards}
+        rotatedPlayers={rotatedPlayers as RoomUser[]}
+        dealingCards={dealingCards}
+      />
 
-      {rotatedPlayers.map((player, index) => (
-        <div
-          key={player.id}
-          className={`${styles.player} ${getPlayerPosition(index)}`}
-        >
-          {player.id === user?._id && gameInfo?.status === "playing" && (
-            <GameRounds hand={hand} />
-          )}
-          <div
-            className={styles.player_info}
-            title={player.username.length > 10 ? player.username : undefined}
-          >
-            <div className={styles.avatar_container}>
-              <Image
-                src={player.avatar || "/avatars/avatar-1.jpeg"}
-                alt={player.username}
-                width={80}
-                height={80}
-                className={styles.avatar}
-              />
-              {index === 0 && <FaCrown className={styles.crown} />}
-            </div>
-            <div className={styles.name}>
-              <span className={styles.username}>
-                {substringText(player.username, 8)}
-              </span>
-              {player.id === user?._id && (
-                <span className={styles.you}>You</span>
-              )}
-            </div>
-          </div>
-        </div>
-      ))}
+      <Players
+        rotatedPlayers={rotatedPlayers as RoomUser[]}
+        user={user as { _id: string }}
+        gameInfo={
+          gameInfo as {
+            status: string;
+            activePlayerId: string;
+            activePlayerIndex: number;
+            dealerId: string;
+            scoreBoard: ScoreBoard[];
+            players: string[];
+            currentHand: number | null;
+            hands: { hand: PlayingCard[]; playerId: string }[] | null;
+            trumpCard: PlayingCard | null;
+          } | null
+        }
+        room={room}
+        hand={hand}
+        getBids={getBids as (playerId: string) => number | undefined}
+      />
     </div>
   );
 };

@@ -1,16 +1,96 @@
-.drawnCards_Container {
-  position: relative;
-  height: 100%;
-  width: max-content;
+.drawn_cards {
+  position: absolute;
+  width: 100px;
+  height: 150px;
+  border-radius: 10px;
 
-  .card {
+  .determine_dealer_cards {
     position: absolute;
-    width: 100px;
-    height: 150px;
-    box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 10px;
+    top: 0;
+    left: 0;
+    width: max-content;
+
+    .card {
+      position: absolute;
+      width: 100px;
+      height: 150px;
+      box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 10px;
+    }
   }
+
+  @media (max-width: 1300px) {
+    width: 90px;
+    height: 130px;
+
+    .determine_dealer_cards {
+      .card {
+        width: 90px;
+        height: 130px;
+      }
+    }
+  }
+
+  @media (max-width: 900px) or (max-height: 800px) {
+    width: 70px;
+    height: 100px;
+
+    .determine_dealer_cards {
+      .card {
+        width: 70px;
+        height: 100px;
+      }
+    }
+  }
+
+  @media (max-width: 600px) or (max-height: 600px) {
+    width: 50px;
+    height: 70px;
+
+    .determine_dealer_cards {
+      .card {
+        width: 50px;
+        height: 70px;
+      }
+    }
+  }
+
+  @media (orientation: landscape) and (max-height: 350px) {
+    width: 40px;
+    height: 60px;
+
+    .determine_dealer_cards {
+      .card {
+        width: 40px;
+        height: 60px;
+      }
+    }
+  }
+}
+
+.bottom_drawn_cards {
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%);
+}
+
+.left_drawn_cards {
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+}
+
+.top_drawn_cards {
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.right_drawn_cards {
+  top: 50%;
+  right: 0;
+  transform: translateY(-50%);
 }

@@ -1,0 +1,88 @@
+@use "../../../../styles/mixins" as *;
+
+.modal_bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.343);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1;
+
+  .modal {
+    @include bgColor(light);
+    border-radius: 8px;
+    padding: 5px;
+    padding: 20px 5;
+    width: 420px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    transition: all 0.3s ease;
+
+    .count_down {
+      position: absolute;
+      right: 0;
+      top: 0;
+      width: 50px;
+      height: 50px;
+      margin: 5px;
+    }
+
+    h4 {
+      text-align: center;
+    }
+
+    .bids {
+      margin-top: 30px;
+      width: 100%;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      transition: all 0.3s ease;
+
+      .bid_btn {
+        @include btn();
+        width: 60px;
+        height: 50px;
+        color: var(--clr-light);
+        font-size: 1.8rem;
+
+        &:disabled {
+          background-color: rgba(152, 152, 152, 0.668);
+          border-color: rgba(122, 117, 117, 0.485);
+          cursor: not-allowed;
+          color: rgba(90, 90, 90, 0.452);
+          transition: all 0.1s ease;
+        }
+      }
+    }
+
+    @media (max-width: 1000px) or (max-height: 700px) {
+      width: 250px;
+
+      .count_down {
+        width: 40px;
+        height: 40px;
+      }
+
+      .bids {
+        gap: 5px;
+
+        .bid_btn {
+          width: 40px;
+          height: 30px;
+          font-size: 1rem;
+        }
+      }
+    }
+
+    @media (orientation: landscape) and (max-height: 550px) {
+      margin-bottom: 100px;
+    }
+  }
+}

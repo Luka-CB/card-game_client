@@ -188,19 +188,43 @@
         }
       }
 
-      .leave_btn {
-        @include btn();
-        padding: 5px 10px;
-        height: auto;
-        background-color: transparent;
-        border-color: var(--clr-danger-800);
-        color: var(--clr-danger-800);
-        font-size: small;
+      .btns {
+        display: flex;
+        align-items: center;
+        gap: 20px;
 
-        &:hover {
-          background-color: var(--clr-danger-faded);
-          color: var(--clr-danger-600);
-          border-color: var(--clr-danger-600);
+        .rejoin_btn {
+          @include btn();
+          padding: 5px 10px;
+          height: auto;
+          background-color: transparent;
+          border-color: var(--clr-primary-800);
+          color: var(--clr-primary-800);
+          font-size: small;
+          z-index: 1;
+
+          &:hover {
+            background-color: var(--clr-primary-faded);
+            color: var(--clr-primary-600);
+            border-color: var(--clr-primary-600);
+          }
+        }
+
+        .leave_btn {
+          @include btn();
+          padding: 5px 10px;
+          height: auto;
+          background-color: transparent;
+          border-color: var(--clr-danger-800);
+          color: var(--clr-danger-800);
+          font-size: small;
+          z-index: 1;
+
+          &:hover {
+            background-color: var(--clr-danger-faded);
+            color: var(--clr-danger-600);
+            border-color: var(--clr-danger-600);
+          }
         }
       }
     }
@@ -216,7 +240,7 @@
     border: 6px solid var(--clr-primary-faded);
 
     &::after {
-      content: "In Progress...";
+      content: "Room's Busy...";
       position: absolute;
       top: 0;
       left: 0;
@@ -236,6 +260,16 @@
     &:hover {
       scale: 1.03;
       box-shadow: 2px 3px 15px var(--clr-primary-800-faded);
+    }
+
+    footer {
+      .btns {
+        .leave_btn,
+        .rejoin_btn {
+          position: relative;
+          bottom: 10px;
+        }
+      }
     }
   }
 }
