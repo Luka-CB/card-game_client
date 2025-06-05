@@ -1,0 +1,246 @@
+@use "../../../../../styles/mixins" as *;
+
+.joker_prompt {
+  @include bgColor(light);
+  position: absolute;
+  bottom: 110%;
+  right: 0;
+  z-index: 100;
+  width: 250px;
+  padding: 8px;
+  border-radius: 5px;
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: flex-end;
+
+  .close_btn {
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding: 1px 5px;
+
+    .icon {
+      font-size: 1.3rem;
+      transition: all 0.1s ease-in-out;
+      color: var(--clr-danger-800);
+      cursor: pointer;
+
+      &:hover {
+        color: var(--clr-danger-600);
+      }
+    }
+  }
+
+  .suits {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 5px;
+    padding: 20px 0 0 0;
+
+    button {
+      @include btn();
+      height: auto;
+      font-size: 0.7rem;
+      width: 23%;
+      padding: 5px;
+      color: var(--clr-light);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      .icon {
+        font-size: 1.5rem;
+      }
+    }
+
+    .need {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+
+      p {
+        font-size: small;
+        padding-bottom: 5px;
+        text-shadow: 0 0 1px rgba(0, 0, 0, 0.796);
+      }
+
+      .suit_btns {
+        display: flex;
+        justify-content: space-between;
+
+        .suit_btn_spades {
+          color: var(--clr-dark);
+          &:hover {
+            color: var(--clr-darker);
+          }
+        }
+
+        .suit_btn_diamonds {
+          color: var(--clr-danger-800);
+          &:hover {
+            color: var(--clr-danger-600);
+          }
+        }
+
+        .suit_btn_hearts {
+          color: var(--clr-danger-600);
+
+          .icon {
+            font-size: 1.3rem;
+          }
+          &:hover {
+            color: var(--clr-danger-800);
+          }
+        }
+
+        .suit_btn_clubs {
+          color: var(--clr-dark);
+          &:hover {
+            color: var(--clr-darker);
+          }
+        }
+      }
+    }
+
+    .takes {
+      display: flex;
+      flex-direction: column;
+      margin-top: 10px;
+
+      p {
+        font-size: small;
+        padding-bottom: 5px;
+        text-shadow: 0 0 1px rgba(0, 0, 0, 0.796);
+      }
+
+      .suit_btns {
+        display: flex;
+        justify-content: space-between;
+
+        .suit_btn_spades {
+          color: var(--clr-dark);
+          &:hover {
+            color: var(--clr-darker);
+          }
+        }
+
+        .suit_btn_diamonds {
+          color: var(--clr-danger-800);
+          &:hover {
+            color: var(--clr-danger-600);
+          }
+        }
+
+        .suit_btn_hearts {
+          color: var(--clr-danger-600);
+
+          .icon {
+            font-size: 1.3rem;
+          }
+          &:hover {
+            color: var(--clr-danger-800);
+          }
+        }
+
+        .suit_btn_clubs {
+          color: var(--clr-dark);
+          &:hover {
+            color: var(--clr-darker);
+          }
+        }
+      }
+    }
+  }
+
+  .btns {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    padding-top: 20px;
+
+    button {
+      @include btn();
+      height: auto;
+      font-size: 0.7rem;
+      width: 48%;
+      padding: 5px;
+      color: var(--clr-light);
+    }
+
+    .take_btn {
+      background-color: var(--clr-success-600);
+
+      &:hover {
+        background-color: var(--clr-success-800);
+        color: var(--clr-lighter);
+      }
+    }
+
+    .no_btn {
+      background-color: var(--clr-danger-600);
+
+      &:hover {
+        background-color: var(--clr-danger-800);
+        color: var(--clr-lighter);
+      }
+    }
+  }
+
+  @media (max-width: 1000px) {
+    width: 200px;
+    padding: 5px;
+
+    .btns {
+      button {
+        font-size: 0.5rem;
+      }
+    }
+  }
+
+  @media (max-width: 600px) or (max-height: 600px) {
+    width: 150px;
+    padding: 5px;
+
+    .close_btn {
+      .icon {
+        font-size: 1rem;
+      }
+    }
+
+    .suits {
+      button {
+        .icon {
+          font-size: 0.8rem;
+        }
+      }
+
+      .need,
+      .takes {
+        p {
+          font-size: 0.6rem;
+        }
+
+        .suit_btns {
+          .suit_btn_hearts {
+            .icon {
+              font-size: 0.8rem;
+            }
+          }
+        }
+      }
+
+      .takes {
+        margin-top: 5px;
+      }
+    }
+
+    .btns {
+      button {
+        font-size: 0.5rem;
+        padding: 2px;
+      }
+    }
+  }
+}

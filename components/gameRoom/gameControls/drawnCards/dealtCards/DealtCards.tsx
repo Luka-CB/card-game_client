@@ -16,113 +16,60 @@ const DealtCards = ({
 }: DealtCardsProps) => {
   const windowSize = useWindowSize();
 
-  const getInitial = () => {
-    switch (playerPositionIndex) {
-      case 0: // bottom
-        return {
-          opacity: 0.5,
-          bottom:
-            windowSize.width <= 600
-              ? -30
-              : (windowSize.width < 1000 && windowSize.width > 600) ||
-                windowSize.height <= 800
-              ? -50
-              : -100,
-          left: "50%",
-          transform: "translate(-50%, 0)",
-        };
-      case 1: // left
-        return {
-          opacity: 0.5,
-          left:
-            windowSize.width <= 600
-              ? -30
-              : (windowSize.width < 1000 && windowSize.width > 600) ||
-                windowSize.height <= 800
-              ? -50
-              : -100,
-          top: "50%",
-          transform: "translate(0, -50%)",
-        };
-      case 2: // top
-        return {
-          opacity: 0.5,
-          top:
-            windowSize.width <= 600
-              ? -30
-              : (windowSize.width < 1000 && windowSize.width > 600) ||
-                windowSize.height <= 800
-              ? -50
-              : -100,
-          left: "50%",
-          transform: "translate(-50%, 0)",
-        };
-      case 3: // right
-        return {
-          opacity: 0.5,
-          left:
-            windowSize.width <= 600
-              ? 30
-              : (windowSize.width < 1000 && windowSize.width > 600) ||
-                windowSize.height <= 800
-              ? 50
-              : 100,
-        };
-      default:
-        return {};
-    }
-  };
+  const playerPosition = ["bottom", "left", "top", "right"][
+    playerPositionIndex
+  ];
 
-  const getAnimate = () => {
-    switch (playerPositionIndex) {
-      case 0: // bottom
-        return {
-          opacity: 1,
-          bottom: 0,
-          left: "50%",
-          transform: "translate(-50%, 0)",
-        };
-      case 1: // left
-        return {
-          opacity: 1,
-          top: "50%",
-          left: 0,
-          transform: "translate(0, -50%)",
-        };
-      case 2: // top
-        return {
-          opacity: 1,
-          top: 0,
-          left: "50%",
-          transform: "translate(-50%, 0)",
-        };
-      case 3: // right
-        return {
-          opacity: 1,
-          left: 0,
-        };
-      default:
-        return {};
-    }
-  };
+  const initialY =
+    windowSize.width <= 500
+      ? 10
+      : windowSize.width <= 800 && windowSize.width > 500
+      ? 30
+      : windowSize.width < 1400 && windowSize.width > 800
+      ? 50
+      : 100;
+  const initialX =
+    windowSize.width <= 500
+      ? 15
+      : windowSize.width <= 800 && windowSize.width > 500
+      ? 30
+      : windowSize.width < 1400 && windowSize.width > 800
+      ? 50
+      : 100;
 
+  const offset =
+    windowSize.width <= 500
+      ? 1
+      : windowSize.width <= 700 && windowSize.width > 500
+      ? 2
+      : windowSize.width < 1200 && windowSize.width > 700
+      ? 3
+      : 5;
   return (
-    <div className={styles.dealtCards_container}>
+    <div className={`${styles.dealtCards_container} ${styles[playerPosition]}`}>
       {Array.from({ length: dealingCards[playerId] || 0 }).map((_, index) => (
         <motion.div
           key={index}
-          initial={getInitial()}
-          animate={getAnimate()}
+          initial={{
+            opacity: 0,
+            y: playerPositionIndex === 0 ? initialY : -initialY,
+            x: playerPositionIndex === 1 ? -initialX : initialX,
+          }}
+          animate={{
+            opacity: 1,
+            y: 0,
+            x: 0,
+          }}
           transition={{
             duration: 0.4,
             type: "spring",
             damping: 15,
-            delay: index * 0.1, // Adjust the delay for each card
+            delay: 2 * 0.1, // Adjust the delay for each card
           }}
           style={{
             position: "absolute",
-            left: `${index * 3}px`, // Adjust this value as needed
-            zIndex: 1,
+            left: `${index * offset}px`,
+            zIndex: index,
           }}
         >
           <Image

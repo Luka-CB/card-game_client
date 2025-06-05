@@ -1,18 +1,89 @@
+@use "../../../../styles/mixins" as *;
+
 .player_hand {
   z-index: 1;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.3rem;
   position: absolute;
   bottom: 120%;
 
-  .card {
+  .card,
+  .card_faded {
     transition: transform 0.3s ease;
     border-radius: 15px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    touch-action: none; /* Prevents browser handling of touch events */
+    cursor: grab;
+    user-select: none; /* Prevents text selection during drag */
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+
+    &:active {
+      cursor: grabbing;
+    }
+
+    @media (max-width: 1200px) {
+      /* Make the entire card area draggable */
+      & > img {
+        pointer-events: none; /* Ensures the image doesn't interfere with drag */
+      }
+    }
+
+    .play_btn {
+      @include btn();
+      position: absolute;
+      top: 20%;
+      width: 70%;
+      height: auto;
+      font-size: small;
+      padding: 5px 0;
+      color: var(--clr-light);
+      box-shadow: 2px 2px 3px rgba(0, 0, 0, 0.473);
+      z-index: 100;
+
+      &:hover {
+        color: var(--clr-lighter);
+      }
+    }
 
     &:hover {
       transform: translateY(-20px);
       z-index: 1;
+    }
+
+    @media (max-width: 1200px) {
+      .play_btn {
+        width: 50%;
+        font-size: 0.5rem;
+      }
+
+      /* Visual feedback for dragging */
+      &.dragging {
+        box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+        transform: translateY(-10px) scale(1.05);
+        z-index: 10;
+      }
+    }
+
+    @media (max-width: 480px) {
+      margin: 0 -8px;
+    }
+  }
+
+  .card_faded {
+    img {
+      filter: grayscale(0.8) brightness(60%);
+    }
+  }
+
+  .playable {
+    img {
+      filter: grayscale(0) brightness(1);
     }
   }
 
@@ -21,5 +92,9 @@
 
   @media (orientation: landscape) and (max-height: 800px) {
     bottom: 120%;
+  }
+
+  @media (orientation: landscape) and (max-height: 600px) {
+    bottom: 100%;
   }
 }

@@ -10,6 +10,34 @@
     top: 0;
     transform: translate(2px, -3px);
     z-index: 1;
+
+    .trump_card_placeholder {
+      position: absolute;
+      height: 150px;
+      width: 100px;
+      background-color: #e2e2e2;
+      border-radius: 15px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      .spades,
+      .diamonds,
+      .hearts,
+      .clubs {
+        font-size: 2.5rem;
+      }
+
+      .spades,
+      .clubs {
+        color: var(--clr-dark);
+      }
+
+      .diamonds,
+      .hearts {
+        color: var(--clr-danger-800);
+      }
+    }
   }
 
   .deck {
@@ -17,33 +45,74 @@
     top: 0;
   }
 
-  @media (max-width: 1500px) {
+  @media (max-width: 1300px) {
     width: 90px;
     height: 130px;
+
+    .trump_card {
+      .trump_card_placeholder {
+        width: 90px;
+        height: 130px;
+
+        .spades,
+        .diamonds,
+        .hearts,
+        .clubs {
+          font-size: 2rem;
+        }
+      }
+    }
   }
 
-  @media (max-width: 900px) {
+  @media (max-width: 900px) or (max-height: 800px) {
     width: 70px;
     height: 100px;
+
+    .trump_card {
+      .trump_card_placeholder {
+        width: 70px;
+        height: 100px;
+        border-radius: 10px;
+
+        .spades,
+        .diamonds,
+        .hearts,
+        .clubs {
+          font-size: 1.5rem;
+        }
+      }
+    }
   }
 
-  @media (max-width: 600px) {
+  @media (max-width: 600px) or (max-height: 600px) {
     width: 50px;
     height: 70px;
-  }
 
-  @media (orientation: landscape) and (max-height: 800px) {
-    width: 70px;
-    height: 100px;
-  }
+    .trump_card {
+      .trump_card_placeholder {
+        width: 50px;
+        height: 70px;
+        border-radius: 5px;
 
-  @media (orientation: landscape) and (max-height: 600px) {
-    width: 50px;
-    height: 70px;
+        .spades,
+        .diamonds,
+        .hearts,
+        .clubs {
+          font-size: 1rem;
+        }
+      }
+    }
   }
 
   @media (orientation: landscape) and (max-height: 350px) {
     width: 40px;
     height: 60px;
+
+    .trump_card {
+      .trump_card_placeholder {
+        width: 40px;
+        height: 60px;
+      }
+    }
   }
 }

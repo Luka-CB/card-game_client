@@ -97,6 +97,10 @@ const adjustBidBasedOnPreviousBids = (
     if (averageBidSofar > currentHand / 4) {
       adjustedBid = Math.max(0, adjustedBid - 1);
     }
+
+    if (sumPreviousBids + adjustedBid === currentHand) {
+      adjustedBid = Math.min(adjustedBid - 1, currentHand);
+    }
   }
 
   return Math.max(0, Math.min(adjustedBid, currentHand));

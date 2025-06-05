@@ -1,0 +1,56 @@
+.played_cards {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 200px;
+  height: 300px;
+
+  @media (max-width: 1150px) or (max-height: 800px) {
+    width: 150px;
+    height: 200px;
+  }
+
+  @media (max-width: 990px) or (max-height: 600px) {
+    width: 110px;
+    height: 150px;
+  }
+
+  @media (max-width: 600px) or (max-height: 550px) {
+    width: 90px;
+    height: 120px;
+  }
+
+  @media (orientation: landscape) and (max-height: 450px) {
+    width: 70px;
+    height: 100px;
+  }
+
+  .card {
+    position: absolute;
+  }
+
+  .card_0 {
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .card_1 {
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%) rotate(90deg);
+  }
+
+  .card_2 {
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .card_3 {
+    top: 50%;
+    right: 0;
+    transform: translateY(-50%) rotate(-90deg);
+  }
+}
