@@ -51,3 +51,5 @@ export const getRandomBotAvatar = () => {
   const avatarNumber = Math.floor(Math.random() * 21) + 1;
   return `/bots/bot-${avatarNumber}.jpeg`;
 };
+
+export const wait = (ms: number) => new Promise((res) => setTimeout(res, ms));

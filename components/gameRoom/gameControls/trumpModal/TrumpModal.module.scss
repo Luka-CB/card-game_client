@@ -1,0 +1,84 @@
+@use "../../../../styles/mixins" as *;
+
+.bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 100;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  .container {
+    @include bgColor(light);
+    border-radius: 8px;
+    padding: 5px 10px;
+    width: 90%;
+    max-width: 400px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border: 2px solid var(--clr-danger-faded);
+    text-align: center;
+
+    p {
+      font-size: 1.2rem;
+      text-shadow: 1px 1px 1px var(--clr-dark);
+    }
+
+    .suits {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
+
+      button {
+        @include btn();
+        width: 18%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 0;
+
+        .icon {
+          font-size: 1.5rem;
+        }
+      }
+
+      .btn_pass {
+        font-size: 2.5rem;
+        color: rgb(46, 46, 46);
+
+        &:hover {
+          color: var(--clr-darker);
+        }
+      }
+      .btn_pass {
+        font-size: 2.5rem;
+        color: rgb(46, 46, 46);
+
+        &:hover {
+          color: var(--clr-darker);
+        }
+      }
+
+      .btn_spades,
+      .btn_clubs {
+        color: var(--clr-dark);
+
+        &:hover {
+          color: var(--clr-darker);
+        }
+      }
+
+      .btn_diamonds,
+      .btn_hearts {
+        color: var(--clr-danger-800);
+
+        &:hover {
+          color: var(--clr-danger-600);
+        }
+      }
+    }
+  }
+}

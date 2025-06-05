@@ -3,6 +3,7 @@ import styles from "./CardDeck.module.scss";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import useWindowSize from "@/hooks/useWindowSize";
+import { GiSpades, GiDiamonds, GiHearts, GiClubs } from "react-icons/gi";
 
 interface CardDeckProps {
   gameInfo: GameInfo | null;
@@ -11,60 +12,59 @@ interface CardDeckProps {
 const CardDeck = ({ gameInfo }: CardDeckProps) => {
   const windowSize = useWindowSize();
 
-  let initialPosition;
-  let animatePosition;
-
-  const animationKey =
-    gameInfo?.status === "dealing" || gameInfo?.status === "waiting"
-      ? "dealing_waiting"
-      : "default";
-
-  if (gameInfo?.status === "dealing" || gameInfo?.status === "waiting") {
-    initialPosition = {
-      opacity: 0,
-      y: 50,
-    };
-
-    animatePosition = {
-      opacity: 1,
-      y: 0,
-      transition: { delay: 0.5, duration: 0.4 },
-    };
-  } else {
-    initialPosition = {
-      opacity: 0,
-      top: "50%",
-      right: "50%",
-      transform: "translate(-50%, -50%)",
-    };
-
-    animatePosition = {
-      opacity: 1,
-      top: "2%",
-      right: "2%",
-      left: "unset",
-      bottom: "unset",
-      transform: "translate(0, 0)",
-      transition: { delay: 0.5, duration: 0.4 },
-    };
-  }
-
   if (!gameInfo) {
     return null;
   }
 
+  const suitIcon = (suit: string | undefined) => {
+    switch (suit) {
+      case "spades":
+        return <GiSpades className={styles.spades} />;
+      case "diamonds":
+        return <GiDiamonds className={styles.diamonds} />;
+      case "hearts":
+        return <GiHearts className={styles.hearts} />;
+      case "clubs":
+        return <GiClubs className={styles.clubs} />;
+      default:
+        return null;
+    }
+  };
+
+  const trumpCard =
+    gameInfo?.trumpCard?.joker && gameInfo?.trumpCard?.color === "black"
+      ? "/cards/joker-black.png"
+      : gameInfo?.trumpCard?.joker && gameInfo?.trumpCard?.color === "red"
+      ? "/cards/joker-red.png"
+      : `/cards/${
+          gameInfo?.trumpCard?.suit
+        }-${gameInfo?.trumpCard?.rank?.toLowerCase()}.png`;
+
   return (
     <motion.div
-      initial={initialPosition}
-      animate={animatePosition}
+      initial={{
+        opacity: 0,
+        top: 100,
+        right: 50,
+      }}
+      animate={
+        gameInfo?.trumpCard
+          ? {
+              opacity: 1,
+              top: 20,
+            }
+          : undefined
+      }
+      transition={{
+        duration: 1,
+        type: "spring",
+      }}
       className={styles.card_deck}
     >
       <div className={styles.trump_card}>
-        {gameInfo?.trumpCard && (
+        {gameInfo?.trumpCard && gameInfo?.currentHand !== 9 ? (
           <Image
-            src={`/cards/${
-              gameInfo.trumpCard.suit
-            }-${gameInfo?.trumpCard?.rank?.toLowerCase()}.png`}
+            src={trumpCard}
             alt="Trump Card"
             width={
               windowSize.height <= 350
@@ -101,6 +101,10 @@ const CardDeck = ({ gameInfo }: CardDeckProps) => {
                 : 150
             }
           />
+        ) : (
+          <div className={styles.trump_card_placeholder}>
+            {suitIcon(gameInfo?.trumpCard?.suit)}
+          </div>
         )}
       </div>
       <div className={styles.deck}>

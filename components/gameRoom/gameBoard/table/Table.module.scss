@@ -15,8 +15,8 @@
   .hisht {
     position: absolute;
     bottom: 5%;
-    right: 10%;
-    font-size: 1.5rem;
+    right: 5%;
+    font-size: 1rem;
     color: var(--clr-primary-800);
     cursor: default;
   }
@@ -28,6 +28,14 @@
     display: flex;
     align-items: center;
     justify-content: center;
+
+    .test_btn {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 10000;
+    }
 
     .game_info {
       display: flex;
@@ -135,6 +143,30 @@
           .game_type {
             font-size: 4rem;
           }
+        }
+      }
+    }
+  }
+}
+
+@media (orientation: landscape) and (max-height: 800px) {
+  .table {
+    .table_surface {
+      .game_info {
+        .game_type {
+          font-size: 6rem;
+        }
+      }
+    }
+  }
+}
+
+@media (orientation: landscape) and (max-height: 500px) {
+  .table {
+    .table_surface {
+      .game_info {
+        .game_type {
+          font-size: 4rem;
         }
       }
     }

@@ -1,27 +1,27 @@
 import useSocket from "@/hooks/useSocket";
 import styles from "./BidModal.module.scss";
 import { motion } from "framer-motion";
-import { PlayingCard, RoomUser, ScoreBoard } from "@/utils/interfaces";
+import { HandBid, PlayingCard, RoomUser, ScoreBoard } from "@/utils/interfaces";
 import { useEffect, useState, useRef } from "react";
 import CountDownClock from "../../gameBoard/timer/CountDownClock";
 import { calculateBotBid } from "@/utils/gameRoom";
 
 interface BidModalProps {
+  rotatedPlayers: RoomUser[];
   data: {
     currentHand: number;
     roomId: string;
-    activePlayerId: string;
-    activePlayerIndex: number;
+    currentPlayerId: string;
     dealerId: string;
     players: string[];
-    scoreBoard: ScoreBoard[] | null;
+    handBids: HandBid[] | null;
     roomUsers: RoomUser[];
     hands: { hand: PlayingCard[]; playerId: string }[] | null;
     trumpCard: PlayingCard | null;
   };
 }
 
-const BidModal = ({ data }: BidModalProps) => {
+const BidModal = ({ data, rotatedPlayers }: BidModalProps) => {
   const [choosingBid, setChoosingBid] = useState(false);
 
   const socket = useSocket();
@@ -30,16 +30,20 @@ const BidModal = ({ data }: BidModalProps) => {
   const botTimeout2Ref = useRef<NodeJS.Timeout | null>(null);
 
   const bids =
-    data.scoreBoard
-      ?.map((score) =>
-        score.scores?.map((s) =>
-          data.currentHand === s.gameHand ? s.bid : null
-        )
+    data.handBids
+      ?.map((bid) =>
+        bid.bids?.map((b) => (data.currentHand === b.gameHand ? b.bid : null))
       )
       .flat()
       .filter((s) => s !== undefined) || [];
 
   const bidSum = bids.reduce((acc: any, bid) => acc + (bid as number), 0);
+
+  const playerIndex = rotatedPlayers?.findIndex(
+    (p) => p.id === data.currentPlayerId
+  );
+  const nextPlayerId =
+    rotatedPlayers[(playerIndex + 1) % rotatedPlayers.length].id;
 
   const handleBidClick = (bid: number) => {
     if (!socket) return;
@@ -49,20 +53,16 @@ const BidModal = ({ data }: BidModalProps) => {
 
     setChoosingBid(true);
 
-    const nextPlayerIndex =
-      data.activePlayerIndex === 3 ? 0 : data.activePlayerIndex + 1;
-    const nextPlayerId = data.players[nextPlayerIndex];
-
-    socket.emit("updateGameScore", data.roomId, data.activePlayerId, {
+    socket.emit("updateBids", data.roomId, {
+      playerId: data.currentPlayerId,
       gameHand: data.currentHand,
       bid,
     });
 
     setTimeout(() => {
       socket.emit("updateGameInfo", data.roomId, {
-        activePlayerId: nextPlayerId,
-        activePlayerIndex: nextPlayerIndex,
-        status: data.dealerId === data.activePlayerId ? "playing" : "bid",
+        currentPlayerId: nextPlayerId,
+        status: data.dealerId === data.currentPlayerId ? "playing" : "bid",
       });
       setChoosingBid(false);
     }, 1000);
@@ -85,48 +85,49 @@ const BidModal = ({ data }: BidModalProps) => {
     setChoosingBid(true);
 
     const previousBids =
-      data.scoreBoard
-        ?.filter(
-          (score) =>
-            data.players?.indexOf(score.playerId) < data.activePlayerIndex
-        )
-        .map((score) => {
-          const currentHandScore = score.scores?.find(
-            (s) => s.gameHand === data.currentHand
+      data?.handBids
+        ?.filter((bid) => bid.playerId !== data.currentPlayerId)
+        ?.map((bid) => {
+          const currentHandScore = bid.bids.find(
+            (b) => b.gameHand === data.currentHand
           );
+
           return currentHandScore?.bid || 0;
         }) || [];
 
     const botBid = calculateBotBid({
       hand:
-        data.hands?.find((h) => h.playerId === data.activePlayerId)?.hand || [],
+        data.hands?.find((h) => h.playerId === data.currentPlayerId)?.hand ||
+        [],
       trumpSuit: data.trumpCard?.suit || "",
       currentHand: data.currentHand || 0,
-      isDealer: data.dealerId === data.activePlayerId,
+      isDealer: data.dealerId === data.currentPlayerId,
       previousBids,
     });
 
-    botTimeout1Ref.current = setTimeout(() => {
-      socket.emit("updateGameScore", data.roomId, data.activePlayerId, {
-        gameHand: data.currentHand,
-        bid: botBid,
-      });
+    const modifiedBotBid =
+      data.dealerId === data.currentPlayerId &&
+      bidSum + botBid === data.currentHand
+        ? botBid + 1
+        : botBid;
 
-      const nextPlayerIndex =
-        data.activePlayerIndex === 3 ? 0 : data.activePlayerIndex + 1;
-      const nextPlayerId = data.players[nextPlayerIndex];
+    botTimeout1Ref.current = setTimeout(() => {
+      socket.emit("updateBids", data.roomId, {
+        playerId: data.currentPlayerId,
+        gameHand: data.currentHand,
+        bid: modifiedBotBid,
+      });
 
       botTimeout2Ref.current = setTimeout(() => {
         socket.emit("updateGameInfo", data.roomId, {
-          activePlayerId: nextPlayerId,
-          activePlayerIndex: nextPlayerIndex,
-          status: data.dealerId === data.activePlayerId ? "playing" : "bid",
+          currentPlayerId: nextPlayerId,
+          status: data.dealerId === data.currentPlayerId ? "playing" : "bid",
         });
 
         socket.emit(
           "updateUserStatus",
           data.roomId,
-          data.activePlayerId,
+          data.currentPlayerId,
           "busy"
         );
 
@@ -169,7 +170,7 @@ const BidModal = ({ data }: BidModalProps) => {
               onClick={() => handleBidClick(index)}
               disabled={
                 choosingBid ||
-                (data.activePlayerId === data.dealerId &&
+                (data.currentPlayerId === data.dealerId &&
                   bidSum + index === data.currentHand)
               }
             >

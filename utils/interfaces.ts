@@ -23,8 +23,11 @@ export interface PlayingCard {
   id: string;
   suit: string;
   rank: string;
+  strength: number;
   joker?: boolean;
   color?: string;
+  type?: string;
+  requestedSuit?: string;
 }
 
 export interface DrawnCard {
@@ -34,22 +37,52 @@ export interface DrawnCard {
 
 export type Suit = "hearts" | "diamonds" | "clubs" | "spades";
 export type Rank = "6" | "7" | "8" | "9" | "10" | "J" | "Q" | "K" | "A";
+export type Strength = "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9";
 
 export type Card =
-  | { suit: Suit; rank: Rank; id: string }
-  | { joker: true; id: string; color: string };
+  | { suit: Suit; rank: Rank; strength: Strength; id: string }
+  | {
+      joker: true;
+      strength: string;
+      id: string;
+      color: string;
+      type: string;
+      requestedSuit: string;
+    };
 
-export interface Score {
-  gameHand: number;
-  bid: number;
-  win: number;
-  points: number;
+export interface HandBid {
+  playerId: string;
+  bids: {
+    gameHand: number;
+    bid: number;
+  }[];
+}
+
+export interface HandWin {
+  playerId: string;
+  wins: {
+    gameHand: number;
+    win: number;
+  }[];
+}
+
+export interface HandPoint {
+  playerId: string;
+  points: {
+    gameHand: number;
+    point: number;
+  }[];
 }
 
 export interface ScoreBoard {
   playerId: string;
   playerName: string;
-  scores: Score[] | null;
+}
+
+export interface PlayedCard {
+  playerId: string;
+  playerIndex: number;
+  card: PlayingCard;
 }
 
 export interface GameInfo {
@@ -58,10 +91,14 @@ export interface GameInfo {
   status: string;
   players: string[] | null;
   dealerId: string | null;
-  activePlayerIndex?: number | null;
-  activePlayerId?: string | null;
+  currentPlayerId: string | null;
   currentHand: number | null;
+  handCount: number | null;
   trumpCard?: PlayingCard | null;
-  hands?: { hand: Card[]; playerId: string }[] | null;
-  scoreBoard?: ScoreBoard[] | null;
+  hands?: { hand: PlayingCard[]; playerId: string }[] | null;
+  handBids?: HandBid[] | null;
+  handWins?: HandWin[] | null;
+  handPoints?: HandPoint[] | null;
+  playedCards?: PlayedCard[] | null;
+  lastPlayedCards?: PlayedCard[] | null;
 }

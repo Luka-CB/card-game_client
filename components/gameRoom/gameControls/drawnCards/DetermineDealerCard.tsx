@@ -38,10 +38,10 @@ const DetermineDealerCard = ({ card, index, playerPositionIndex }: Props) => {
           opacity: 0.5,
           translateY:
             windowSize.width <= 600
-              ? -30
+              ? 30
               : (windowSize.width < 1000 && windowSize.width > 600) ||
                 windowSize.height <= 800
-              ? -50
+              ? 50
               : 100,
         };
       case 1: // left

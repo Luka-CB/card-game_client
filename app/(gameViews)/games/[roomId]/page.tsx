@@ -3,11 +3,11 @@
 import styles from "./page.module.scss";
 import { FaTimesCircle } from "react-icons/fa";
 import {
+  HandBid,
   GameInfo,
   PlayingCard,
   Room,
   RoomUser,
-  ScoreBoard,
 } from "@/utils/interfaces";
 import useUserStore from "@/store/user/userStore";
 import useSocket from "@/hooks/useSocket";
@@ -15,11 +15,13 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Loader from "@/components/loaders/Loader";
 import LeaveRoomModal from "@/components/gameRoom/leaveRoomModal/LeaveRoomModal";
-import Popup from "@/components/popup/Popup";
+import { JokerPopup, UserTurnPopup } from "@/components/popup/Popup";
 import useWindowSize from "@/hooks/useWindowSize";
 import Players from "@/components/gameRoom/gameBoard/players/Players";
 import Table from "@/components/gameRoom/gameBoard/table/Table";
 import BusyBg from "@/components/gameRoom/busyMode/BusyBg";
+import TrumpModal from "@/components/gameRoom/gameControls/trumpModal/TrumpModal";
+import { wait } from "@/utils/misc";
 
 const GameRoom: React.FC = () => {
   const [room, setRoom] = useState<Room | null>(null);
@@ -30,9 +32,12 @@ const GameRoom: React.FC = () => {
   const { user } = useUserStore();
   const [hand, setHand] = useState<PlayingCard[]>([]);
   const [gameInfo, setGameInfo] = useState<GameInfo | null>(null);
+  const [isChoosingTrump, setIsChoosingTrump] = useState(false);
 
   const [revealInProgress, setRevealInProgress] = useState(false);
   const [initialLiadComplete, setInitialLiadComplete] = useState(false);
+  const [currentDealingRound, setCurrentDealingRound] = useState(0);
+  const [trumpSelectionActive, setTrumpSelectionActive] = useState(false);
 
   const visibleRef = useRef<Record<string, PlayingCard[]>>({});
   const animationStarted = useRef(false);
@@ -46,6 +51,8 @@ const GameRoom: React.FC = () => {
     lastGameInfo: null,
     isProcessing: false,
   });
+
+  const processingRef = useRef<{ [key: string]: boolean }>({});
 
   const [dealingCards, setDealingCards] = useState<Record<string, number>>({});
 
@@ -97,24 +104,20 @@ const GameRoom: React.FC = () => {
   }, [user, room]);
 
   useEffect(() => {
-    if (!socket || !roomId || !room) return;
+    if (!socket || !roomId) return;
 
-    if (gameInfo?.scoreBoard) return;
-
-    const players =
-      room?.users.map((user) => ({
-        playerId: user.id,
-        playerName: user.username,
-      })) || [];
-
-    if (players.length) {
-      socket.emit("updateGameScoreBoard", roomId, players);
-    }
+    socket.emit("getRoom", roomId);
+    socket.on("getRoom", (roomData: Room) => {
+      if (roomData.id === roomId) {
+        setRoom(roomData);
+        setLoading(false);
+      }
+    });
 
     return () => {
-      socket.off("updateGameScoreBoard");
+      socket.off("getRoom");
     };
-  }, [socket, roomId, room, gameInfo]);
+  }, [socket, roomId, user]);
 
   useEffect(() => {
     if (!socket || !roomId) return;
@@ -195,38 +198,86 @@ const GameRoom: React.FC = () => {
   }, [socket, revealInProgress, initialLiadComplete]);
 
   useEffect(() => {
-    if (!socket || !roomId || !gameInfo || !room || !user) return;
+    if (!socket || !roomId || !gameInfo || !user || !room) return;
 
-    const sortedPlayers = [...room.users].sort((a, b) =>
-      a.id.localeCompare(b.id)
-    );
-    const isInitiator = sortedPlayers[0]?.id === user._id;
+    const handleGameStatus = async () => {
+      const { status, dealerId, currentHand, trumpCard, handCount } = gameInfo;
 
-    let timeout: NodeJS.Timeout;
+      const sortedPlayers = [...room.users].sort((a, b) =>
+        a.id.localeCompare(b.id)
+      );
+      const isInitiator = sortedPlayers[0]?.id === user._id;
 
-    if (gameInfo.status === "dealing" && !gameInfo.dealerId && isInitiator) {
-      timeout = setTimeout(() => {
-        socket?.emit("determineDealer", roomId);
-      }, 1500);
-    }
+      if (processingRef.current[status]) return;
+      processingRef.current[status] = true;
 
-    if (
-      gameInfo.status === "dealing" &&
-      gameInfo.dealerId &&
-      gameInfo.currentHand &&
-      isInitiator
-    ) {
-      timeout = setTimeout(() => {
-        socket?.emit("startRound", roomId, gameInfo.currentHand);
-      }, 1500);
-    }
+      switch (status) {
+        case "waiting":
+          setCurrentDealingRound(0);
+          setDealingCards({});
+          setTrumpSelectionActive(false);
+          setIsChoosingTrump(false);
+          setHand([]);
 
-    return () => {
-      clearTimeout(timeout);
-      socket.off("determineDealer");
-      socket.off("startRound");
+          if (isInitiator) {
+            await wait(1000);
+
+            let handNum;
+
+            if (handCount && currentHand) {
+              if (handCount >= 1 && handCount <= 8) {
+                handNum = currentHand + 1;
+              } else if (handCount > 8 && handCount <= 12) {
+                handNum = 9;
+              } else if (handCount > 12 && handCount <= 20) {
+                handNum = currentHand - 1;
+              } else {
+                handNum = 9;
+              }
+            } else {
+              handNum = 1;
+            }
+
+            socket.emit("updateGameInfo", roomId, {
+              status: "dealing",
+              currentHand: handNum,
+            });
+          }
+          break;
+        case "dealing":
+          if (!dealerId && isInitiator) {
+            await wait(1500);
+            socket.emit("determineDealer", roomId);
+          }
+
+          if (dealerId && currentHand && isInitiator) {
+            await wait(1500);
+            socket.emit("startRound", roomId, currentHand);
+          }
+          break;
+        case "trump":
+          if (!trumpCard && isInitiator) {
+            await wait(1500);
+            socket.emit("getTrumpCard", roomId);
+          }
+
+          if (trumpCard && isInitiator) {
+            await wait(1500);
+            socket.emit("updateGameInfo", roomId, {
+              status: "bid",
+            });
+          }
+          break;
+
+        default:
+          break;
+      }
+
+      processingRef.current[status] = false;
     };
-  }, [gameInfo, socket, roomId, room, user]);
+
+    handleGameStatus();
+  }, [socket, roomId, gameInfo, room, user]);
 
   useEffect(() => {
     if (!socket || !gameInfo) return;
@@ -248,9 +299,13 @@ const GameRoom: React.FC = () => {
   }, [socket, user, rotatedPlayers, gameInfo]);
 
   useEffect(() => {
-    if (!socket || !gameInfo || !user) return;
+    if (!gameInfo || !user) return;
 
-    if (!hand.length && gameInfo.hands?.length) {
+    if (
+      !hand.length &&
+      gameInfo.hands?.length &&
+      gameInfo.status !== "dealing"
+    ) {
       const playerHand = gameInfo.hands.find(
         (hand) => hand.playerId === user?._id
       );
@@ -258,94 +313,7 @@ const GameRoom: React.FC = () => {
         setHand(playerHand.hand as PlayingCard[]);
       }
     }
-  }, [socket, gameInfo, user]);
-
-  useEffect(() => {
-    if (!socket || !gameInfo) return;
-
-    let timeout: NodeJS.Timeout;
-
-    if (gameInfo?.status === "waiting") {
-      timeout = setTimeout(() => {
-        socket.emit("updateGameInfo", roomId, {
-          status: "dealing",
-          currentHand:
-            gameInfo.currentHand === null ? 1 : gameInfo.currentHand + 1,
-        });
-      }, 1000);
-    }
-
-    return () => {
-      clearTimeout(timeout);
-      socket.off("updateGameInfo");
-    };
-  }, [socket, gameInfo, roomId]);
-
-  useEffect(() => {
-    if (!socket || !gameInfo || !roomId) return;
-
-    let timeout: NodeJS.Timeout;
-
-    if (
-      gameInfo.status === "trump" &&
-      !gameInfo.trumpCard &&
-      !stateChangeRef.current.isProcessing
-    ) {
-      stateChangeRef.current.isProcessing = true;
-
-      timeout = setTimeout(() => {
-        socket?.emit("getTrumpCard", roomId);
-      }, 1500);
-    }
-
-    return () => {
-      clearTimeout(timeout);
-      stateChangeRef.current.isProcessing = false;
-      socket.off("updateGameInfo");
-    };
-  }, [socket, gameInfo, roomId]);
-
-  useEffect(() => {
-    if (!socket || !gameInfo) return;
-
-    let timeout: NodeJS.Timeout;
-
-    if (
-      gameInfo?.trumpCard &&
-      gameInfo.status === "trump" &&
-      !stateChangeRef.current.isProcessing
-    ) {
-      stateChangeRef.current.isProcessing = true;
-
-      timeout = setTimeout(() => {
-        socket?.emit("updateGameInfo", roomId, {
-          status: "bid",
-        });
-      }, 1500);
-    }
-
-    return () => {
-      clearTimeout(timeout);
-      socket.off("updateGameInfo");
-      stateChangeRef.current.isProcessing = false;
-    };
-  }, [socket, gameInfo, roomId]);
-
-  useEffect(() => {
-    if (!socket || !roomId) return;
-
-    socket.emit("getRoom", roomId);
-    socket.on("getRoom", (roomData: Room) => {
-      if (roomData.id === roomId) {
-        setRoom(roomData);
-        setLoading(false);
-      }
-    });
-
-    return () => {
-      socket.off("getRoom");
-    };
-  }, [socket, roomId, user]);
+  }, [gameInfo, user, hand.length]);
 
   useEffect(() => {
     return () => {
@@ -356,14 +324,13 @@ const GameRoom: React.FC = () => {
 
   const animateDealing = async (
     players: typeof rotatedPlayers,
-    cardsPerPlayer: number,
+    totalCardsPerPlayer: number,
     dealerId: string | null
   ) => {
     if (!dealerId || !socket || !roomId || !gameInfo) return;
 
-    const dealingState: Record<string, number> = {};
+    // const dealingState: Record<string, number> = {};
     const dealerIndex = players.findIndex((p) => p.id === dealerId);
-
     const nextPlayerIndex = (dealerIndex + 1) % players.length;
     const nextPlayerId = players[nextPlayerIndex].id;
 
@@ -372,21 +339,60 @@ const GameRoom: React.FC = () => {
       ...players.slice(0, dealerIndex + 1),
     ];
 
-    for (let i = 0; i < cardsPerPlayer; i++) {
-      for (let player of dealingOrder) {
-        dealingState[player.id] = (dealingState[player.id] || 0) + 1;
-        setDealingCards({ ...dealingState });
-        await new Promise((res) => setTimeout(res, 600));
+    const isSpecialHand = gameInfo.currentHand === 9;
+
+    const currentDealingState = { ...dealingCards };
+
+    const deal = async (startFrom: number, endAt: number) => {
+      for (let i = startFrom; i < endAt; i++) {
+        for (let player of dealingOrder) {
+          currentDealingState[player.id] =
+            (currentDealingState[player.id] || 0) + 1;
+          setDealingCards({ ...currentDealingState });
+          await new Promise((res) => setTimeout(res, 600));
+        }
+        setCurrentDealingRound(i + 1);
       }
+    };
+
+    if (isSpecialHand) {
+      if (currentDealingRound < 3) {
+        await deal(currentDealingRound, 3);
+
+        if (!gameInfo.trumpCard) {
+          setTrumpSelectionActive(true);
+          setIsChoosingTrump(true);
+
+          await new Promise<void>((resolve) => {
+            const checkTrump = () => {
+              if (gameInfo.trumpCard) {
+                setTrumpSelectionActive(false);
+                setIsChoosingTrump(false);
+                resolve();
+              } else {
+                setTimeout(checkTrump, 100);
+              }
+            };
+            checkTrump();
+          });
+        }
+      }
+
+      if (currentDealingRound >= 3) {
+        await deal(Math.max(currentDealingRound, 3), totalCardsPerPlayer);
+      }
+    } else {
+      await deal(currentDealingRound, totalCardsPerPlayer);
     }
 
     setTimeout(() => {
       socket.emit("updateGameInfo", roomId, {
-        status: "trump",
-        activePlayerIndex: nextPlayerIndex,
-        activePlayerId: nextPlayerId,
-        players: players.map((player) => player.id),
+        status: isSpecialHand ? "bid" : "trump",
+        currentPlayerId: nextPlayerId,
+        players: players.map((p) => p.id),
       });
+      setDealingCards({});
+      setCurrentDealingRound(0);
     }, 1000);
   };
 
@@ -407,21 +413,35 @@ const GameRoom: React.FC = () => {
   }
 
   const getBids = (playerId: string) => {
-    if (!gameInfo?.scoreBoard) return null;
+    if (!gameInfo?.handBids) return null;
 
-    const playerScore = gameInfo.scoreBoard.find(
-      (score) => score.playerId === playerId
-    );
+    const playerBid =
+      gameInfo.handBids
+        .find((bid) => bid.playerId === playerId)
+        ?.bids.find((b) => b.gameHand === gameInfo.currentHand)?.bid || 0;
 
-    if (!playerScore || !playerScore.scores) return null;
-
-    const currentHand = gameInfo.currentHand || 0;
-    const currentBid =
-      playerScore.scores.find((score) => score.gameHand === currentHand)?.bid ||
-      0;
-
-    return currentBid === 0 ? "-" : currentBid;
+    return playerBid === 0 ? "-" : playerBid;
   };
+
+  const getWins = (playerId: string) => {
+    if (!gameInfo?.handWins) return null;
+
+    const playerWin =
+      gameInfo.handWins
+        .find((win) => win.playerId === playerId)
+        ?.wins.find((w) => w.gameHand === gameInfo.currentHand)?.win || 0;
+
+    return playerWin === 0 ? "-" : playerWin;
+  };
+
+  const findRequestedJokerUser = (playerId: string) => {
+    if (!gameInfo || !room) return null;
+
+    const foundUser = room.users.find((user) => user.id === playerId);
+    return foundUser;
+  };
+
+  console.log(gameInfo);
 
   return (
     <div className={styles.game_room}>
@@ -429,11 +449,11 @@ const GameRoom: React.FC = () => {
         <button
           className={styles.close_btn_sm}
           onClick={() => setShowLeaveModal(true)}
-          disabled={
-            gameInfo?.status === "dealing" ||
-            gameInfo?.status === "trump" ||
-            gameInfo?.status === "bid"
-          }
+          // disabled={
+          //   gameInfo?.status === "dealing" ||
+          //   gameInfo?.status === "trump" ||
+          //   gameInfo?.status === "bid"
+          // }
         >
           <FaTimesCircle className={styles.close_icon} />
         </button>
@@ -468,9 +488,42 @@ const GameRoom: React.FC = () => {
         />
       )}
 
-      {gameInfo?.status === "bid" && gameInfo?.activePlayerId === user?._id && (
-        <Popup primaryText="It's your turn" secondaryText={user?.username} />
-      )}
+      {trumpSelectionActive &&
+        gameInfo?.currentPlayerId === user?._id &&
+        !gameInfo?.trumpCard && (
+          <TrumpModal
+            roomId={roomId as string}
+            onClose={() => {
+              setIsChoosingTrump(false);
+              setTrumpSelectionActive(false);
+            }}
+          />
+        )}
+
+      {gameInfo?.status === "playing" &&
+        gameInfo?.currentPlayerId === user?._id &&
+        gameInfo?.playedCards?.length !== 4 && (
+          <UserTurnPopup username={user?.username as string} />
+        )}
+
+      {gameInfo?.playedCards &&
+        gameInfo?.playedCards.length > 0 &&
+        gameInfo?.playedCards[0].card?.joker &&
+        gameInfo?.playedCards[0].playerId !== user?._id && (
+          <JokerPopup
+            username={
+              findRequestedJokerUser(gameInfo?.playedCards[0].playerId)
+                ?.username as string
+            }
+            sute={
+              gameInfo?.playedCards[0].card?.requestedSuit ===
+              gameInfo?.trumpCard?.suit
+                ? "trump"
+                : (gameInfo?.playedCards[0].card?.requestedSuit as string)
+            }
+            type={gameInfo?.playedCards[0].card?.type as string}
+          />
+        )}
 
       <Table
         gameInfo={gameInfo}
@@ -479,19 +532,20 @@ const GameRoom: React.FC = () => {
         visibleCards={visibleCards}
         rotatedPlayers={rotatedPlayers as RoomUser[]}
         dealingCards={dealingCards}
+        isChoosingTrump={isChoosingTrump}
       />
 
       <Players
         rotatedPlayers={rotatedPlayers as RoomUser[]}
         user={user as { _id: string }}
+        isChoosingTrump={isChoosingTrump as boolean}
         gameInfo={
           gameInfo as {
             status: string;
-            activePlayerId: string;
-            activePlayerIndex: number;
+            currentPlayerId: string;
             dealerId: string;
-            scoreBoard: ScoreBoard[];
             players: string[];
+            handBids: HandBid[];
             currentHand: number | null;
             hands: { hand: PlayingCard[]; playerId: string }[] | null;
             trumpCard: PlayingCard | null;
@@ -500,6 +554,7 @@ const GameRoom: React.FC = () => {
         room={room}
         hand={hand}
         getBids={getBids as (playerId: string) => number | undefined}
+        getWins={getWins as (playerId: string) => number | undefined}
       />
     </div>
   );
