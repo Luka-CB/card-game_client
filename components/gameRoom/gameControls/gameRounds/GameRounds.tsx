@@ -300,14 +300,12 @@ const GameRounds = ({
                 width={
                   windowSize.height <= 450
                     ? 30
-                    : windowSize.height <= 550 && windowSize.height > 450
+                    : windowSize.height <= 600 && windowSize.height > 450
                     ? 40
-                    : windowSize.height <= 600 && windowSize.height > 350
-                    ? 50
-                    : windowSize.height <= 800 &&
+                    : windowSize.height <= 900 &&
                       windowSize.height > 600 &&
                       windowSize.width > 600
-                    ? 70
+                    ? 50
                     : windowSize.width <= 600
                     ? 40
                     : windowSize.width <= 990 && windowSize.width > 600
@@ -321,14 +319,12 @@ const GameRounds = ({
                 height={
                   windowSize.height <= 450
                     ? 45
-                    : windowSize.height <= 550 && windowSize.height > 450
+                    : windowSize.height <= 600 && windowSize.height > 450
                     ? 60
-                    : windowSize.height <= 600 && windowSize.height > 350
-                    ? 70
-                    : windowSize.height <= 800 &&
+                    : windowSize.height <= 900 &&
                       windowSize.height > 600 &&
                       windowSize.width > 600
-                    ? 100
+                    ? 80
                     : windowSize.width <= 600
                     ? 55
                     : windowSize.width <= 990 && windowSize.width > 600

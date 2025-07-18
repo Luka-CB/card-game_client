@@ -35,7 +35,12 @@
 
       .diamonds,
       .hearts {
-        color: var(--clr-danger-800);
+        color: var(--clr-danger-600);
+      }
+
+      .pass {
+        font-size: 6rem;
+        color: rgb(55, 55, 55);
       }
     }
   }

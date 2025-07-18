@@ -10,6 +10,7 @@ interface BidModalProps {
   rotatedPlayers: RoomUser[];
   data: {
     currentHand: number;
+    handCount: number;
     roomId: string;
     currentPlayerId: string;
     dealerId: string;
@@ -32,7 +33,7 @@ const BidModal = ({ data, rotatedPlayers }: BidModalProps) => {
   const bids =
     data.handBids
       ?.map((bid) =>
-        bid.bids?.map((b) => (data.currentHand === b.gameHand ? b.bid : null))
+        bid.bids?.map((b) => (data.handCount === b.handNumber ? b.bid : null))
       )
       .flat()
       .filter((s) => s !== undefined) || [];

@@ -54,6 +54,7 @@ export interface HandBid {
   playerId: string;
   bids: {
     gameHand: number;
+    handNumber: number;
     bid: number;
   }[];
 }
@@ -62,6 +63,7 @@ export interface HandWin {
   playerId: string;
   wins: {
     gameHand: number;
+    handNumber: number;
     win: number;
   }[];
 }
@@ -70,19 +72,40 @@ export interface HandPoint {
   playerId: string;
   points: {
     gameHand: number;
+    handNumber: number;
     point: number;
   }[];
-}
-
-export interface ScoreBoard {
-  playerId: string;
-  playerName: string;
 }
 
 export interface PlayedCard {
   playerId: string;
   playerIndex: number;
   card: PlayingCard;
+}
+
+export interface Round {
+  id: number;
+  gameHand: number;
+  handNumber: number;
+  bid: number | null;
+  points: {
+    value: number;
+    isCut: boolean;
+    isBonus: boolean;
+  };
+}
+
+export interface ScoreBoard {
+  playerId: string;
+  roundOne: Round[];
+  roundSumOne: number;
+  roundTwo: Round[];
+  roundSumTwo: number;
+  roundThree: Round[];
+  roundSumThree: number;
+  roundFour: Round[];
+  roundSumFour: number;
+  totalSum: number;
 }
 
 export interface GameInfo {
@@ -101,4 +124,5 @@ export interface GameInfo {
   handPoints?: HandPoint[] | null;
   playedCards?: PlayedCard[] | null;
   lastPlayedCards?: PlayedCard[] | null;
+  scoreBoard?: ScoreBoard[] | null;
 }

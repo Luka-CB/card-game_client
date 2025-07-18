@@ -2,19 +2,22 @@
 
 import styles from "./page.module.scss";
 import { FaTimesCircle } from "react-icons/fa";
+import { PiKeyboard } from "react-icons/pi";
 import {
   HandBid,
   GameInfo,
   PlayingCard,
   Room,
   RoomUser,
+  ScoreBoard,
+  HandWin,
 } from "@/utils/interfaces";
 import useUserStore from "@/store/user/userStore";
 import useSocket from "@/hooks/useSocket";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Loader from "@/components/loaders/Loader";
-import LeaveRoomModal from "@/components/gameRoom/leaveRoomModal/LeaveRoomModal";
+import LeaveRoomModal from "@/components/gameRoom/gameControls/leaveRoomModal/LeaveRoomModal";
 import { JokerPopup, UserTurnPopup } from "@/components/popup/Popup";
 import useWindowSize from "@/hooks/useWindowSize";
 import Players from "@/components/gameRoom/gameBoard/players/Players";
@@ -22,6 +25,7 @@ import Table from "@/components/gameRoom/gameBoard/table/Table";
 import BusyBg from "@/components/gameRoom/busyMode/BusyBg";
 import TrumpModal from "@/components/gameRoom/gameControls/trumpModal/TrumpModal";
 import { wait } from "@/utils/misc";
+import ScoreBoardModal from "@/components/gameRoom/scoreBoard/ScoreBoard";
 
 const GameRoom: React.FC = () => {
   const [room, setRoom] = useState<Room | null>(null);
@@ -33,11 +37,13 @@ const GameRoom: React.FC = () => {
   const [hand, setHand] = useState<PlayingCard[]>([]);
   const [gameInfo, setGameInfo] = useState<GameInfo | null>(null);
   const [isChoosingTrump, setIsChoosingTrump] = useState(false);
+  const [isScoreBoardOpen, setIsScoreBoardOpen] = useState(false);
 
   const [revealInProgress, setRevealInProgress] = useState(false);
   const [initialLiadComplete, setInitialLiadComplete] = useState(false);
   const [currentDealingRound, setCurrentDealingRound] = useState(0);
   const [trumpSelectionActive, setTrumpSelectionActive] = useState(false);
+  const [nextPlayerId, setNextPlayerId] = useState<string | null>(null);
 
   const visibleRef = useRef<Record<string, PlayingCard[]>>({});
   const animationStarted = useRef(false);
@@ -235,7 +241,7 @@ const GameRoom: React.FC = () => {
                 handNum = 9;
               }
             } else {
-              handNum = 1;
+              handNum = 6;
             }
 
             socket.emit("updateGameInfo", roomId, {
@@ -286,7 +292,9 @@ const GameRoom: React.FC = () => {
       "dealCards",
       (data: { hand: PlayingCard[]; playerId: string; round: number }) => {
         if (data.playerId === user?._id) {
-          setHand(data.hand);
+          if (!hand.length) {
+            setHand(data.hand);
+          }
         }
 
         animateDealing(rotatedPlayers, data.round, gameInfo?.dealerId);
@@ -314,6 +322,14 @@ const GameRoom: React.FC = () => {
       }
     }
   }, [gameInfo, user, hand.length]);
+
+  useEffect(() => {
+    if (!gameInfo || !socket) return;
+
+    if (gameInfo.status === "bid" && !gameInfo.scoreBoard) {
+      socket.emit("createScoreBoard", roomId);
+    }
+  }, [gameInfo, socket]);
 
   useEffect(() => {
     return () => {
@@ -356,6 +372,8 @@ const GameRoom: React.FC = () => {
     };
 
     if (isSpecialHand) {
+      setNextPlayerId(nextPlayerId);
+
       if (currentDealingRound < 3) {
         await deal(currentDealingRound, 3);
 
@@ -418,7 +436,7 @@ const GameRoom: React.FC = () => {
     const playerBid =
       gameInfo.handBids
         .find((bid) => bid.playerId === playerId)
-        ?.bids.find((b) => b.gameHand === gameInfo.currentHand)?.bid || 0;
+        ?.bids.find((b) => b.handNumber === gameInfo.handCount)?.bid || 0;
 
     return playerBid === 0 ? "-" : playerBid;
   };
@@ -429,7 +447,7 @@ const GameRoom: React.FC = () => {
     const playerWin =
       gameInfo.handWins
         .find((win) => win.playerId === playerId)
-        ?.wins.find((w) => w.gameHand === gameInfo.currentHand)?.win || 0;
+        ?.wins.find((w) => w.handNumber === gameInfo.handCount)?.win || 0;
 
     return playerWin === 0 ? "-" : playerWin;
   };
@@ -441,13 +459,17 @@ const GameRoom: React.FC = () => {
     return foundUser;
   };
 
-  console.log(gameInfo);
+  console.log(room);
 
   return (
     <div className={styles.game_room}>
-      {windowSize.width < 1200 && windowSize.height < 700 ? (
+      {!isScoreBoardOpen && (
         <button
-          className={styles.close_btn_sm}
+          className={
+            windowSize.width < 1200 || windowSize.height < 700
+              ? styles.close_btn_sm
+              : styles.close_btn
+          }
           onClick={() => setShowLeaveModal(true)}
           // disabled={
           //   gameInfo?.status === "dealing" ||
@@ -456,20 +478,29 @@ const GameRoom: React.FC = () => {
           // }
         >
           <FaTimesCircle className={styles.close_icon} />
+          {windowSize.width >= 1200 && windowSize.height >= 700 && (
+            <span>Leave Room</span>
+          )}
         </button>
-      ) : (
-        <button
-          className={styles.close_btn}
-          onClick={() => setShowLeaveModal(true)}
-          disabled={
-            gameInfo?.status === "dealing" ||
-            gameInfo?.status === "trump" ||
-            gameInfo?.status === "bid"
-          }
-        >
-          <FaTimesCircle className={styles.close_icon} />
-          <span>Leave Room</span>
-        </button>
+      )}
+
+      <button
+        className={styles.scoreBoard_btn}
+        onClick={() => setIsScoreBoardOpen(!isScoreBoardOpen)}
+      >
+        <PiKeyboard className={styles.scoreBoard_icon} />
+        <span>Score board</span>
+      </button>
+
+      {isScoreBoardOpen && (
+        <ScoreBoardModal
+          roomId={roomId as string}
+          hisht={room?.hisht as string}
+          scoreBoard={gameInfo?.scoreBoard as ScoreBoard[]}
+          roomUsers={room?.users as RoomUser[]}
+          handWins={gameInfo?.handWins as HandWin[]}
+          closeModal={() => setIsScoreBoardOpen(false)}
+        />
       )}
 
       {room?.users?.find((roomUser) => roomUser.id === user?._id)?.status ===
@@ -489,7 +520,7 @@ const GameRoom: React.FC = () => {
       )}
 
       {trumpSelectionActive &&
-        gameInfo?.currentPlayerId === user?._id &&
+        nextPlayerId === user?._id &&
         !gameInfo?.trumpCard && (
           <TrumpModal
             roomId={roomId as string}
@@ -533,12 +564,14 @@ const GameRoom: React.FC = () => {
         rotatedPlayers={rotatedPlayers as RoomUser[]}
         dealingCards={dealingCards}
         isChoosingTrump={isChoosingTrump}
+        nextPlayerId={nextPlayerId as string}
       />
 
       <Players
         rotatedPlayers={rotatedPlayers as RoomUser[]}
         user={user as { _id: string }}
         isChoosingTrump={isChoosingTrump as boolean}
+        nextPlayerId={nextPlayerId as string}
         gameInfo={
           gameInfo as {
             status: string;

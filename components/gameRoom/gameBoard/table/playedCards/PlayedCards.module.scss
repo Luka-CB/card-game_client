@@ -6,17 +6,17 @@
   width: 200px;
   height: 300px;
 
-  @media (max-width: 1150px) or (max-height: 800px) {
+  @media (max-width: 1150px) or (max-height: 900px) {
     width: 150px;
     height: 200px;
   }
 
-  @media (max-width: 990px) or (max-height: 600px) {
-    width: 110px;
+  @media (max-width: 990px) or (max-height: 900px) {
+    width: 100px;
     height: 150px;
   }
 
-  @media (max-width: 600px) or (max-height: 550px) {
+  @media (max-width: 600px) or (max-height: 600px) {
     width: 90px;
     height: 120px;
   }
@@ -33,24 +33,24 @@
   .card_0 {
     bottom: 0;
     left: 50%;
-    transform: translateX(-50%);
+    transform: translateX(-50%) rotate(-5deg);
   }
 
   .card_1 {
     top: 50%;
     left: 0;
-    transform: translateY(-50%) rotate(90deg);
+    transform: translateY(-50%) rotate(95deg);
   }
 
   .card_2 {
     top: 0;
     left: 50%;
-    transform: translateX(-50%);
+    transform: translateX(-50%) rotate(5deg);
   }
 
   .card_3 {
     top: 50%;
     right: 0;
-    transform: translateY(-50%) rotate(-90deg);
+    transform: translateY(-50%) rotate(-85deg);
   }
 }

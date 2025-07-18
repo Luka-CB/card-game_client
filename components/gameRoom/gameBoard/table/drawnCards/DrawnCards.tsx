@@ -18,6 +18,7 @@ interface DrawnCardsProps {
     currentPlayerId: string;
   };
   isChoosingTrump: boolean;
+  nextPlayerId: string | null;
 }
 
 const DrawnCards = ({
@@ -28,6 +29,7 @@ const DrawnCards = ({
   user,
   gameInfo,
   isChoosingTrump,
+  nextPlayerId,
 }: DrawnCardsProps) => {
   const playerPosition =
     playerPositionIndex === 0
@@ -53,7 +55,7 @@ const DrawnCards = ({
         </div>
       )}
 
-      {isChoosingTrump && gameInfo?.currentPlayerId !== user._id && (
+      {isChoosingTrump && nextPlayerId !== user._id && (
         <DealtCards
           dealingCards={dealingCards}
           playerPositionIndex={playerPositionIndex}

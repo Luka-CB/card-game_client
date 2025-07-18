@@ -1,0 +1,89 @@
+@use "../../../../../styles/mixins" as *;
+
+.container {
+  position: absolute;
+  top: 10%;
+  left: 20px;
+
+  .display_cards {
+    position: absolute;
+    filter: brightness(0.5);
+    transition: all 0.2s ease-in-out;
+    z-index: 1;
+
+    .card {
+      position: absolute;
+
+      &:first-child {
+        transform: translateY(-40%);
+        rotate: 5deg;
+      }
+      &:nth-child(2) {
+        rotate: 85deg;
+        transform: translateY(40%);
+      }
+      &:nth-child(3) {
+        transform: translateY(-40%);
+        rotate: 95deg;
+      }
+      &:last-child {
+        transform: translateY(40%);
+        rotate: -5deg;
+      }
+    }
+
+    &:hover {
+      filter: brightness(1);
+    }
+  }
+
+  .played_cards {
+    @include bgColor();
+    position: absolute;
+    width: 150px;
+    height: 150px;
+    z-index: 2;
+    top: -40px;
+    left: -40px;
+    border-radius: 20px;
+    border: 2px solid var(--clr-light-faded);
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.423);
+
+    .card {
+      position: absolute;
+    }
+
+    .card_0 {
+      bottom: 15px;
+      left: 50%;
+      transform: translateX(-50%) rotate(-5deg);
+    }
+
+    .card_1 {
+      top: 50%;
+      left: 15px;
+      transform: translateY(-50%) rotate(95deg);
+    }
+
+    .card_2 {
+      top: 15px;
+      left: 50%;
+      transform: translateX(-50%) rotate(5deg);
+    }
+
+    .card_3 {
+      top: 50%;
+      right: 15px;
+      transform: translateY(-50%) rotate(-85deg);
+    }
+  }
+
+  @media (max-height: 700px) {
+    top: 18%;
+    left: 0;
+  }
+
+  @media (max-width: 1000px) {
+    left: 15px;
+  }
+}

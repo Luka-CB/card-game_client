@@ -1,5 +1,5 @@
 import { PlayingCard } from "@/utils/interfaces";
-import { CardDeck } from "../../cardDeck";
+import { CardDeck } from "../../../cardDeck";
 import styles from "./DrawnCards.module.scss";
 import Image from "next/image";
 import { motion } from "framer-motion";
