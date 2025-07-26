@@ -241,7 +241,7 @@ const GameRoom: React.FC = () => {
                 handNum = 9;
               }
             } else {
-              handNum = 6;
+              handNum = 5;
             }
 
             socket.emit("updateGameInfo", roomId, {
