@@ -85,57 +85,34 @@ const BidModal = ({ data, rotatedPlayers }: BidModalProps) => {
 
     setChoosingBid(true);
 
-    const previousBids =
-      data?.handBids
-        ?.filter((bid) => bid.playerId !== data.currentPlayerId)
-        ?.map((bid) => {
-          const currentHandScore = bid.bids.find(
-            (b) => b.gameHand === data.currentHand
-          );
+    const playerOrder = rotatedPlayers.map((p) => p.id);
 
-          return currentHandScore?.bid || 0;
-        }) || [];
-
-    const botBid = calculateBotBid({
-      hand:
-        data.hands?.find((h) => h.playerId === data.currentPlayerId)?.hand ||
-        [],
-      trumpSuit: data.trumpCard?.suit || "",
-      currentHand: data.currentHand || 0,
-      isDealer: data.dealerId === data.currentPlayerId,
-      previousBids,
-    });
-
-    const modifiedBotBid =
-      data.dealerId === data.currentPlayerId &&
-      bidSum + botBid === data.currentHand
-        ? botBid + 1
-        : botBid;
+    const currentBids: { [playerId: string]: number } =
+      Object.fromEntries(
+        data?.handBids
+          ?.filter((bid) => bid.playerId !== data.currentPlayerId)
+          ?.map((bid) => {
+            const currentHandScore = bid.bids.find(
+              (b) => b.handNumber === data.handCount
+            );
+            return [bid.playerId, currentHandScore?.bid || 0];
+          }) || []
+      ) || {};
 
     botTimeout1Ref.current = setTimeout(() => {
-      socket.emit("updateBids", data.roomId, {
+      socket.emit("setBotBid", {
+        roomId: data.roomId,
         playerId: data.currentPlayerId,
-        gameHand: data.currentHand,
-        bid: modifiedBotBid,
+        hand:
+          data.hands?.find((h) => h.playerId === data.currentPlayerId)?.hand ||
+          [],
+        playerOrder,
+        currentBids,
+        nextPlayerId,
       });
 
-      botTimeout2Ref.current = setTimeout(() => {
-        socket.emit("updateGameInfo", data.roomId, {
-          currentPlayerId: nextPlayerId,
-          status: data.dealerId === data.currentPlayerId ? "playing" : "bid",
-        });
-
-        socket.emit(
-          "updateUserStatus",
-          data.roomId,
-          data.currentPlayerId,
-          "busy"
-        );
-
-        setChoosingBid(false);
-        botTimeout1Ref.current = null;
-        botTimeout2Ref.current = null;
-      }, 500);
+      setChoosingBid(false);
+      botTimeout1Ref.current = null;
     }, 1000);
   };
 
@@ -160,7 +137,11 @@ const BidModal = ({ data, rotatedPlayers }: BidModalProps) => {
         className={styles.modal}
       >
         <div className={styles.count_down}>
-          <CountDownClock onComplete={onComplete} textColor="black" />
+          <CountDownClock
+            onComplete={onComplete}
+            textColor="black"
+            duration={15}
+          />
         </div>
         <h4>Choose a Bid</h4>
         <div className={styles.bids}>
