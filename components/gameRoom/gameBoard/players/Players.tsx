@@ -14,6 +14,7 @@ interface PlayersProps {
   rotatedPlayers: RoomUser[];
   user: { _id: string };
   isChoosingTrump: boolean;
+  nextPlayerId: string | null;
   gameInfo: {
     status: string;
     currentPlayerId: string;
@@ -34,6 +35,7 @@ const Players: React.FC<PlayersProps> = ({
   rotatedPlayers,
   user,
   isChoosingTrump,
+  nextPlayerId,
   gameInfo,
   room,
   hand,
@@ -136,8 +138,9 @@ const Players: React.FC<PlayersProps> = ({
           key={player.id}
           className={`${styles.player} ${getPlayerPosition(index)}`}
         >
-          {gameInfo?.currentPlayerId === user?._id &&
-            gameInfo?.currentPlayerId === player.id &&
+          {nextPlayerId === user?._id &&
+            nextPlayerId === player.id &&
+            gameInfo?.status !== "playing" &&
             isChoosingTrump && (
               <GameRounds
                 rotatedPlayers={rotatedPlayers}
@@ -200,7 +203,6 @@ const Players: React.FC<PlayersProps> = ({
                   <span className={styles.username}>
                     {substringText(player.username, 8)}
                   </span>
-                  <p style={{ color: "red" }}>{index}</p>
                   {player.id === user?._id && (
                     <span className={styles.you}>You</span>
                   )}

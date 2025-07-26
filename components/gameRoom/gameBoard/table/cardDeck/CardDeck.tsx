@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import useWindowSize from "@/hooks/useWindowSize";
 import { GiSpades, GiDiamonds, GiHearts, GiClubs } from "react-icons/gi";
+import { TbPlayCardOff } from "react-icons/tb";
 
 interface CardDeckProps {
   gameInfo: GameInfo | null;
@@ -26,6 +27,8 @@ const CardDeck = ({ gameInfo }: CardDeckProps) => {
         return <GiHearts className={styles.hearts} />;
       case "clubs":
         return <GiClubs className={styles.clubs} />;
+      case "pass":
+        return <TbPlayCardOff className={styles.pass} />;
       default:
         return null;
     }

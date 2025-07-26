@@ -9,6 +9,7 @@ import Header from "@/components/header/Header";
 import FlashMsg from "@/components/falshMsg/FlashMsg";
 import useFlashMsgStore from "@/store/flashMsgStore";
 import { usePathname } from "next/navigation";
+import useLastPlayedCardsStore from "@/store/gamePage/lastPlayedCardsStore";
 
 export default function ClientLayout({
   children,
@@ -18,12 +19,15 @@ export default function ClientLayout({
   const { isOpen, setIsOpen } = useUserOptionStore();
   const { getUser, loading } = useUserStore();
   const { msg } = useFlashMsgStore();
+  const { toggleLastPlayedCardsModal, setToggleLastPlayedCards } =
+    useLastPlayedCardsStore();
   const pathname = usePathname();
 
   const isGameRoom = pathname?.includes("/games/");
 
   const handleClosePopup = () => {
     if (isOpen) setIsOpen(false);
+    if (toggleLastPlayedCardsModal) setToggleLastPlayedCards(false);
   };
 
   useEffect(() => {

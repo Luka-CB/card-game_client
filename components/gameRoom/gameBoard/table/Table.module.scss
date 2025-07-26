@@ -12,11 +12,22 @@
   align-items: center;
   justify-content: center;
 
+  .hand_info {
+    position: absolute;
+    top: 2%;
+    left: 2%;
+    display: flex;
+    flex-direction: column;
+    color: var(--clr-light);
+    opacity: 0.3;
+    font-size: small;
+  }
+
   .hisht {
     position: absolute;
-    bottom: 5%;
+    top: 1.2%;
     right: 5%;
-    font-size: 1rem;
+    font-size: 0.8rem;
     color: var(--clr-primary-800);
     cursor: default;
   }
@@ -28,14 +39,6 @@
     display: flex;
     align-items: center;
     justify-content: center;
-
-    .test_btn {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      z-index: 10000;
-    }
 
     .game_info {
       display: flex;
@@ -68,12 +71,6 @@
   .table {
     border-radius: 50px;
 
-    .hisht {
-      bottom: 1%;
-      right: 2%;
-      font-size: 1rem;
-    }
-
     .table_surface {
       .game_info {
         .game_type {
@@ -91,13 +88,6 @@
     height: 80vh;
     border-width: 10px;
     border-radius: 30px;
-
-    .hisht {
-      position: absolute;
-      bottom: 2%;
-      right: 3%;
-      font-size: 1rem;
-    }
 
     .table_surface {
       .game_info {
@@ -124,25 +114,27 @@
 }
 
 @media (max-width: 400px) {
-  .game_room {
-    .table {
-      .hisht {
-        top: 1%;
-        left: 3%;
-        font-size: 0.8rem;
-      }
+  .table {
+    .hisht {
+      font-size: 0.6rem;
+    }
+  }
+}
+
+@media (max-width: 500px) or (max-height: 500px) {
+  .table {
+    .hand_info {
+      font-size: 0.6rem;
     }
   }
 }
 
 @media (orientation: landscape) and (max-height: 800px) {
-  .game_room {
-    .table {
-      .table_surface {
-        .game_info {
-          .game_type {
-            font-size: 4rem;
-          }
+  .table {
+    .table_surface {
+      .game_info {
+        .game_type {
+          font-size: 4rem;
         }
       }
     }

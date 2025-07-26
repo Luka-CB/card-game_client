@@ -1,0 +1,216 @@
+@use "../../../styles/mixins" as *;
+
+@import url("https://fonts.googleapis.com/css2?family=Edu+NSW+ACT+Hand+Pre:wght@400..700&display=swap");
+
+.bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.177);
+  z-index: 100;
+
+  .container {
+    @include bgColor(light);
+    position: absolute;
+    left: 2%;
+    top: 7%;
+    border-radius: 10px;
+    box-shadow: 2px 2px 20px 0px rgba(0, 0, 0, 0.7);
+
+    .board {
+      height: 100%;
+      display: flex;
+      padding: 10px;
+
+      .player {
+        border: 1px solid var(--clr-dark);
+        border-top: unset;
+        border-bottom: unset;
+        width: 150px;
+        text-align: center;
+
+        .player_name {
+          font-size: small;
+          font-weight: bold;
+          border-bottom: 2px solid var(--clr-dark);
+          padding: 0 10px 5px 10px;
+        }
+
+        .round {
+          border: 2px solid var(--clr-darker);
+          border-left: unset;
+          border-right: unset;
+          margin: 5px 0;
+
+          .round_content {
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid var(--clr-dark);
+            padding: 2px;
+
+            .game_hand {
+              font-weight: bold;
+              font-size: small;
+            }
+
+            .bid {
+              margin-left: 5px;
+              padding-right: 5px;
+              font-size: 0.6rem;
+              font-family: "Edu NSW ACT Hand Pre", cursive;
+              width: 20px;
+
+              &:not(:last-child) {
+                border-right: 1px solid rgba(64, 64, 64, 0.588);
+              }
+            }
+
+            .points,
+            .points_won {
+              margin-left: 10px;
+              font-size: 0.6rem;
+              color: var(--clr-warning-600);
+              font-family: "Edu NSW ACT Hand Pre", cursive;
+
+              .bonus {
+                display: flex;
+                align-items: center;
+
+                b {
+                  position: relative;
+                  left: 2px;
+                  bottom: 2px;
+                  color: rgb(240, 110, 110);
+                }
+
+                small {
+                  margin-left: 4px;
+                  font-size: 0.6rem;
+                  font-weight: bold;
+                }
+              }
+
+              .cut {
+                text-decoration: line-through;
+                text-decoration-thickness: 1px;
+                font-style: italic;
+                color: rgb(87, 149, 123);
+              }
+
+              .hisht {
+                display: flex;
+                align-items: center;
+
+                .line_one,
+                .line_three {
+                  width: 1px;
+                  height: 10px;
+                  background-color: var(--clr-danger-600);
+                }
+
+                .line_two {
+                  width: 30px;
+                  height: 2px;
+                  background-color: var(--clr-danger-600);
+                }
+
+                small {
+                  margin-left: 5px;
+                  color: rgb(201, 81, 81);
+                  font-size: 0.6rem;
+                }
+              }
+            }
+
+            .points_won {
+              color: var(--clr-success-600);
+            }
+          }
+        }
+
+        .round_sum {
+          border: 2px solid var(--clr-darker);
+          border-left: unset;
+          border-right: unset;
+          font-family: "Edu NSW ACT Hand Pre", cursive;
+          font-size: 0.7rem;
+        }
+
+        .total {
+          border-bottom: 2px solid var(--clr-dark);
+          height: 40px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+      }
+    }
+  }
+
+  @media (max-width: 650px) {
+    .container {
+      left: 0;
+      width: 100%;
+      border-radius: unset;
+      overflow-x: auto;
+
+      &::-webkit-scrollbar {
+        display: none;
+      }
+
+      .board {
+        justify-content: space-between;
+        width: max-content;
+
+        .player {
+          width: 155px;
+        }
+      }
+    }
+  }
+
+  @media (max-height: 900px) {
+    .container {
+      overflow-y: auto;
+      height: 600px;
+
+      &::-webkit-scrollbar {
+        display: none;
+      }
+
+      .board {
+        height: max-content;
+
+        .player {
+          .player_name_fixed {
+            position: sticky;
+            top: 0;
+            z-index: 2;
+            padding: 5px 0;
+            background-color: rgb(203, 235, 244);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: small;
+            border-right: 1px solid var(--clr-dark);
+            box-shadow: 0 5px 5px -4px rgba(0, 0, 0, 0.5);
+          }
+        }
+      }
+    }
+  }
+
+  @media (max-height: 700px) {
+    .container {
+      height: 440px;
+    }
+  }
+
+  @media (max-height: 500px) {
+    .container {
+      height: 250px;
+    }
+  }
+}

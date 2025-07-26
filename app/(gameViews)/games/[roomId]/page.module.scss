@@ -17,7 +17,7 @@
     right: 20px;
     width: 40px;
     height: 40px;
-    border: 1.5px solid var(--clr-danger-600);
+    border: 1.5px solid var(--clr-danger-800);
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -26,18 +26,26 @@
 
     .close_icon {
       font-size: 1.3rem;
-      color: var(--clr-danger-600);
+      color: var(--clr-danger-800);
     }
 
     &:hover {
       background-color: var(--clr-danger-faded);
-      border-color: var(--clr-danger-200);
+      border-color: var(--clr-danger-600);
       transition: all 0.1s ease;
 
-      .close_icon,
-      span {
-        color: var(--clr-danger-200);
+      .close_icon {
+        color: var(--clr-danger-600);
         transition: all 0.1s ease;
+      }
+    }
+
+    &:active {
+      background-color: var(--clr-danger-faded);
+      border-color: var(--clr-danger-faded);
+
+      .close_icon {
+        color: var(--clr-danger-faded);
       }
     }
 
@@ -60,7 +68,7 @@
     top: 20px;
     right: 20px;
     background-color: transparent;
-    border: 1.5px solid var(--clr-danger-600);
+    border: 1.5px solid var(--clr-danger-800);
     border-radius: 8px;
     display: flex;
     align-items: center;
@@ -71,24 +79,34 @@
     .close_icon {
       font-size: 1.3rem;
       margin-right: 10px;
-      color: var(--clr-danger-600);
+      color: var(--clr-danger-800);
     }
 
     span {
       font-weight: bold;
       color: var(--clr-light);
-      color: var(--clr-danger-600);
+      color: var(--clr-danger-800);
     }
 
     &:hover {
       background-color: var(--clr-danger-faded);
-      border-color: var(--clr-danger-200);
+      border-color: var(--clr-danger-600);
       transition: all 0.1s ease;
 
       .close_icon,
       span {
-        color: var(--clr-danger-200);
+        color: var(--clr-danger-600);
         transition: all 0.1s ease;
+      }
+    }
+
+    &:active {
+      background-color: var(--clr-danger-faded);
+      border-color: var(--clr-danger-faded);
+
+      .close_icon,
+      span {
+        color: var(--clr-danger-faded);
       }
     }
 
@@ -101,6 +119,53 @@
       span {
         color: rgb(105, 90, 90);
         transition: all 0.1s ease;
+      }
+    }
+  }
+
+  .scoreBoard_btn {
+    @include btn();
+    position: absolute;
+    top: 3%;
+    left: 2%;
+    height: auto;
+    padding: 5px 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: transparent;
+    border-color: var(--clr-warning-800);
+    border-width: 1px;
+
+    .scoreBoard_icon {
+      font-size: 1.3rem;
+      margin-right: 5px;
+      color: var(--clr-warning-800);
+    }
+
+    span {
+      font-size: small;
+      color: var(--clr-warning-800);
+      font-weight: 200;
+    }
+
+    &:hover {
+      border-color: var(--clr-warning-600);
+      background-color: var(--clr-warning-faded);
+
+      span,
+      .scoreBoard_icon {
+        color: var(--clr-warning-600);
+      }
+    }
+
+    &:active {
+      border-color: var(--clr-warning-faded);
+      background-color: var(--clr-warning-faded);
+
+      span,
+      .scoreBoard_icon {
+        color: var(--clr-warning-faded);
       }
     }
   }
@@ -126,13 +191,20 @@
   }
 }
 
-/* Tablets */
-@media (max-width: 992px) {
+@media (max-width: 1200px) {
   .game_room {
-    .close_btn {
-      top: 10px;
-      right: 10px;
-      padding: 8px 15px;
+    .scoreBoard_btn {
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+
+      .scoreBoard_icon {
+        margin: 0;
+      }
+
+      span {
+        display: none;
+      }
     }
   }
 }

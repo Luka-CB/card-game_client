@@ -34,12 +34,6 @@ const TrumpModal = ({ onClose, roomId }: Props) => {
         <p>Choose a Trump</p>
         <div className={styles.suits}>
           <button
-            className={styles.btn_pass}
-            onClick={() => handleChooseTrump("pass")}
-          >
-            -
-          </button>
-          <button
             className={styles.btn_spades}
             onClick={() => handleChooseTrump("spades")}
           >
@@ -64,6 +58,12 @@ const TrumpModal = ({ onClose, roomId }: Props) => {
             <GiHearts className={styles.icon} />
           </button>
         </div>
+        <button
+          className={styles.btn_pass}
+          onClick={() => handleChooseTrump("pass")}
+        >
+          No Trump
+        </button>
       </motion.div>
     </div>
   );

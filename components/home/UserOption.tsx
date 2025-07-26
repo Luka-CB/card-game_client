@@ -14,7 +14,7 @@ import useUserStore from "@/store/user/userStore";
 const UserOption = () => {
   const { isOpen, setIsOpen } = useUserOptionStore();
   const { status, logout } = useLogoutStore();
-  const { user, setJoinedRoom, joinedRoom } = useUserStore();
+  const { user } = useUserStore();
   const socket = useSocket();
   const router = useRouter();
 
@@ -26,11 +26,6 @@ const UserOption = () => {
   }, [status, router]);
 
   const handleLogout = () => {
-    if (user && joinedRoom) {
-      socket?.emit("leaveRoom", joinedRoom.id, user._id);
-      setJoinedRoom(null);
-    }
-
     logout();
   };
 

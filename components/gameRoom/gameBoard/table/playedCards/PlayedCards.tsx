@@ -5,7 +5,6 @@ import useWindowSize from "@/hooks/useWindowSize";
 import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import useSocket from "@/hooks/useSocket";
-import { get } from "http";
 
 interface PlayedCardsProps {
   playedCards: PlayedCard[];
@@ -108,7 +107,7 @@ const PlayedCards: React.FC<PlayedCardsProps> = ({
     const winCount =
       HandWins?.find(
         (w) => w.playerId === winnerCardRef.current?.playerId
-      )?.wins.find((w) => w.gameHand === currentHand)?.win || 0;
+      )?.wins.find((w) => w.handNumber === handCount)?.win || 0;
 
     const timeout1 = setTimeout(() => {
       socket.emit("updateWins", roomId, {
@@ -119,6 +118,10 @@ const PlayedCards: React.FC<PlayedCardsProps> = ({
     }, 500);
 
     const timeout2 = setTimeout(() => {
+      socket.emit("setLastPlayedCards", roomId, playedCards);
+    }, 700);
+
+    const timeout3 = setTimeout(() => {
       socket.emit("updateGameInfo", roomId, {
         currentPlayerId: winnerCardRef.current?.playerId,
         playedCards: null,
@@ -135,6 +138,7 @@ const PlayedCards: React.FC<PlayedCardsProps> = ({
     return () => {
       clearTimeout(timeout1);
       clearTimeout(timeout2);
+      clearTimeout(timeout3);
       setWinnerIndex(null);
       winnerCardRef.current = null;
       socket.off("updateWins");
@@ -215,12 +219,10 @@ const PlayedCards: React.FC<PlayedCardsProps> = ({
                   ? 30
                   : windowSize.height <= 550 && windowSize.height > 450
                   ? 40
-                  : windowSize.height <= 600 && windowSize.height > 350
-                  ? 50
-                  : windowSize.height <= 800 &&
+                  : windowSize.height <= 900 &&
                     windowSize.height > 600 &&
                     windowSize.width > 600
-                  ? 70
+                  ? 50
                   : windowSize.width <= 600
                   ? 40
                   : windowSize.width <= 990 && windowSize.width > 600
@@ -234,14 +236,12 @@ const PlayedCards: React.FC<PlayedCardsProps> = ({
               height={
                 windowSize.height <= 450
                   ? 45
-                  : windowSize.height <= 550 && windowSize.height > 450
+                  : windowSize.height <= 600 && windowSize.height > 450
                   ? 60
-                  : windowSize.height <= 600 && windowSize.height > 350
-                  ? 70
-                  : windowSize.height <= 800 &&
+                  : windowSize.height <= 900 &&
                     windowSize.height > 600 &&
                     windowSize.width > 600
-                  ? 100
+                  ? 8
                   : windowSize.width <= 600
                   ? 55
                   : windowSize.width <= 990 && windowSize.width > 600
@@ -260,14 +260,12 @@ const PlayedCards: React.FC<PlayedCardsProps> = ({
               width={
                 windowSize.height <= 450
                   ? 30
-                  : windowSize.height <= 550 && windowSize.height > 450
+                  : windowSize.height <= 600 && windowSize.height > 450
                   ? 40
-                  : windowSize.height <= 600 && windowSize.height > 350
-                  ? 50
-                  : windowSize.height <= 800 &&
+                  : windowSize.height <= 900 &&
                     windowSize.height > 600 &&
                     windowSize.width > 600
-                  ? 70
+                  ? 50
                   : windowSize.width <= 600
                   ? 40
                   : windowSize.width <= 990 && windowSize.width > 600
@@ -281,14 +279,12 @@ const PlayedCards: React.FC<PlayedCardsProps> = ({
               height={
                 windowSize.height <= 450
                   ? 45
-                  : windowSize.height <= 550 && windowSize.height > 450
+                  : windowSize.height <= 600 && windowSize.height > 450
                   ? 60
-                  : windowSize.height <= 600 && windowSize.height > 350
-                  ? 70
-                  : windowSize.height <= 800 &&
+                  : windowSize.height <= 900 &&
                     windowSize.height > 600 &&
                     windowSize.width > 600
-                  ? 100
+                  ? 80
                   : windowSize.width <= 600
                   ? 55
                   : windowSize.width <= 990 && windowSize.width > 600
