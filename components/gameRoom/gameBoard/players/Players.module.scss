@@ -7,6 +7,14 @@
     gap: 0.5rem;
     transition: transform 0.3s ease;
 
+    .count_down_current_player {
+      position: absolute;
+      top: 0;
+      left: 120%;
+      width: 100px;
+      height: 100px;
+    }
+
     .count_down {
       position: absolute;
       z-index: 1;
@@ -310,7 +318,8 @@
     .player {
       gap: 0.3rem;
 
-      .count_down {
+      .count_down,
+      .count_down_current_player {
         width: 70px;
         height: 70px;
       }
@@ -619,6 +628,14 @@
 @media (max-width: 800px) {
   .players {
     .player {
+      .count_down_current_player {
+        top: 50%;
+        transform: translateY(-50%);
+        left: 170px;
+        width: 50px;
+        height: 50px;
+      }
+
       .count_down {
         position: absolute;
         z-index: 1;
@@ -662,6 +679,14 @@
 @media (orientation: landscape) and (max-height: 800px) {
   .players {
     .player {
+      .count_down_current_player {
+        top: 50%;
+        transform: translateY(-50%);
+        left: 170%;
+        width: 50px;
+        height: 50px;
+      }
+
       .left_clock {
         left: 100%;
       }

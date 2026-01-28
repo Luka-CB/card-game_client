@@ -15,9 +15,10 @@ import useRoomStore from "@/store/gamePage/roomStore";
 
 const CreateRoom = () => {
   const [currentStatus, setCurrentStatus] = useState("public");
-  const [currentType, setCurrentType] = useState<
-    "classic" | "nines" | "betting"
-  >("classic");
+  const [currentTab, setCurrentTab] = useState<"classic" | "nines" | "betting">(
+    "classic"
+  );
+  const [type, setType] = useState<"classic" | "nines">("classic");
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
   const [bett, setBett] = useState("");
@@ -58,8 +59,8 @@ const CreateRoom = () => {
       id: uuidv4(),
       name,
       password: currentStatus === "private" ? password : null,
-      bett: currentType === "betting" ? bett : null,
-      type: currentType,
+      bett: bett ? bett : null,
+      type: type,
       status: currentStatus,
       hisht,
       createdAt: new Date(),
@@ -122,25 +123,34 @@ const CreateRoom = () => {
             <div className={styles.game_type}>
               <div
                 className={
-                  currentType === "classic" ? styles.item_active : styles.item
+                  currentTab === "classic" ? styles.item_active : styles.item
                 }
-                onClick={() => setCurrentType("classic")}
+                onClick={() => {
+                  setCurrentTab("classic");
+                  setType("classic");
+                }}
               >
                 <span>Classic</span>
               </div>
               <div
                 className={
-                  currentType === "nines" ? styles.item_active : styles.item
+                  currentTab === "nines" ? styles.item_active : styles.item
                 }
-                onClick={() => setCurrentType("nines")}
+                onClick={() => {
+                  setCurrentTab("nines");
+                  setType("nines");
+                }}
               >
                 <span>Nines</span>
               </div>
               <div
                 className={
-                  currentType === "betting" ? styles.item_active : styles.item
+                  currentTab === "betting" ? styles.item_active : styles.item
                 }
-                onClick={() => setCurrentType("betting")}
+                onClick={() => {
+                  setCurrentTab("betting");
+                  setType("classic");
+                }}
               >
                 <span>Betting</span>
               </div>
@@ -190,18 +200,49 @@ const CreateRoom = () => {
                   />
                 </div>
               ) : null}
-              {currentType === "betting" ? (
-                <div className={styles.input_box}>
-                  <label htmlFor="bett">Amount of Bett</label>
-                  <input
-                    type="number"
-                    name="bett"
-                    id="bett"
-                    required
-                    value={bett}
-                    onChange={(e) => setBett(e.target.value)}
-                  />
-                </div>
+              {currentTab === "betting" ? (
+                <>
+                  <div className={styles.input_box}>
+                    <label htmlFor="bett">Amount of Bett</label>
+                    <input
+                      type="number"
+                      name="bett"
+                      id="bett"
+                      required
+                      value={bett}
+                      onChange={(e) => setBett(e.target.value)}
+                    />
+                  </div>
+                  <div className={styles.radio_box}>
+                    <b>Choose Type:</b>
+                    <div className={styles.inputs}>
+                      <input
+                        type="radio"
+                        name="type"
+                        id="type_classic"
+                        required
+                        value="classic"
+                        checked={type === "classic"}
+                        onChange={(e) =>
+                          setType(e.target.value as "classic" | "nines")
+                        }
+                      />
+                      <label htmlFor="type_classic">Classic</label>
+                      <input
+                        type="radio"
+                        name="type"
+                        id="type_nines"
+                        required
+                        value="nines"
+                        checked={type === "nines"}
+                        onChange={(e) =>
+                          setType(e.target.value as "classic" | "nines")
+                        }
+                      />
+                      <label htmlFor="type_nines">Nines</label>
+                    </div>
+                  </div>
+                </>
               ) : null}
               <div className={styles.radio_box}>
                 <b>Hisht:</b>
@@ -226,6 +267,16 @@ const CreateRoom = () => {
                     onChange={(e) => setHisht(e.target.value)}
                   />
                   <label htmlFor="hisht_500">500</label>
+                  <input
+                    type="radio"
+                    name="hisht"
+                    id="hisht_900"
+                    required
+                    value={900}
+                    checked={hisht === "900"}
+                    onChange={(e) => setHisht(e.target.value)}
+                  />
+                  <label htmlFor="hisht_900">900</label>
                 </div>
               </div>
               <button type="submit" className={styles.submit_btn}>

@@ -45,6 +45,14 @@ const Card: React.FC<CardProps> = ({ room }) => {
       if (roomUser?.status === "active") {
         socket?.emit("leaveRoom", room.id, user._id);
       } else {
+        const usersWhoLeft = room?.users.filter(
+          (roomUser) => roomUser.status === "left"
+        );
+
+        if (usersWhoLeft?.length === 3) {
+          socket?.emit("destroyRoom", room.id);
+        }
+
         socket?.emit("updateUserStatus", room.id, user._id, "left");
       }
     }
@@ -133,9 +141,11 @@ const Card: React.FC<CardProps> = ({ room }) => {
             Hisht: <b>{room?.hisht}</b>
           </span>
         </div>
-        {(roomUser?.status === "active" || roomUser?.status === "inactive") && (
+        {(roomUser?.status === "active" ||
+          roomUser?.status === "inactive" ||
+          roomUser?.status === "busy") && (
           <div className={styles.btns}>
-            {roomUser.status === "inactive" && (
+            {(roomUser.status === "inactive" || roomUser.status === "busy") && (
               <button className={styles.rejoin_btn} onClick={handleRejoin}>
                 Continue Playing
               </button>

@@ -3,7 +3,6 @@ import {
   GameInfo,
   PlayingCard,
   RoomUser,
-  HandWin,
   PlayedCard,
 } from "@/utils/interfaces";
 import styles from "./Table.module.scss";
@@ -12,6 +11,8 @@ import CardDeck from "./cardDeck/CardDeck";
 import DrawnCards from "./drawnCards/DrawnCards";
 import PlayedCards from "./playedCards/PlayedCards";
 import LastPlayedCards from "./lastPlayedCards/LastPlayedCards";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import usePlayedCardsStore from "@/store/gamePage/playedCardsStore";
 
 interface TableProps {
   gameInfo: GameInfo | null;
@@ -24,8 +25,7 @@ interface TableProps {
   visibleCards: { [key: string]: PlayingCard[] };
   rotatedPlayers: RoomUser[];
   dealingCards?: Record<string, number>;
-  isChoosingTrump?: boolean;
-  nextPlayerId: string | null;
+  socket?: any;
 }
 
 const Table: React.FC<TableProps> = ({
@@ -35,31 +35,65 @@ const Table: React.FC<TableProps> = ({
   visibleCards,
   rotatedPlayers,
   dealingCards,
-  isChoosingTrump,
-  nextPlayerId,
+  socket,
 }) => {
-  let stuffing = null;
-  let tearing = null;
+  const { setRoundWinnerId } = usePlayedCardsStore();
 
-  if (!stuffing && !tearing && gameInfo?.status === "playing") {
-    const bids = gameInfo?.handBids
-      ?.map((hb) =>
-        hb.bids.map((b) =>
-          b.handNumber === gameInfo?.handCount ? b.bid : null
+  const { stuffing, tearing } = useMemo(() => {
+    let stuffing = null;
+    let tearing = null;
+
+    if (!stuffing && !tearing && gameInfo?.status === "playing") {
+      const bids = gameInfo?.handBids
+        ?.map((hb) =>
+          hb.bids.map((b) =>
+            b.handNumber === gameInfo?.handCount ? b.bid : null
+          )
         )
-      )
-      .flat()
-      .filter((s) => s !== null);
+        .flat()
+        .filter((s) => s !== null);
 
-    const bidSum =
-      bids && bids.reduce((acc: any, bid) => acc + (bid as number), 0);
+      const bidSum =
+        bids && bids.reduce((acc: any, bid) => acc + (bid as number), 0);
 
-    if (gameInfo?.currentHand && bidSum < gameInfo?.currentHand) {
-      stuffing = gameInfo?.currentHand - bidSum;
-    } else {
-      tearing = gameInfo?.currentHand && bidSum - gameInfo?.currentHand;
+      if (gameInfo?.currentHand && bidSum < gameInfo?.currentHand) {
+        stuffing = gameInfo?.currentHand - bidSum;
+      } else {
+        tearing = gameInfo?.currentHand && bidSum - gameInfo?.currentHand;
+      }
     }
-  }
+
+    return { stuffing, tearing };
+  }, [gameInfo?.status, gameInfo?.handBids, gameInfo?.currentHand]);
+
+  const handleRoundWinner = useCallback((winnerCard: PlayedCard) => {
+    if (winnerCard) {
+      setRoundWinnerId(winnerCard.playerId);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!socket) return;
+
+    socket.on("roundWinner", handleRoundWinner);
+
+    return () => {
+      socket.off("roundWinner", handleRoundWinner);
+    };
+  }, [socket, handleRoundWinner]);
+
+  const bidModalData = useMemo(
+    () => ({
+      currentHand: gameInfo?.currentHand as number,
+      handCount: gameInfo?.handCount as number,
+      roomId: gameInfo?.roomId as string,
+      currentPlayerId: gameInfo?.currentPlayerId as string,
+      dealerId: gameInfo?.dealerId as string,
+      handBids: gameInfo?.handBids as HandBid[] | null,
+      rotatedPlayers: rotatedPlayers as RoomUser[],
+    }),
+    [gameInfo, rotatedPlayers]
+  );
 
   return (
     <div className={styles.table}>
@@ -71,35 +105,13 @@ const Table: React.FC<TableProps> = ({
       {gameInfo &&
         gameInfo?.status === "bid" &&
         gameInfo?.currentPlayerId === user?._id && (
-          <BidModal
-            rotatedPlayers={rotatedPlayers}
-            data={{
-              currentHand: gameInfo?.currentHand as number,
-              handCount: gameInfo?.handCount as number,
-              roomId: gameInfo?.roomId,
-              currentPlayerId: gameInfo?.currentPlayerId,
-              dealerId: gameInfo?.dealerId as string,
-              players: gameInfo?.players as string[],
-              handBids: gameInfo?.handBids as HandBid[] | null,
-              roomUsers: room?.users as RoomUser[],
-              hands: gameInfo?.hands as
-                | { hand: PlayingCard[]; playerId: string }[]
-                | null,
-              trumpCard: gameInfo?.trumpCard as PlayingCard | null,
-            }}
-          />
+          <BidModal data={bidModalData} />
         )}
       <span className={styles.hisht}>Hisht: {room?.hisht}</span>
       <div className={styles.table_surface}>
         <PlayedCards
           playedCards={gameInfo?.playedCards || []}
-          trumpCard={gameInfo?.trumpCard as PlayingCard}
-          roomId={gameInfo?.roomId as string}
-          currentHand={gameInfo?.currentHand as number}
-          handCount={gameInfo?.handCount as number}
-          HandWins={gameInfo?.handWins as HandWin[] | null}
-          players={gameInfo?.players as string[]}
-          dealerId={gameInfo?.dealerId as string}
+          currentPlayerId={gameInfo?.currentPlayerId as string}
           rotatedPlayers={rotatedPlayers}
         />
         {gameInfo?.lastPlayedCards && (
@@ -115,15 +127,12 @@ const Table: React.FC<TableProps> = ({
             drawnCards={visibleCards[player.id] || []}
             playerPositionIndex={index}
             playerId={player.id}
-            user={user as { _id: string }}
             dealingCards={dealingCards || {}}
             gameInfo={{
               dealerId: gameInfo?.dealerId as string | null,
               status: gameInfo?.status as string,
               currentPlayerId: gameInfo?.currentPlayerId as string,
             }}
-            isChoosingTrump={isChoosingTrump as boolean}
-            nextPlayerId={nextPlayerId as string}
           />
         ))}
         <div className={styles.game_info}>

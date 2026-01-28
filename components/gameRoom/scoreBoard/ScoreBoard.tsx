@@ -9,7 +9,6 @@ interface ScoreBoardProps {
   hisht: string;
   scoreBoard: ScoreBoard[] | null;
   roomUsers: RoomUser[] | null;
-  handWins: HandWin[] | null;
   closeModal?: () => void;
 }
 
@@ -18,7 +17,6 @@ const ScoreBoardModal: React.FC<ScoreBoardProps> = ({
   roomUsers,
   closeModal,
   hisht,
-  handWins,
 }) => {
   const windowSize = useWindowSize();
 
@@ -66,53 +64,25 @@ const ScoreBoardModal: React.FC<ScoreBoardProps> = ({
               )}
               <section className={styles.round}>
                 {score.roundOne?.map((round) => (
-                  <RoundContent
-                    key={round.id}
-                    round={round}
-                    hisht={hisht}
-                    handWins={handWins?.find(
-                      (hw) => hw.playerId === score.playerId
-                    )}
-                  />
+                  <RoundContent key={round.id} round={round} hisht={hisht} />
                 ))}
               </section>
               <RoundSum roundSum={score.roundSumOne || 0} />
               <section className={styles.round}>
                 {score.roundTwo?.map((round) => (
-                  <RoundContent
-                    key={round.id}
-                    round={round}
-                    hisht={hisht}
-                    handWins={handWins?.find(
-                      (hw) => hw.playerId === score.playerId
-                    )}
-                  />
+                  <RoundContent key={round.id} round={round} hisht={hisht} />
                 ))}
               </section>
               <RoundSum roundSum={score.roundSumTwo || 0} />
               <section className={styles.round}>
                 {score.roundThree?.map((round) => (
-                  <RoundContent
-                    key={round.id}
-                    round={round}
-                    hisht={hisht}
-                    handWins={handWins?.find(
-                      (hw) => hw.playerId === score.playerId
-                    )}
-                  />
+                  <RoundContent key={round.id} round={round} hisht={hisht} />
                 ))}
               </section>
               <RoundSum roundSum={score.roundSumThree || 0} />
               <section className={styles.round}>
                 {score.roundFour?.map((round) => (
-                  <RoundContent
-                    key={round.id}
-                    round={round}
-                    hisht={hisht}
-                    handWins={handWins?.find(
-                      (hw) => hw.playerId === score.playerId
-                    )}
-                  />
+                  <RoundContent key={round.id} round={round} hisht={hisht} />
                 ))}
               </section>
               <RoundSum roundSum={score.roundSumFour || 0} />
@@ -127,25 +97,12 @@ const ScoreBoardModal: React.FC<ScoreBoardProps> = ({
   );
 };
 
-const RoundContent = ({
-  round,
-  hisht,
-  handWins,
-}: {
-  round: Round;
-  hisht: string;
-  handWins: HandWin | undefined;
-}) => {
-  const pointsCalss = () => {
-    const win = handWins?.wins?.find(
-      (win) => win.handNumber === round.handNumber
-    );
-
-    if (win?.win === round.bid) {
+const RoundContent = ({ round, hisht }: { round: Round; hisht: string }) => {
+  const pointsClass = () => {
+    if (round.win === round.bid) {
       return styles.points_won;
-    } else {
-      return styles.points;
     }
+    return styles.points;
   };
 
   const point = () => {
@@ -168,7 +125,7 @@ const RoundContent = ({
     <div className={styles.round_content}>
       <span className={styles.game_hand}>{round.gameHand}.</span>
       <span className={styles.bid}>{round.bid || "-"}</span>
-      <div className={pointsCalss()}>
+      <div className={pointsClass()}>
         {round.points.value > 0 ? (
           point()
         ) : round.points.value < 0 ? (

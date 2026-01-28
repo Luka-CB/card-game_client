@@ -1,20 +1,17 @@
+import React, { useEffect } from "react";
 import { HandBid, GameInfo, PlayingCard, RoomUser } from "@/utils/interfaces";
 import GameRounds from "../../gameControls/gameRounds/GameRounds";
 import styles from "./Players.module.scss";
-import CountDownClock from "../timer/CountDownClock";
 import Image from "next/image";
 import { FaCrown } from "react-icons/fa6";
 import useWindowSize from "@/hooks/useWindowSize";
 import { substringText } from "@/utils/misc";
-import { useEffect } from "react";
-import useSocket from "@/hooks/useSocket";
-import { calculateBotBid } from "@/utils/gameRoom";
+import Timer from "../timer/TimerCircle";
+import useTimerStore from "@/store/gamePage/timerStore";
 
 interface PlayersProps {
   rotatedPlayers: RoomUser[];
   user: { _id: string };
-  isChoosingTrump: boolean;
-  nextPlayerId: string | null;
   gameInfo: {
     status: string;
     currentPlayerId: string;
@@ -25,111 +22,49 @@ interface PlayersProps {
     hands: { hand: PlayingCard[]; playerId: string }[] | null;
     trumpCard: PlayingCard | null;
   } | null;
-  room: { id: string; users: { id: string; status: string }[] } | null;
+  room: { id: string; users: RoomUser[] | null };
   hand: PlayingCard[];
   getBids: (playerId: string) => number | undefined;
   getWins: (playerId: string) => number | undefined;
 }
 
+const getPlayerPosition = (index: number) => {
+  switch (index) {
+    case 0:
+      return styles.bottom;
+    case 1:
+      return styles.left;
+    case 2:
+      return styles.top;
+    case 3:
+      return styles.right;
+    default:
+      return "";
+  }
+};
+
 const Players: React.FC<PlayersProps> = ({
   rotatedPlayers,
   user,
-  isChoosingTrump,
-  nextPlayerId,
   gameInfo,
   room,
   hand,
   getBids,
   getWins,
 }) => {
-  const windowSize = useWindowSize();
-  const socket = useSocket();
+  const { duration, setDuration } = useTimerStore();
 
-  const currentUserStatus = room?.users?.find(
-    (u) => u.id === gameInfo?.currentPlayerId
-  )?.status;
+  const windowSize = useWindowSize();
 
   useEffect(() => {
-    if (!socket || !gameInfo || !room) return;
-
-    if (gameInfo.status !== "bid" || currentUserStatus === "active") return;
-
-    let timeout1: NodeJS.Timeout;
-    let timeout2: NodeJS.Timeout;
-
-    const previousBids =
-      gameInfo.handBids
-        ?.filter((bid) => bid.playerId !== gameInfo.currentPlayerId)
-        ?.map((bid) => {
-          const currentHandScore = bid.bids.find(
-            (b) => b.gameHand === gameInfo.currentHand
-          );
-
-          return currentHandScore?.bid || 0;
-        }) || [];
-
-    const botBid = calculateBotBid({
-      hand:
-        gameInfo?.hands?.find((h) => h.playerId === gameInfo.currentPlayerId)
-          ?.hand || [],
-      trumpSuit: gameInfo.trumpCard?.suit || "",
-      currentHand: gameInfo.currentHand || 0,
-      isDealer: gameInfo.dealerId === gameInfo.currentPlayerId,
-      previousBids,
-    });
-
-    timeout1 = setTimeout(() => {
-      socket.emit("updateGameScore", room.id, gameInfo.currentPlayerId, {
-        gameHand: gameInfo.currentHand,
-        bid: botBid,
-      });
-
-      const playerIndex = rotatedPlayers.findIndex(
-        (p) => p.id === gameInfo.currentPlayerId
-      );
-      const nextPlayerId =
-        rotatedPlayers[(playerIndex + 1) % rotatedPlayers.length].id;
-
-      if (!nextPlayerId) {
-        console.error(
-          "Calculated nextPlayerIndex resulted in undefined nextPlayerId:",
-          nextPlayerId,
-          gameInfo.players
-        );
-        return;
-      }
-
-      timeout2 = setTimeout(() => {
-        socket.emit("updateGameInfo", room.id, {
-          currentPlayerId: nextPlayerId,
-          status:
-            gameInfo.dealerId === gameInfo.currentPlayerId ? "playing" : "bid",
-        });
-      }, 500);
-    }, 1500);
-
-    return () => {
-      if (timeout1) clearTimeout(timeout1);
-      if (timeout2) clearTimeout(timeout2);
-      socket.off("updateGameInfo");
-      socket.off("updateGameScore");
-    };
-  }, [socket, gameInfo, room, currentUserStatus]);
-
-  const getPlayerPosition = (index: number) => {
-    switch (index) {
-      case 0:
-        return styles.bottom;
-      case 1:
-        return styles.left;
-      case 2:
-        return styles.top;
-      case 3:
-        return styles.right;
-      default:
-        return "";
+    if (
+      gameInfo?.status === "playing" ||
+      gameInfo?.status === "bid" ||
+      gameInfo?.status === "choosingTrump"
+    ) {
+      setDuration(20);
     }
-  };
+  }, [gameInfo?.status]);
 
   return (
     <div className={styles.players}>
@@ -138,15 +73,16 @@ const Players: React.FC<PlayersProps> = ({
           key={player.id}
           className={`${styles.player} ${getPlayerPosition(index)}`}
         >
-          {nextPlayerId === user?._id &&
-            nextPlayerId === player.id &&
-            gameInfo?.status !== "playing" &&
-            isChoosingTrump && (
+          {gameInfo?.status !== "playing" &&
+            gameInfo?.status === "choosingTrump" &&
+            player.id === user?._id &&
+            gameInfo?.currentPlayerId === user?._id && (
               <GameRounds
                 rotatedPlayers={rotatedPlayers}
                 hand={hand.slice(0, 3)}
                 gameInfo={gameInfo as GameInfo}
                 user={user as { _id: string }}
+                roomUsers={room.users || []}
               />
             )}
 
@@ -157,18 +93,33 @@ const Players: React.FC<PlayersProps> = ({
                 hand={hand}
                 gameInfo={gameInfo as GameInfo}
                 user={user as { _id: string }}
+                roomUsers={room.users || []}
               />
             )}
 
-          {gameInfo?.status === "bid" &&
-            gameInfo.currentPlayerId === player.id &&
-            index !== 0 && (
+          {(gameInfo?.status === "bid" ||
+            gameInfo?.status === "playing" ||
+            gameInfo?.status === "choosingTrump") &&
+            gameInfo?.currentPlayerId === player.id &&
+            index !== 0 &&
+            duration && (
               <div
                 className={`${styles.count_down} ${getPlayerPosition(
                   index
                 )}_clock`}
               >
-                <CountDownClock textColor="aliceblue" fontSize={1.5} />
+                <Timer duration={duration as number} />
+              </div>
+            )}
+
+          {(gameInfo?.status === "playing" ||
+            gameInfo?.status === "bid" ||
+            gameInfo?.status === "choosingTrump") &&
+            gameInfo.currentPlayerId === player.id &&
+            index === 0 &&
+            duration && (
+              <div className={`${styles.count_down_current_player}`}>
+                <Timer duration={duration as number} />
               </div>
             )}
           <div
@@ -196,7 +147,8 @@ const Players: React.FC<PlayersProps> = ({
               )}
               {index === 0 && <FaCrown className={styles.crown} />}
             </div>
-            {gameInfo?.status === "dealing" &&
+            {(gameInfo?.status === "dealing" ||
+              gameInfo?.status === "choosingTrump") &&
             (windowSize.width <= 800 || windowSize.height <= 800) ? null : (
               <>
                 <div className={styles.name}>
@@ -219,4 +171,4 @@ const Players: React.FC<PlayersProps> = ({
   );
 };
 
-export default Players;
+export default React.memo(Players);

@@ -1,27 +1,29 @@
 import styles from "./GameRounds.module.scss";
 import { CardDeck } from "@/components/gameRoom/cardDeck";
-import { GameInfo, PlayingCard, RoomUser } from "@/utils/interfaces";
+import {
+  GameInfo,
+  PlayedCard,
+  PlayingCard,
+  RoomUser,
+} from "@/utils/interfaces";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import useWindowSize from "@/hooks/useWindowSize";
-import { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import ActionBtn from "./ActionBtn";
 import useSocket from "@/hooks/useSocket";
 import JokerPrompt from "./jokerPrompt/JokerPrompt";
+import usePlayedCardsStore from "@/store/gamePage/playedCardsStore";
 
 interface GameRoundsProps {
   rotatedPlayers: RoomUser[];
   hand: PlayingCard[];
   gameInfo: GameInfo;
   user: { _id: string };
+  roomUsers: RoomUser[];
 }
 
-const GameRounds = ({
-  hand,
-  gameInfo,
-  user,
-  rotatedPlayers,
-}: GameRoundsProps) => {
+const GameRounds = ({ hand, gameInfo, user }: GameRoundsProps) => {
   const [cardId, setCardId] = useState("");
   const [draggedCardId, setDraggedCardId] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
@@ -35,7 +37,7 @@ const GameRounds = ({
   useEffect(() => {
     if (!hand) return;
 
-    const sorted = hand.sort((a, b) => {
+    const sorted = [...hand].sort((a, b) => {
       if (a.suit === b.suit) {
         if (a.rank === "A") return 1;
         if (b.rank === "A") return -1;
@@ -56,36 +58,16 @@ const GameRounds = ({
   }, [hand]);
 
   const playedCardHandler = (card: PlayingCard) => {
-    if (!socket || !gameInfo || gameInfo.currentPlayerId !== user._id) return;
+    if (!socket || !gameInfo) return;
+    if (gameInfo.currentPlayerId !== user._id) return;
 
-    const playerIndex = rotatedPlayers.findIndex(
-      (p) => p.id === gameInfo?.currentPlayerId
-    );
-    const nextPlayerId =
-      rotatedPlayers[(playerIndex + 1) % rotatedPlayers.length].id;
-
-    socket.emit("removeCardFromHand", {
-      roomId: gameInfo?.roomId,
-      playerId: gameInfo?.currentPlayerId,
-      card: card,
+    socket.emit("playCard", {
+      roomId: gameInfo.roomId,
+      playerId: gameInfo.currentPlayerId,
+      card,
     });
 
-    const newSortedCards = sortedCards?.filter((c) => c.id !== card.id);
-    setSortedCards(newSortedCards);
-
-    setTimeout(() => {
-      socket.emit("setPlayedCards", {
-        roomId: gameInfo?.roomId,
-        playerId: gameInfo?.currentPlayerId,
-        playedCard: card,
-      });
-    }, 500);
-
-    setTimeout(() => {
-      socket.emit("updateGameInfo", gameInfo?.roomId, {
-        currentPlayerId: nextPlayerId,
-      });
-    }, 1000);
+    setSortedCards((prev) => prev.filter((c) => c.id !== card.id));
   };
 
   const handlePlayCard = (card: PlayingCard) => {
@@ -98,6 +80,24 @@ const GameRounds = ({
 
     playedCardHandler(card);
   };
+
+  useEffect(() => {
+    if (!socket || !gameInfo) return;
+    if (gameInfo.status !== "playing") return;
+    if (gameInfo.currentPlayerId !== user._id) return;
+    console.log("Setting up botPlayedCard listener");
+
+    socket.on("botPlayedCard", (card: PlayingCard) => {
+      if (card) {
+        console.log("Bot played card:", card);
+        setSortedCards((prev) => prev.filter((c) => c.id !== card.id));
+      }
+    });
+
+    return () => {
+      socket.off("botPlayedCard");
+    };
+  }, [socket, gameInfo?.roomId, gameInfo?.currentPlayerId, gameInfo?.status]);
 
   const handleDragStart = (card: PlayingCard) => {
     if (!gameInfo || gameInfo.currentPlayerId !== user._id) return;
@@ -146,7 +146,7 @@ const GameRounds = ({
 
   const isPlayerTurn = gameInfo?.currentPlayerId === user._id;
 
-  const findPlayableCards = () => {
+  const playableCards = useMemo(() => {
     if (!sortedCards.length || !gameInfo) return;
 
     const card = gameInfo?.playedCards?.map(
@@ -206,7 +206,28 @@ const GameRounds = ({
     }
 
     return playableCards;
-  };
+  }, [sortedCards, gameInfo]);
+
+  const handleMouseEnter = useCallback(
+    (cardId: string) => {
+      if (
+        windowSize.width > 1200 &&
+        playableCards?.some((c) => c.id === cardId) &&
+        isPlayerTurn
+      ) {
+        setCardId(cardId);
+      }
+    },
+    [playableCards, windowSize.width, isPlayerTurn]
+  );
+
+  const animateProps = useMemo(
+    () => ({
+      opacity: 1,
+      translateY: 0,
+    }),
+    []
+  );
 
   return (
     <motion.div
@@ -215,7 +236,7 @@ const GameRounds = ({
         x: 0,
         translateY: 100,
       }}
-      animate={{ opacity: 1, translateY: 0 }}
+      animate={animateProps}
       transition={{ duration: 0.4, damping: 15, type: "spring" }}
       className={styles.player_hand}
     >
@@ -245,7 +266,7 @@ const GameRounds = ({
             c.rank === "JOKER" && c.color === "red"
         )?.image;
 
-        const isPlayable = findPlayableCards()?.some((c) => c.id === card.id);
+        const isPlayable = playableCards?.some((c) => c.id === card.id);
 
         return (
           <motion.div
@@ -257,29 +278,14 @@ const GameRounds = ({
               isDragging && draggedCardId === card.id ? styles.dragging : ""
             }`}
             key={card.id}
-            onMouseEnter={() =>
-              windowSize.width > 1200 &&
-              isPlayable &&
-              isPlayerTurn &&
-              setCardId(card.id)
-            }
+            onMouseEnter={() => handleMouseEnter(card.id)}
             onMouseLeave={() => windowSize.width > 1200 && setCardId("")}
-            drag={
-              windowSize.width <= 1200 && isPlayerTurn && isPlayable
-                ? "y"
-                : false
-            }
+            drag={isPlayerTurn && isPlayable ? "y" : false}
             dragConstraints={{ top: -200, bottom: 0 }}
             dragElastic={0.2}
-            onDragStart={() =>
-              windowSize.width <= 1200 && handleDragStart(card as PlayingCard)
-            }
-            onDrag={(e, info) =>
-              windowSize.width <= 1200 && handleDrag(e, info)
-            }
-            onDragEnd={() =>
-              windowSize.width <= 1200 && handleDragEnd(card as PlayingCard)
-            }
+            onDragStart={() => handleDragStart(card as PlayingCard)}
+            onDrag={(e, info) => handleDrag(e, info)}
+            onDragEnd={() => handleDragEnd(card as PlayingCard)}
             animate={{
               y: draggedCardId === card.id ? -20 : 0,
               scale: draggedCardId === card.id ? 1.05 : 1,
@@ -395,4 +401,4 @@ const GameRounds = ({
   );
 };
 
-export default GameRounds;
+export default React.memo(GameRounds);
