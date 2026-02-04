@@ -4,6 +4,7 @@ import Image from "next/image";
 import { FaInfo } from "react-icons/fa6";
 import Auth from "@/components/auth/Auth";
 import Link from "next/link";
+import AvatarGallery from "@/components/auth/LeftPanel/AvatarGallery";
 
 export default function Home() {
   return (
@@ -45,6 +46,8 @@ export default function Home() {
         </Link>
       </div>
       <Auth />
+
+      <AvatarGallery />
     </main>
   );
 }

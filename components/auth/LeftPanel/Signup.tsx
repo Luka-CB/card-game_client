@@ -2,14 +2,15 @@
 
 import styles from "./Sign.module.scss";
 import { useRouter, useSearchParams } from "next/navigation";
-import Avatar from "./Avatar";
 import { useEffect, useState } from "react";
 import useSignupStore from "@/store/auth/signupStore";
 import useAvatarStore from "@/store/user/avatarStore";
 import BtnLoader from "../../loaders/BtnLoader";
+import { MdOutlineAddPhotoAlternate } from "react-icons/md";
 import Oauth from "./Oauth";
 import { IoMdEye, IoIosEyeOff } from "react-icons/io";
 import useUserStore from "@/store/user/userStore";
+import Image from "next/image";
 
 const Signup = () => {
   const router = useRouter();
@@ -17,12 +18,13 @@ const Signup = () => {
 
   const { status, signup, error, setError, user } = useSignupStore();
   const { setUser } = useUserStore();
-  const { avatar, setAvatar } = useAvatarStore();
+  const { avatar, setAvatar, toggleAvatarGallery } = useAvatarStore();
 
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [avatarError, setAvatarError] = useState(false);
 
   const [visiblePassword, setVisiblePassword] = useState(false);
   const [visibleConfirmPassword, setVisibleConfirmPassword] = useState(false);
@@ -48,6 +50,7 @@ const Signup = () => {
     if (status === "success") {
       if (user) setUser(user);
       setAvatar("");
+      setAvatarError(false);
       setUsername("");
       setEmail("");
       setPassword("");
@@ -63,7 +66,13 @@ const Signup = () => {
       return;
     }
 
-    signup({ username, email, avatar: avatar || "", password });
+    if (!avatar) {
+      setError("Please select an avatar");
+      setAvatarError(true);
+      return;
+    }
+
+    signup({ username, email, avatar, password });
   };
 
   return (
@@ -71,7 +80,29 @@ const Signup = () => {
       {error && <p className={styles.error}>{error}</p>}
       <h2>Sign up</h2>
       <div className={styles.local_auth}>
-        <Avatar />
+        <div
+          className={
+            avatarError
+              ? styles.choose_avatar_wrapper_error
+              : styles.choose_avatar_wrapper
+          }
+          onClick={() => toggleAvatarGallery()}
+        >
+          <div className={styles.choose_avatar}>
+            <button>
+              {!avatar ? (
+                <div className={styles.choose}>
+                  <MdOutlineAddPhotoAlternate className={styles.icon} />
+                  <span>Choose</span>
+                </div>
+              ) : (
+                <div className={styles.image} title="Change avatar">
+                  <Image src={avatar} width={100} height={100} alt="avatar" />
+                </div>
+              )}
+            </button>
+          </div>
+        </div>
         <form onSubmit={handleSubmit}>
           <input
             type="text"

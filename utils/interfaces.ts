@@ -11,7 +11,7 @@ export interface Room {
   name: string;
   password: string | null;
   bett: string | null;
-  type: "classic" | "nines" | "betting";
+  type: "classic" | "nines";
   status: "public" | "private";
   isActive?: boolean;
   hisht: string;
@@ -39,16 +39,18 @@ export type Suit = "hearts" | "diamonds" | "clubs" | "spades";
 export type Rank = "6" | "7" | "8" | "9" | "10" | "J" | "Q" | "K" | "A";
 export type Strength = "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9";
 
-export type Card =
-  | { suit: Suit; rank: Rank; strength: Strength; id: string }
-  | {
-      joker: true;
-      strength: string;
-      id: string;
-      color: string;
-      type: string;
-      requestedSuit: string;
-    };
+export type Card = {
+  id: string;
+  joker: boolean;
+  suit: Suit | null;
+  rank: Rank | null;
+  strength: string;
+  color: string | null;
+  isJoker?: boolean;
+  isTrump?: boolean;
+  type?: string | null;
+  requestedSuit?: string | null;
+};
 
 export interface HandBid {
   playerId: string;
@@ -88,6 +90,7 @@ export interface Round {
   gameHand: number;
   handNumber: number;
   bid: number | null;
+  win: number | null;
   points: {
     value: number;
     isCut: boolean;

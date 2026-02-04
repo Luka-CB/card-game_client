@@ -8,17 +8,11 @@ import UserOption from "../home/UserOption";
 import useUserOptionStore from "@/store/user/userOptionStore";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useMemo } from "react";
-import { getStoredRandomAvatar } from "@/utils/misc";
 
 const Header = () => {
   const { user } = useUserStore();
   const { setIsOpen, isOpen } = useUserOptionStore();
   const pathname = usePathname();
-
-  const avatar = useMemo(() => {
-    return user?.avatar || getStoredRandomAvatar();
-  }, [user?.avatar]);
 
   return (
     <header className={styles.header}>
@@ -54,10 +48,10 @@ const Header = () => {
         </ul>
       </nav>
       <div className={styles.user}>
-        <p>{user?.username}</p>
+        <p>{user?.originalUsername}</p>
         <div className={styles.avatar} onClick={() => setIsOpen(!isOpen)}>
           <Image
-            src={avatar}
+            src={user?.avatar || "/default-avatar.jpeg"}
             alt="avatar"
             width={50}
             height={50}

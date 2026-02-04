@@ -6,20 +6,10 @@ import { create } from "zustand";
 export interface userIFace {
   _id: string;
   username: string;
+  originalUsername: string;
   avatar: string;
   email: string;
   isVerified: boolean;
-}
-
-interface Room {
-  id: string;
-  name: string;
-  password: string | null;
-  bett: string | null;
-  type: "classic" | "nines" | "betting";
-  status: "public" | "private";
-  hisht: string;
-  createdAt: Date;
 }
 
 interface UserStore {
