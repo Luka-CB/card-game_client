@@ -105,7 +105,7 @@ const Players: React.FC<PlayersProps> = ({
             duration && (
               <div
                 className={`${styles.count_down} ${getPlayerPosition(
-                  index
+                  index,
                 )}_clock`}
               >
                 <Timer duration={duration as number} />

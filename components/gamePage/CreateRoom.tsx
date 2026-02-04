@@ -10,13 +10,13 @@ import { v4 as uuidv4 } from "uuid";
 import useSocket from "@/hooks/useSocket";
 import useUserStore from "@/store/user/userStore";
 import useFlashMsgStore from "@/store/flashMsgStore";
-import { getRandomBotAvatar, getStoredRandomAvatar } from "@/utils/misc";
+import { getRandomBotAvatar } from "@/utils/misc";
 import useRoomStore from "@/store/gamePage/roomStore";
 
 const CreateRoom = () => {
   const [currentStatus, setCurrentStatus] = useState("public");
   const [currentTab, setCurrentTab] = useState<"classic" | "nines" | "betting">(
-    "classic"
+    "classic",
   );
   const [type, setType] = useState<"classic" | "nines">("classic");
   const [name, setName] = useState("");
@@ -47,7 +47,7 @@ const CreateRoom = () => {
     if (!user) return;
 
     const roomUser = rooms.find((room) =>
-      room?.users.some((u) => u.id === user._id)
+      room?.users.some((u) => u.id === user._id),
     );
     if (roomUser) {
       setMsg("You can't be in more than one room at the same time", "error");
@@ -67,9 +67,9 @@ const CreateRoom = () => {
       users: [
         {
           id: user._id,
-          username: user.username,
+          username: user.originalUsername,
           status: "active",
-          avatar: user.avatar || getStoredRandomAvatar(),
+          avatar: user.avatar || "/default-avatar.jpeg",
           botAvatar: getRandomBotAvatar(),
         },
       ],
@@ -287,7 +287,7 @@ const CreateRoom = () => {
         </motion.div>
       )}
     </AnimatePresence>,
-    document.body
+    document.body,
   );
 };
 

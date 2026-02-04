@@ -22,6 +22,7 @@ const useSessionUserStore = create<SessionUserStore>((set) => ({
       const user = {
         _id: data._id,
         username: data.username,
+        originalUsername: data.originalUsername,
         avatar: data.avatar,
         email: data.email,
         isVerified: data.isVerified,

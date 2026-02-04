@@ -94,5 +94,37 @@
         }
       }
     }
+
+    .go_back_wrapper {
+      margin-top: 20px;
+      cursor: pointer;
+      width: 220px;
+
+      .go_back {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease-in-out;
+
+        .icon {
+          font-size: 1.5rem;
+          color: var(--clr-light);
+          transition: all 0.2s ease-in-out;
+        }
+
+        span {
+          color: var(--clr-light);
+          margin-left: 5px;
+          transition: all 0.2s ease-in-out;
+        }
+
+        &:hover {
+          span {
+            color: var(--clr-lighter);
+            margin-left: 15px;
+          }
+        }
+      }
+    }
   }
 }
