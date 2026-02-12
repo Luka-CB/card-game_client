@@ -26,6 +26,9 @@ interface PlayersProps {
   hand: PlayingCard[];
   getBids: (playerId: string) => number | undefined;
   getWins: (playerId: string) => number | undefined;
+  messagePopups: Record<string, { message: string; timestamp: Date } | null>;
+  showChat: boolean;
+  emojiPopup: { playerId: string; emoji: string; timestamp: Date } | null;
 }
 
 const getPlayerPosition = (index: number) => {
@@ -51,6 +54,9 @@ const Players: React.FC<PlayersProps> = ({
   hand,
   getBids,
   getWins,
+  messagePopups,
+  showChat,
+  emojiPopup,
 }) => {
   const { duration, setDuration } = useTimerStore();
 
@@ -65,6 +71,8 @@ const Players: React.FC<PlayersProps> = ({
       setDuration(20);
     }
   }, [gameInfo?.status]);
+
+  console.log(emojiPopup);
 
   return (
     <div className={styles.players}>
@@ -126,14 +134,29 @@ const Players: React.FC<PlayersProps> = ({
             className={styles.player_info}
             title={player.username.length > 10 ? player.username : undefined}
           >
+            {!showChat && messagePopups[player.id] && (
+              <div className={styles.message_popup}>
+                <span>{messagePopups[player.id]?.message}</span>
+              </div>
+            )}
+
+            {emojiPopup && emojiPopup.playerId === player.id && (
+              <div className={styles.emoji_popup}>
+                <span>{emojiPopup.emoji}</span>
+              </div>
+            )}
             <div className={styles.avatar_container}>
               {room?.users?.find((u) => u.id === player.id)?.status ===
               "active" ? (
                 <Image
                   src={player.avatar || "/avatars/avatar-1.jpeg"}
                   alt={player.username}
-                  width={80}
-                  height={80}
+                  width={100}
+                  height={100}
+                  style={{
+                    border: `3px solid ${player.color?.value}`,
+                    borderRadius: "50%",
+                  }}
                   className={styles.avatar}
                 />
               ) : (

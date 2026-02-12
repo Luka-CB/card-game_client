@@ -10,19 +10,21 @@ import { v4 as uuidv4 } from "uuid";
 import useSocket from "@/hooks/useSocket";
 import useUserStore from "@/store/user/userStore";
 import useFlashMsgStore from "@/store/flashMsgStore";
-import { getRandomBotAvatar } from "@/utils/misc";
+import { getRandomBotAvatar, getRandomColor } from "@/utils/misc";
 import useRoomStore from "@/store/gamePage/roomStore";
+import Image from "next/image";
+import useJCoinsStore from "@/store/user/stats/jCoinsStore";
 
 const CreateRoom = () => {
   const [currentStatus, setCurrentStatus] = useState("public");
-  const [currentTab, setCurrentTab] = useState<"classic" | "nines" | "betting">(
-    "classic",
-  );
+  const [currentTab, setCurrentTab] = useState<"classic" | "nines">("classic");
   const [type, setType] = useState<"classic" | "nines">("classic");
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
   const [bett, setBett] = useState("");
+  const [bettError, setBettError] = useState("");
   const [hisht, setHisht] = useState("200");
+  const [toggleChat, setToggleChat] = useState(false);
 
   const { toggleCreateRoomModal, setToggleCreateRoom } = useCreateRoomStore();
   const { setMsg } = useFlashMsgStore();
@@ -32,6 +34,7 @@ const CreateRoom = () => {
 
   const socket = useSocket();
   const { user } = useUserStore();
+  const { jCoins, toggleGetMoreModal } = useJCoinsStore();
 
   const resetModal = () => {
     setToggleCreateRoom(false, null);
@@ -39,6 +42,8 @@ const CreateRoom = () => {
     setPassword("");
     setBett("");
     setHisht("200");
+    setToggleChat(false);
+    setBettError("");
   };
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
@@ -55,6 +60,23 @@ const CreateRoom = () => {
       return;
     }
 
+    if (bett && parseInt(bett) < 50) {
+      setBettError("Bett must be at least 50");
+      return;
+    }
+
+    if (bett && jCoins && parseInt(bett) > jCoins.raw) {
+      setBettError("You don't have enough JCoins");
+      return;
+    }
+
+    if (jCoins && jCoins.raw < 100) {
+      toggleGetMoreModal(true);
+      setMsg("You need at least 100 JCoins to create a room", "error");
+      resetModal();
+      return;
+    }
+
     const room = {
       id: uuidv4(),
       name,
@@ -63,6 +85,7 @@ const CreateRoom = () => {
       type: type,
       status: currentStatus,
       hisht,
+      hasChat: toggleChat,
       createdAt: new Date(),
       users: [
         {
@@ -71,6 +94,7 @@ const CreateRoom = () => {
           status: "active",
           avatar: user.avatar || "/default-avatar.jpeg",
           botAvatar: getRandomBotAvatar(),
+          color: getRandomColor(),
         },
       ],
     };
@@ -143,17 +167,6 @@ const CreateRoom = () => {
               >
                 <span>Nines</span>
               </div>
-              <div
-                className={
-                  currentTab === "betting" ? styles.item_active : styles.item
-                }
-                onClick={() => {
-                  setCurrentTab("betting");
-                  setType("classic");
-                }}
-              >
-                <span>Betting</span>
-              </div>
             </div>
             <div className={styles.visibility}>
               <div
@@ -200,50 +213,29 @@ const CreateRoom = () => {
                   />
                 </div>
               ) : null}
-              {currentTab === "betting" ? (
-                <>
-                  <div className={styles.input_box}>
-                    <label htmlFor="bett">Amount of Bett</label>
-                    <input
-                      type="number"
-                      name="bett"
-                      id="bett"
-                      required
-                      value={bett}
-                      onChange={(e) => setBett(e.target.value)}
-                    />
-                  </div>
-                  <div className={styles.radio_box}>
-                    <b>Choose Type:</b>
-                    <div className={styles.inputs}>
-                      <input
-                        type="radio"
-                        name="type"
-                        id="type_classic"
-                        required
-                        value="classic"
-                        checked={type === "classic"}
-                        onChange={(e) =>
-                          setType(e.target.value as "classic" | "nines")
-                        }
-                      />
-                      <label htmlFor="type_classic">Classic</label>
-                      <input
-                        type="radio"
-                        name="type"
-                        id="type_nines"
-                        required
-                        value="nines"
-                        checked={type === "nines"}
-                        onChange={(e) =>
-                          setType(e.target.value as "classic" | "nines")
-                        }
-                      />
-                      <label htmlFor="type_nines">Nines</label>
-                    </div>
-                  </div>
-                </>
-              ) : null}
+              <div
+                className={bettError ? styles.bet_box_error : styles.bet_box}
+              >
+                <label htmlFor="bett">Bett (optional):</label>
+                <input
+                  type="number"
+                  name="bett"
+                  id="bett"
+                  value={bett}
+                  onChange={(e) => {
+                    setBett(e.target.value);
+                    setBettError("");
+                  }}
+                />
+                <div className={styles.info}>
+                  <small>Minimum bet:</small>
+                  <Image src="/coin1.png" alt="coin" width={20} height={20} />
+                  <b>50</b>
+                </div>
+                {bettError && (
+                  <span className={styles.error_message}>{bettError}</span>
+                )}
+              </div>
               <div className={styles.radio_box}>
                 <b>Hisht:</b>
                 <div className={styles.inputs}>
@@ -278,6 +270,20 @@ const CreateRoom = () => {
                   />
                   <label htmlFor="hisht_900">900</label>
                 </div>
+              </div>
+              <div className={styles.toggle_box}>
+                <span>In Game Chat:</span>
+                <label htmlFor="toggleChat" className={styles.toggle_switch}>
+                  <input
+                    type="checkbox"
+                    name="toggleChat"
+                    id="toggleChat"
+                    checked={toggleChat}
+                    onChange={(e) => setToggleChat(e.target.checked)}
+                  />
+                  <span className={styles.slider}></span>
+                </label>
+                <small>{toggleChat ? "On" : "Off"}</small>
               </div>
               <button type="submit" className={styles.submit_btn}>
                 Create

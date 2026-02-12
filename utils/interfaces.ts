@@ -4,6 +4,10 @@ export interface RoomUser {
   status: string;
   avatar: string | null;
   botAvatar: string | null;
+  color: {
+    value: string;
+    textColor: string;
+  };
 }
 
 export interface Room {
@@ -13,6 +17,7 @@ export interface Room {
   bett: string | null;
   type: "classic" | "nines";
   status: "public" | "private";
+  hasChat?: boolean;
   isActive?: boolean;
   hisht: string;
   createdAt: Date;
@@ -128,4 +133,25 @@ export interface GameInfo {
   playedCards?: PlayedCard[] | null;
   lastPlayedCards?: PlayedCard[] | null;
   scoreBoard?: ScoreBoard[] | null;
+}
+
+export interface chatUser {
+  id: string;
+  username: string;
+  avatar: string | null;
+  color: { value: string; textColor: string } | null;
+}
+
+export interface ChatMessage {
+  id: string;
+  sender: chatUser;
+  content: string;
+  timestamp: Date;
+}
+
+export interface ChatRoom {
+  roomId: string;
+  unreadMessages: { [userId: string]: number };
+  messages: ChatMessage[];
+  hasChatOpen: { [userId: string]: boolean };
 }
