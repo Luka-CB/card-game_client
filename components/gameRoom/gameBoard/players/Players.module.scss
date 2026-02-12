@@ -41,6 +41,7 @@
     }
 
     .player_info {
+      position: relative;
       display: flex;
       align-items: center;
       width: 180px;
@@ -50,10 +51,44 @@
       border-radius: 10px;
       backdrop-filter: blur(5px);
 
+      .emoji_popup {
+        position: absolute;
+        background-color: rgba(0, 0, 0, 0.85);
+        color: white;
+        padding: 0.75rem;
+        border-radius: 50%;
+        font-size: 2.5rem;
+        z-index: 10;
+        animation: fadeIn 0.3s ease-in-out;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 60px;
+        height: 60px;
+      }
+
+      .message_popup {
+        position: absolute;
+        background-color: rgba(0, 0, 0, 0.85);
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        white-space: nowrap;
+        width: 200px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        text-align: center;
+        font-size: 0.875rem;
+        z-index: 10;
+        animation: fadeIn 0.3s ease-in-out;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+      }
+
       .avatar_container {
         position: relative;
-        width: 50px;
-        height: 50px;
+        width: 60px;
+        height: 60px;
         border-radius: 50%;
         overflow: hidden;
         border: 3px solid var(--clr-primary);
@@ -122,24 +157,156 @@
     bottom: 4%;
     left: 50%;
     transform: translateX(-50%);
+
+    .message_popup {
+      bottom: 110%;
+      left: 50%;
+      transform: translateX(-50%);
+
+      &::after {
+        content: "";
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        border: 6px solid transparent;
+        border-top-color: rgba(0, 0, 0, 0.85);
+      }
+    }
+
+    .emoji_popup {
+      margin-bottom: 5px;
+      bottom: 110%;
+      left: 50%;
+      transform: translateX(-50%);
+
+      &::after {
+        content: "";
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        border: 6px solid transparent;
+        border-top-color: rgba(0, 0, 0, 0.85);
+      }
+    }
   }
 
   .left {
     left: 20;
     top: 50%;
     transform: translateY(-50%);
+
+    .message_popup {
+      left: 110%;
+      top: 50%;
+      transform: translateY(-50%);
+
+      &::after {
+        content: "";
+        position: absolute;
+        top: 50%;
+        right: 110%;
+        transform: translateY(-50%);
+        border: 6px solid transparent;
+        border-left-color: rgba(0, 0, 0, 0.85);
+      }
+    }
+
+    .emoji_popup {
+      margin-left: 5px;
+      left: 110%;
+      top: 50%;
+      transform: translateY(-50%);
+
+      &::after {
+        content: "";
+        position: absolute;
+        top: 50%;
+        right: 100%;
+        transform: translateY(-50%);
+        border: 6px solid transparent;
+        border-right-color: rgba(0, 0, 0, 0.85);
+      }
+    }
   }
 
   .top {
     top: 4%;
     left: 50%;
     transform: translateX(-50%);
+
+    .message_popup {
+      top: 110%;
+      left: 50%;
+      transform: translateX(-50%);
+
+      &::after {
+        content: "";
+        position: absolute;
+        bottom: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        border: 6px solid transparent;
+        border-bottom-color: rgba(0, 0, 0, 0.85);
+      }
+    }
+
+    .emoji_popup {
+      margin-top: 5px;
+      top: 110%;
+      left: 50%;
+      transform: translateX(-50%);
+
+      &::after {
+        content: "";
+        position: absolute;
+        bottom: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        border: 6px solid transparent;
+        border-bottom-color: rgba(0, 0, 0, 0.85);
+      }
+    }
   }
 
   .right {
     right: 1%;
     top: 50%;
     transform: translateY(-50%);
+
+    .message_popup {
+      right: 110%;
+      top: 50%;
+      transform: translateY(-50%);
+
+      &::after {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 0;
+        transform: translateY(-50%);
+        border: 6px solid transparent;
+        border-right-color: rgba(0, 0, 0, 0.85);
+      }
+    }
+
+    .emoji_popup {
+      margin-right: 5px;
+      right: 110%;
+      top: 50%;
+      transform: translateY(-50%);
+
+      &::after {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 100%;
+        transform: translateY(-50%);
+        border: 6px solid transparent;
+        border-left-color: rgba(0, 0, 0, 0.85);
+      }
+    }
   }
 }
 
@@ -724,5 +891,14 @@
         transform: translateX(-50%);
       }
     }
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
   }
 }

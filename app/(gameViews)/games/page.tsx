@@ -2,6 +2,8 @@ import GamePageHeader from "@/components/gamePage/GamePageHeader";
 import styles from "./page.module.scss";
 import CreateRoom from "@/components/gamePage/CreateRoom";
 import Cards from "@/components/gamePage/cards/Cards";
+import GetMoreModal from "@/components/jCoinst/GetMoreModal";
+import SideNav from "@/components/header/SideNav";
 
 export default function Classic() {
   return (
@@ -10,6 +12,8 @@ export default function Classic() {
       <Cards />
 
       <CreateRoom />
+      <GetMoreModal />
+      <SideNav />
     </main>
   );
 }

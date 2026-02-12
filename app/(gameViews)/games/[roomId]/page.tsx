@@ -2,6 +2,7 @@
 
 import styles from "./page.module.scss";
 import { FaTimesCircle } from "react-icons/fa";
+import { IoChatbubbleEllipsesOutline } from "react-icons/io5";
 import { PiKeyboard } from "react-icons/pi";
 import {
   HandBid,
@@ -10,6 +11,8 @@ import {
   Room,
   RoomUser,
   ScoreBoard,
+  ChatRoom,
+  ChatMessage,
 } from "@/utils/interfaces";
 import useUserStore from "@/store/user/userStore";
 import useSocket from "@/hooks/useSocket";
@@ -25,6 +28,9 @@ import BusyBg from "@/components/gameRoom/busyMode/BusyBg";
 import TrumpModal from "@/components/gameRoom/gameControls/trumpModal/TrumpModal";
 import ScoreBoardModal from "@/components/gameRoom/scoreBoard/ScoreBoard";
 import FinishedMode from "@/components/gameRoom/finishedMode/FinishedMode";
+import { BsFillEmojiSunglassesFill } from "react-icons/bs";
+import Emojis from "@/components/emojis/Emojis";
+import Chat from "@/components/chat/Chat";
 
 const GameRoom: React.FC = () => {
   const [room, setRoom] = useState<Room | null>(null);
@@ -36,6 +42,18 @@ const GameRoom: React.FC = () => {
   const [hand, setHand] = useState<PlayingCard[]>([]);
   const [gameInfo, setGameInfo] = useState<GameInfo | null>(null);
   const [isScoreBoardOpen, setIsScoreBoardOpen] = useState(false);
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [emojiPopup, setEmojiPopup] = useState<{
+    playerId: string;
+    emoji: string;
+    timestamp: Date;
+  } | null>(null);
+  const [showChat, setShowChat] = useState(false);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [chat, setChat] = useState<ChatRoom | null>(null);
+  const [messagePopups, setMessagePopups] = useState<
+    Record<string, { message: string; timestamp: Date } | null>
+  >({});
 
   const [revealInProgress, setRevealInProgress] = useState(false);
   const [currentDealingRound, setCurrentDealingRound] = useState(0);
@@ -102,6 +120,38 @@ const GameRoom: React.FC = () => {
     ];
   }, [user, room]);
 
+  const handleEmojiSelect = (emoji: string) => {
+    if (!socket || !roomId) return;
+
+    console.log("Selected emoji:", emoji);
+
+    socket.emit("sendEmoji", roomId, {
+      playerId: user?._id,
+      emoji,
+    });
+  };
+
+  useEffect(() => {
+    if (!socket || !roomId) return;
+
+    const handleEmojiPopup = (data: {
+      playerId: string;
+      emoji: string;
+      timestamp: Date;
+    }) => {
+      setEmojiPopup(data);
+      setTimeout(() => {
+        setEmojiPopup(null);
+      }, 3000);
+    };
+
+    socket.on("emojiPopup", handleEmojiPopup);
+
+    return () => {
+      socket.off("emojiPopup", handleEmojiPopup);
+    };
+  }, [socket, roomId]);
+
   useEffect(() => {
     if (!socket || !roomId) return;
 
@@ -113,16 +163,23 @@ const GameRoom: React.FC = () => {
       }
     });
 
+    socket.on("roomDestroyed", (data: { roomId: string }) => {
+      if (data.roomId === roomId) {
+        router.push("/games");
+      }
+    });
+
     return () => {
       socket.off("getRoom");
+      socket.off("roomDestroyed");
     };
-  }, [socket, roomId, user]);
+  }, [socket, roomId, user, router]);
 
   useEffect(() => {
     if (!socket || !roomId) return;
 
     const handleGameInfo = (data: GameInfo) => {
-      if (data.roomId !== roomId) return;
+      if (!data || data.roomId !== roomId) return;
 
       if (
         stateChangeRef.current.lastGameInfo &&
@@ -145,40 +202,102 @@ const GameRoom: React.FC = () => {
   }, [socket, roomId]);
 
   useEffect(() => {
-    if (!socket) return;
+    if (!socket || !room || !roomId) return;
 
-    const handlePrepare = () => {
-      setVisibleCards({});
-      setRevealInProgress(true);
+    if (!room.hasChat) return;
+
+    socket.emit("createChat", roomId);
+  }, [socket, room, roomId]);
+
+  useEffect(() => {
+    if (!socket || !roomId) return;
+
+    socket.emit("getChat", roomId);
+
+    const handleChatUpdate = (data: ChatRoom) => {
+      if (data && data.messages) {
+        setMessages(data.messages);
+        setChat(data);
+      }
     };
 
-    const handleStep = (step: {
-      targetPlayerId: string;
-      card: PlayingCard;
-    }) => {
-      if (!revealInProgressRef.current) return;
-
-      const { targetPlayerId, card } = step;
-      setVisibleCards((prev) => ({
-        ...prev,
-        [targetPlayerId]: [...(prev[targetPlayerId] || []), card],
-      }));
-    };
-
-    const handleDone = () => {
-      setRevealInProgress(false);
-    };
-
-    socket.on("dealerRevealPrepare", handlePrepare);
-    socket.on("dealerRevealStep", handleStep);
-    socket.on("dealerRevealDone", handleDone);
+    socket.on("getChat", handleChatUpdate);
 
     return () => {
-      socket.off("dealerRevealPrepare", handlePrepare);
-      socket.off("dealerRevealStep", handleStep);
-      socket.off("dealerRevealDone", handleDone);
+      socket.off("getChat", handleChatUpdate);
     };
-  }, [socket]);
+  }, [socket, roomId]);
+
+  useEffect(() => {
+    if (!socket || !roomId || !user) return;
+
+    const handleMessagePopup = (data: {
+      playerId: string;
+      message: string;
+      timestamp: Date;
+    }) => {
+      if (data.playerId === user._id) return;
+
+      if (showChat) return;
+
+      setMessagePopups((prev) => {
+        const updated = {
+          ...prev,
+          [data.playerId]: { message: data.message, timestamp: data.timestamp },
+        };
+        return updated;
+      });
+
+      setTimeout(() => {
+        setMessagePopups((prev) => ({
+          ...prev,
+          [data.playerId]: null,
+        }));
+      }, 5000);
+    };
+
+    socket.on("chatMessagePopup", handleMessagePopup);
+
+    return () => {
+      socket.off("chatMessagePopup", handleMessagePopup);
+    };
+  }, [socket, roomId, user, showChat]);
+
+  // useEffect(() => {
+  //   if (!socket) return;
+
+  //   const handlePrepare = () => {
+  //     setVisibleCards({});
+  //     setRevealInProgress(true);
+  //   };
+
+  //   const handleStep = (step: {
+  //     targetPlayerId: string;
+  //     card: PlayingCard;
+  //   }) => {
+  //     if (!revealInProgressRef.current) return;
+
+  //     const { targetPlayerId, card } = step;
+  //     setVisibleCards((prev) => ({
+  //       ...prev,
+  //       [targetPlayerId]: [...(prev[targetPlayerId] || []), card],
+  //     }));
+  //   };
+
+  //   const handleDone = () => {
+  //     setRevealInProgress(false);
+  //   };
+
+  //   socket.on("dealerRevealPrepare", handlePrepare);
+  //   socket.on("dealerRevealStep", handleStep);
+  //   socket.on("dealerRevealDone", handleDone);
+
+  //   return () => {
+  //     socket.off("dealerRevealPrepare", handlePrepare);
+  //     socket.off("dealerRevealStep", handleStep);
+  //     socket.off("dealerRevealDone", handleDone);
+  //   };
+  // }, [socket]);
 
   useEffect(() => {
     if (!socket || !gameInfo) return;
@@ -335,10 +454,31 @@ const GameRoom: React.FC = () => {
     return foundUser;
   };
 
-  console.log("GameInfo:", gameInfo);
+  const handleOpenChat = (e: React.MouseEvent) => {
+    if (!socket || !roomId || !user) return;
+
+    if (!showChat) {
+      setShowChat(!showChat);
+      socket.emit("toggleChatOpen", roomId, user._id);
+    }
+  };
+
+  const handleCloseChat = () => {
+    if (!socket || !roomId || !user) return;
+
+    if (showChat) {
+      socket.emit("toggleChatOpen", roomId, user._id);
+      setShowChat(false);
+    }
+  };
 
   return (
-    <div className={styles.game_room}>
+    <div
+      className={styles.game_room}
+      onClick={() => {
+        setShowEmojiPicker(false);
+      }}
+    >
       {!isScoreBoardOpen && (
         <button
           className={
@@ -367,6 +507,65 @@ const GameRoom: React.FC = () => {
         <PiKeyboard className={styles.scoreBoard_icon} />
         <span>Score board</span>
       </button>
+
+      {!room.hasChat && (
+        <button
+          className={styles.emoji_picker}
+          onClick={(e) => {
+            e.stopPropagation();
+            setShowEmojiPicker(!showEmojiPicker);
+          }}
+        >
+          <BsFillEmojiSunglassesFill className={styles.emoji_icon} />
+        </button>
+      )}
+
+      {showEmojiPicker && (
+        <div
+          className={styles.emoji_container}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <Emojis
+            onEmojiSelect={handleEmojiSelect}
+            setShowPicker={setShowEmojiPicker}
+          />
+        </div>
+      )}
+
+      {room.hasChat && (
+        <button
+          className={styles.chat_button}
+          onClick={(e) => handleOpenChat(e)}
+          title="Open Chat"
+        >
+          <IoChatbubbleEllipsesOutline className={styles.chat_icon} />
+          {chat?.unreadMessages &&
+            user?._id &&
+            chat.unreadMessages[user._id] > 0 && (
+              <div className={styles.chat_notification}>
+                <span>{chat.unreadMessages[user._id]}</span>
+              </div>
+            )}
+        </button>
+      )}
+
+      {showChat && (
+        <div
+          className={styles.chat_container}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <Chat
+            roomId={roomId as string}
+            closeChat={handleCloseChat}
+            player={
+              room?.users?.find(
+                (roomUser) => roomUser.id === user?._id,
+              ) as RoomUser
+            }
+            messages={messages}
+          />
+        </div>
+      )}
 
       {isScoreBoardOpen && (
         <ScoreBoardModal
@@ -440,36 +639,49 @@ const GameRoom: React.FC = () => {
           />
         )}
 
-      <Table
-        gameInfo={gameInfo}
-        user={user}
-        room={room}
-        visibleCards={visibleCards}
-        rotatedPlayers={rotatedPlayers as RoomUser[]}
-        dealingCards={dealingCards}
-        socket={socket}
-      />
+      {gameInfo && (
+        <>
+          <Table
+            gameInfo={gameInfo}
+            user={user}
+            room={room}
+            visibleCards={visibleCards}
+            rotatedPlayers={rotatedPlayers as RoomUser[]}
+            dealingCards={dealingCards}
+            socket={socket}
+          />
 
-      <Players
-        rotatedPlayers={rotatedPlayers as RoomUser[]}
-        user={user as { _id: string }}
-        gameInfo={
-          gameInfo as {
-            status: string;
-            currentPlayerId: string;
-            dealerId: string;
-            players: string[];
-            handBids: HandBid[];
-            currentHand: number | null;
-            hands: { hand: PlayingCard[]; playerId: string }[] | null;
-            trumpCard: PlayingCard | null;
-          } | null
-        }
-        room={room}
-        hand={hand}
-        getBids={getBids as (playerId: string) => number | undefined}
-        getWins={getWins as (playerId: string) => number | undefined}
-      />
+          <Players
+            rotatedPlayers={rotatedPlayers as RoomUser[]}
+            user={user as { _id: string }}
+            gameInfo={
+              gameInfo as {
+                status: string;
+                currentPlayerId: string;
+                dealerId: string;
+                players: string[];
+                handBids: HandBid[];
+                currentHand: number | null;
+                hands: { hand: PlayingCard[]; playerId: string }[] | null;
+                trumpCard: PlayingCard | null;
+              } | null
+            }
+            room={room}
+            hand={hand}
+            getBids={getBids as (playerId: string) => number | undefined}
+            getWins={getWins as (playerId: string) => number | undefined}
+            messagePopups={messagePopups}
+            showChat={showChat}
+            emojiPopup={
+              emojiPopup as {
+                playerId: string;
+                emoji: string;
+                timestamp: Date;
+              } | null
+            }
+          />
+        </>
+      )}
     </div>
   );
 };

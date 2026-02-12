@@ -1,0 +1,209 @@
+@use "../../styles/mixins" as *;
+
+.bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1002;
+
+  .side_nav {
+    @include bgColor(light);
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 300px;
+    height: 100%;
+    background-color: var(--clr-primary-800);
+    box-shadow: -2px 0 15px rgba(5, 24, 17, 0.7);
+
+    .user {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 5px;
+
+      .avatar {
+        display: flex;
+        align-items: flex-end;
+
+        .image {
+          width: 60px;
+          height: 60px;
+          border-radius: 50%;
+          border: 4px solid var(--clr-dark);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          box-shadow: 1px 2px 5px var(--clr-dark);
+          cursor: pointer;
+          transition: all 0.1s ease-in-out;
+
+          .avatar_img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+          }
+        }
+
+        span {
+          margin-left: 5px;
+          font-size: 0.8rem;
+          font-weight: bold;
+          color: var(--clr-dark);
+        }
+      }
+    }
+
+    .stats {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-around;
+
+      .rating {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 1rem;
+        color: var(--clr-dark);
+
+        .up_rating_icon,
+        .down_rating_icon,
+        .stable_rating_icon {
+          margin-right: 5px;
+          font-size: 1.5rem;
+        }
+
+        .up_rating_icon {
+          color: var(--clr-success-600);
+        }
+
+        .down_rating_icon {
+          color: var(--clr-danger-600);
+        }
+
+        .stable_rating_icon {
+          color: var(--clr-warning-600);
+        }
+      }
+
+      .coins {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+      }
+    }
+
+    nav ul {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-around;
+      height: 200px;
+
+      a {
+        text-decoration: none;
+        width: 100%;
+        padding: 10px;
+        text-align: center;
+        font-size: 1.2rem;
+        color: var(--clr-dark);
+        cursor: pointer;
+        transition: all 0.1s ease-in-out;
+
+        &:hover {
+          background-color: var(--clr-primary-800);
+          color: var(--clr-light);
+        }
+      }
+    }
+
+    hr {
+      margin: 10px 0;
+    }
+
+    .logout {
+      display: flex;
+      justify-content: center;
+
+      .logout_btn {
+        background: var(--clr-dark);
+        width: 200px;
+        height: 40px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: none;
+        font-size: 1.5rem;
+        color: var(--clr-light);
+        cursor: pointer;
+        transition: all 0.1s ease-in-out;
+
+        .logout_icon {
+          margin-left: 5px;
+          font-size: 1.5rem;
+        }
+
+        &:hover {
+          background-color: var(--clr-darker);
+          color: var(--clr-lighter);
+        }
+
+        &:active {
+          background-color: rgb(49, 49, 49);
+          color: rgb(115, 115, 115);
+
+          span,
+          .logout_icon {
+            transform: scale(0.95);
+          }
+        }
+      }
+    }
+
+    .close_btn {
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--clr-dark);
+      width: 100%;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: none;
+      font-size: 1.5rem;
+      color: var(--clr-light);
+      cursor: pointer;
+      transition: all 0.1s ease-in-out;
+
+      .close_icon {
+        margin-left: 5px;
+      }
+
+      &:hover {
+        background-color: var(--clr-darker);
+        color: var(--clr-lighter);
+      }
+
+      &:active {
+        background-color: rgb(49, 49, 49);
+        color: rgb(115, 115, 115);
+
+        span,
+        .close_icon {
+          transform: scale(0.95);
+        }
+      }
+    }
+  }
+}
