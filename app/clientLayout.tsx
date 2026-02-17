@@ -10,6 +10,7 @@ import FlashMsg from "@/components/falshMsg/FlashMsg";
 import useFlashMsgStore from "@/store/flashMsgStore";
 import { usePathname } from "next/navigation";
 import useLastPlayedCardsStore from "@/store/gamePage/lastPlayedCardsStore";
+import GetMoreModal from "@/components/jCoinst/GetMoreModal";
 
 export default function ClientLayout({
   children,
@@ -48,6 +49,7 @@ export default function ClientLayout({
             <main>{children}</main>
           </>
         )}
+        <GetMoreModal />
       </body>
     </html>
   );

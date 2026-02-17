@@ -6,7 +6,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  z-index: 1000;
+  z-index: 1003;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -67,15 +67,21 @@
         font-size: 1.5rem;
         color: var(--clr-dark);
 
-        .ad_reward {
+        .info {
           display: flex;
+          flex-direction: column;
           align-items: center;
-          gap: 10px;
-          margin-top: 10px;
 
-          .coin_image {
-            width: 60px;
-            height: 60px;
+          .ad_reward {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+
+            .coin_image {
+              width: 60px;
+              height: 60px;
+            }
           }
         }
 
@@ -138,6 +144,171 @@
       &:active {
         color: rgba(70, 70, 70, 0.563);
         transform: scale(0.9);
+      }
+    }
+
+    @media (max-width: 850px) {
+      padding: 0 20px 30px 20px;
+      width: 600px;
+    }
+
+    @media (max-width: 650px) {
+      padding: 0 20px 30px 20px;
+      width: 450px;
+
+      .ads {
+        .ad {
+          height: 150px;
+          border: 2px solid var(--clr-primary-600);
+          border-top-width: 3px;
+          border-left-width: 6px;
+          border-right-width: 6px;
+          border-radius: 10px;
+          font-size: 1.2rem;
+
+          .info {
+            .ad_reward {
+              gap: 5px;
+              margin-top: 5px;
+
+              .coin_image {
+                width: 50px;
+                height: 50px;
+              }
+            }
+          }
+
+          .play_btn {
+            border-radius: 5px 10px;
+            padding: 5px 10px;
+            font-size: 0.8rem;
+
+            .play_icon {
+              font-size: 1.2rem;
+            }
+          }
+        }
+      }
+
+      .close_btn {
+        position: absolute;
+        top: 0;
+        right: 0;
+        color: var(--clr-dark);
+        background-color: transparent;
+        border: none;
+        font-size: 2rem;
+        border-radius: 5px;
+        cursor: pointer;
+
+        &:hover {
+          color: var(--clr-danger-600);
+        }
+
+        &:active {
+          color: rgba(70, 70, 70, 0.563);
+          transform: scale(0.9);
+        }
+      }
+    }
+
+    @media (max-width: 500px) {
+      width: 100%;
+      border-radius: unset;
+
+      .ads {
+        grid-template-columns: 1fr;
+
+        .ad {
+          height: auto;
+          flex-direction: row;
+          padding: 0;
+          justify-content: space-between;
+          border: none;
+          box-shadow: 0 5px 5px -4px var(--clr-primary-200);
+
+          .info {
+            width: 70%;
+            background-color: var(--clr-dark-faded);
+            border-top-left-radius: 5px;
+            border-bottom-left-radius: 5px;
+            box-shadow: inset 0 0 2px rgba(0, 0, 0, 0.6);
+
+            h5 {
+              font-size: 0.8rem;
+              padding-top: 5px;
+            }
+
+            .ad_reward {
+              gap: 0;
+              margin-top: 0;
+              font-size: 0.7rem;
+
+              .coin_image {
+                width: 30px;
+                height: 30px;
+              }
+            }
+          }
+
+          .play_btn {
+            flex: 1;
+            height: 100%;
+            border-radius: unset;
+            border-top-right-radius: 5px;
+            border-bottom-right-radius: 5px;
+            padding: 5px 10px;
+            font-size: 0.7rem;
+            box-shadow: none;
+
+            .play_icon {
+              font-size: 1.2rem;
+            }
+          }
+        }
+      }
+    }
+
+    @media (max-width: 350px) {
+      h2 {
+        font-size: 1.2rem;
+        margin: 10px 0;
+      }
+
+      h4 {
+        font-size: 0.9rem;
+      }
+
+      .ads {
+        gap: 0.5rem;
+
+        .ad {
+          flex-direction: column;
+
+          .info {
+            border-top-left-radius: 5px;
+            border-top-right-radius: 5px;
+            border-bottom-left-radius: unset;
+            border-bottom-right-radius: unset;
+            width: 100%;
+          }
+
+          .play_btn {
+            width: 100%;
+            border-radius: unset;
+            border-bottom-left-radius: 5px;
+            border-bottom-right-radius: 5px;
+
+            .play_icon {
+              font-size: 1rem;
+            }
+          }
+
+          &:hover {
+            box-shadow: 0 6px 6px -4px var(--clr-primary-600);
+            transform: scale(1.05);
+          }
+        }
       }
     }
   }

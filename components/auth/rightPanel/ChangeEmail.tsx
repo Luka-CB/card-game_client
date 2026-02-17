@@ -39,7 +39,7 @@ const ChangeEmail = () => {
     <div className={styles.container}>
       <h1>Change Email</h1>
       <p>
-        <b>{user?.email}</b>: Your current email
+        <b>{user?.email}lukaaslamazashvili20@gmail.com</b>: Your current email
       </p>
       <form onSubmit={handleSubmit}>
         <label htmlFor="email">New Email</label>

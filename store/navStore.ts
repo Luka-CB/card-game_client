@@ -2,12 +2,13 @@ import { create } from "zustand";
 
 interface NavStore {
   isNavOpen: boolean;
-  toggleNav: () => void;
+  toggleNav: (value?: boolean) => void;
 }
 
 const useNavStore = create<NavStore>((set) => ({
   isNavOpen: false,
-  toggleNav: () => set((state) => ({ isNavOpen: !state.isNavOpen })),
+  toggleNav: (value) =>
+    set((state) => ({ isNavOpen: value ?? !state.isNavOpen })),
 }));
 
 export default useNavStore;

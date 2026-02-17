@@ -13,7 +13,13 @@ export default function Home() {
       <div className={styles.cards}>
         <Link href="/games">
           <div className={styles.card}>
-            <Image src="/jok.png" alt="joker" width={220} height={220} />
+            <Image
+              src="/jok.png"
+              alt="joker"
+              width={220}
+              height={220}
+              className={styles.image}
+            />
             <h3>Classic Game</h3>
             <button className={styles.info_btn} title="View All Rooms">
               <MdOpenInNew />
@@ -22,7 +28,13 @@ export default function Home() {
         </Link>
         <Link href="/games">
           <div className={styles.card}>
-            <Image src="/jok2.png" alt="joker" width={220} height={220} />
+            <Image
+              src="/jok2.png"
+              alt="joker"
+              width={220}
+              height={220}
+              className={styles.image}
+            />
             <h3>Only Nines Game</h3>
             <button className={styles.info_btn} title="View All Rooms">
               <MdOpenInNew />

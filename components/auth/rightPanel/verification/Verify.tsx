@@ -52,10 +52,15 @@ const Verify = () => {
 
   return (
     <div className={styles.container}>
+      <div className={styles.info_verify}>
+        <h1>
+          Almost there! <span>Verify email to start playing!</span>
+        </h1>
+      </div>
       {status === "success" && signupStatus === "success" ? (
         <h3>Authenticated successfully!</h3>
       ) : status === "success" && changeEmailStatus === "success" ? (
-        <h3>Email sent to new email successfukky!</h3>
+        <h3>Email sent to new email successfully!</h3>
       ) : status === "success" ? (
         <h3>Email sent successfully!</h3>
       ) : null}

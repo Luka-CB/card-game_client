@@ -11,19 +11,28 @@ import { TfiStatsDown, TfiStatsUp, TfiClose } from "react-icons/tfi";
 import { PiChartLineLight } from "react-icons/pi";
 import { IoIosLogOut } from "react-icons/io";
 import useUserStore from "@/store/user/userStore";
-import useJCoinsStore from "@/store/user/stats/jCoinsStore";
-import useRatingStore from "@/store/user/stats/ratingStore";
 import useLogoutStore from "@/store/auth/logoutStore";
 import BtnLoader from "../loaders/BtnLoader";
 
-const SideNav = () => {
+interface SideNavProps {
+  jCoins: { value: string; raw: number } | null;
+  rating: {
+    value: number;
+    trend: "up" | "down" | "stable";
+  } | null;
+  onOpenGetMoreModal: () => void;
+}
+
+const SideNav: React.FC<SideNavProps> = ({
+  jCoins,
+  rating,
+  onOpenGetMoreModal,
+}) => {
   const pathname = usePathname();
   const { toggleNav, isNavOpen } = useNavStore();
   const { status, logout } = useLogoutStore();
 
   const { user } = useUserStore();
-  const { toggleGetMoreModal, jCoins } = useJCoinsStore();
-  const { rating } = useRatingStore();
 
   const windowSize = useWindowSize();
 
@@ -78,10 +87,7 @@ const SideNav = () => {
                   )}
                   <span>{rating !== null ? rating.value : "0"}</span>
                 </div>
-                <div
-                  className={styles.coins}
-                  onClick={() => toggleGetMoreModal()}
-                >
+                <div className={styles.coins} onClick={onOpenGetMoreModal}>
                   <Image
                     src="/coin1.png"
                     alt="coin"
@@ -99,6 +105,7 @@ const SideNav = () => {
                 <Link
                   href="/"
                   className={pathname === "/" ? styles.active : undefined}
+                  onClick={() => toggleNav()}
                 >
                   Home
                 </Link>
@@ -106,6 +113,7 @@ const SideNav = () => {
                 <Link
                   href="/games"
                   className={pathname === "/games" ? styles.active : undefined}
+                  onClick={() => toggleNav()}
                 >
                   Rooms
                 </Link>
@@ -115,6 +123,7 @@ const SideNav = () => {
                   className={
                     pathname === "/about-us" ? styles.active : undefined
                   }
+                  onClick={() => toggleNav()}
                 >
                   About Us
                 </Link>
@@ -123,6 +132,7 @@ const SideNav = () => {
                   className={
                     pathname === "/about-game" ? styles.active : undefined
                   }
+                  onClick={() => toggleNav()}
                 >
                   About Game
                 </Link>
@@ -141,7 +151,7 @@ const SideNav = () => {
                 )}
               </button>
             </div>
-            <button className={styles.close_btn}>
+            <button className={styles.close_btn} onClick={() => toggleNav()}>
               <span>Close</span>
               <TfiClose className={styles.close_icon} />
             </button>

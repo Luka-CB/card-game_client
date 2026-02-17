@@ -77,4 +77,53 @@
       }
     }
   }
+
+  @media (max-width: 500px) {
+    h1 {
+      font-size: 1.5rem;
+    }
+
+    p {
+      font-size: small;
+
+      b {
+        font-size: small;
+      }
+    }
+
+    form {
+      width: 100%;
+
+      label {
+        font-size: small;
+        padding: 5px 0;
+      }
+
+      input {
+        height: 35px;
+        font-size: 0.6rem;
+        border-width: 1px;
+      }
+
+      button {
+        height: 35px;
+        font-size: 0.6rem;
+        width: 150px;
+        align-self: center;
+        border-width: 1px;
+      }
+    }
+
+    .go_back_wrapper {
+      .go_back {
+        .icon {
+          font-size: 1rem;
+        }
+
+        span {
+          font-size: small;
+        }
+      }
+    }
+  }
 }

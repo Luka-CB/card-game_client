@@ -16,13 +16,13 @@ interface MainNavProps {
     value: number;
     trend: "up" | "down" | "stable";
   } | null;
-  toggleGetMoreModal: () => void;
+  onOpenGetMoreModal: () => void;
 }
 
 const MainNav: React.FC<MainNavProps> = ({
   jCoins,
   rating,
-  toggleGetMoreModal,
+  onOpenGetMoreModal,
 }) => {
   const { user } = useUserStore();
 
@@ -68,7 +68,7 @@ const MainNav: React.FC<MainNavProps> = ({
               )}
               <span>{rating !== null ? rating.value : "0"}</span>
             </div>
-            <div className={styles.coins} onClick={() => toggleGetMoreModal()}>
+            <div className={styles.coins} onClick={onOpenGetMoreModal}>
               <Image
                 src="/coin1.png"
                 alt="coin"

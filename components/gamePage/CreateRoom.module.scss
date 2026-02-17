@@ -21,6 +21,11 @@
     box-shadow: 2px 2px 15px black;
     position: relative;
 
+    @media (max-width: 500px) {
+      width: 100%;
+      border-radius: unset;
+    }
+
     .close_icon {
       position: absolute;
       top: 0;
@@ -78,6 +83,19 @@
         background-color: var(--clr-primary-800);
         color: var(--clr-light);
       }
+
+      @media (max-width: 400px) {
+        margin-bottom: 1rem;
+
+        .item,
+        .item_active {
+          padding: 0.5rem 1rem;
+
+          span {
+            font-size: 0.7rem;
+          }
+        }
+      }
     }
 
     .visibility {
@@ -127,6 +145,24 @@
           color: var(--clr-primary-800);
           transition: all 0.1s ease-in-out;
           text-shadow: 0 0 2px var(--clr-primary-800);
+        }
+      }
+
+      @media (max-width: 400px) {
+        margin-bottom: 1rem;
+
+        .item,
+        .item_active {
+          margin: 0 10px;
+
+          .icon {
+            font-size: 0.8rem;
+          }
+
+          span {
+            font-size: 0.7rem;
+            margin-top: 3px;
+          }
         }
       }
     }
@@ -305,6 +341,12 @@
           left: 25%;
           font-size: small;
         }
+
+        @media (max-width: 300px) {
+          width: 100%;
+          flex-direction: column;
+          align-items: flex-start;
+        }
       }
 
       .bet_box_error {
@@ -333,6 +375,122 @@
           color: var(--clr-light);
           border-color: var(--clr-primary-600);
           background-color: var(--clr-primary-600);
+        }
+      }
+
+      @media (max-width: 400px) {
+        margin-top: 10px;
+
+        .radio_box {
+          margin: 20px 0 10px 0;
+
+          b {
+            font-size: 0.8rem;
+          }
+
+          .inputs {
+            display: flex;
+            gap: 5px;
+
+            input[type="radio"] {
+              width: 13px;
+              height: 13px;
+
+              &:not(:first-child) {
+                margin-left: 10px;
+              }
+            }
+
+            label {
+              font-size: 0.7rem;
+            }
+          }
+        }
+
+        .input_box {
+          label {
+            font-size: 0.8rem;
+          }
+
+          input {
+            @include input();
+            padding-right: 0px;
+            height: 35px;
+            font-size: small;
+          }
+        }
+
+        .bet_box,
+        .bet_box_error {
+          label {
+            font-size: 0.8rem;
+          }
+
+          input {
+            @include input();
+            width: 60px;
+            height: 35px;
+            font-size: small;
+            margin-left: 5px;
+          }
+
+          .info {
+            margin-left: 5px;
+
+            small {
+              font-size: 0.7rem;
+            }
+
+            img {
+              width: 20px;
+              height: 20px;
+            }
+
+            b {
+              font-size: 0.8rem;
+            }
+          }
+
+          .error_message {
+            left: 20%;
+            font-size: 0.7rem;
+          }
+        }
+
+        .toggle_box {
+          gap: 0.5rem;
+          margin-bottom: 1rem;
+
+          span {
+            font-size: 0.8rem;
+          }
+        }
+
+        .toggle_switch {
+          width: 46px;
+          height: 20px;
+        }
+
+        .slider {
+          &::before {
+            height: 14px;
+            width: 14px;
+            left: 3px;
+            bottom: 3px;
+          }
+        }
+
+        .submit_btn {
+          font-size: 0.9rem;
+          height: 30px;
+          width: 150px;
+          align-self: center;
+
+          &:hover {
+            color: var(--clr-primary-800);
+            border-color: var(--clr-primary-600);
+            background-color: var(--clr-primary-faded);
+          }
         }
       }
     }
