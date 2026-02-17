@@ -17,13 +17,6 @@ import ConfirmEmail from "./LeftPanel/forgotPassword/ConfirmEmail";
 
 const leftSlideParams = ["signin", "signup", "confirm-email"];
 const rightSlideParams = ["verify", "change-email"];
-const textParams = [
-  "verified",
-  "redirecting",
-  "error",
-  "change-password",
-  "confirm-email",
-];
 
 const Auth = () => {
   const router = useRouter();
@@ -45,11 +38,23 @@ const Auth = () => {
     }
   }, [user, router, auth, loading]);
 
+  useEffect(() => {
+    if (!user || !user.isVerified || auth === "redirecting") {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "auto";
+    }
+
+    return () => {
+      document.body.style.overflow = "auto";
+    };
+  }, [user, auth]);
+
   if (!user || !user.isVerified || auth === "redirecting") {
     return (
       <motion.main
         initial={{ backdropFilter: "blur(0)" }}
-        animate={{ backdropFilter: "blur(10px)", transition: { duration: 5 } }}
+        animate={{ backdropFilter: "blur(18px)", transition: { duration: 5 } }}
         className={styles.container}
       >
         <AnimatePresence>
@@ -69,13 +74,32 @@ const Auth = () => {
               }}
               className={styles.auth_wrapper}
             >
-              {auth === "confirm-email" ? (
-                <ConfirmEmail />
-              ) : auth === "signup" ? (
-                <Signup />
-              ) : (
-                <Signin />
-              )}
+              <div className={styles.auth}>
+                {auth === "confirm-email" ? (
+                  <ConfirmEmail />
+                ) : auth === "signup" ? (
+                  <Signup />
+                ) : (
+                  <Signin />
+                )}
+              </div>
+              <motion.div
+                key="info-signup"
+                initial={{ right: 0 }}
+                transition={{ duration: 0.6 }}
+                className={styles.info_signup}
+              >
+                <motion.h1
+                  initial={{ opacity: 0, scale: 0 }}
+                  animate={{
+                    opacity: 1,
+                    scale: 1,
+                    transition: { duration: 0.3, type: "spring", delay: 0.6 },
+                  }}
+                >
+                  Authenticate! <span>It's Easy, Quick and Free</span>
+                </motion.h1>
+              </motion.div>
             </motion.div>
           ) : null}
 
@@ -95,7 +119,26 @@ const Auth = () => {
               }}
               className={styles.verify_wrapper}
             >
-              {auth === "verify" ? <Verify /> : <ChangeEmail />}
+              <motion.div
+                key="info-verify"
+                initial={{ left: 0 }}
+                transition={{ duration: 0.6 }}
+                className={styles.info_verify}
+              >
+                <motion.h1
+                  initial={{ opacity: 0, scale: 0 }}
+                  animate={{
+                    opacity: 1,
+                    scale: 1,
+                    transition: { duration: 0.3, type: "spring", delay: 0.6 },
+                  }}
+                >
+                  Almost there! <span>Verify email to start playing!</span>
+                </motion.h1>
+              </motion.div>
+              <div className={styles.verify_content}>
+                {auth === "verify" ? <Verify /> : <ChangeEmail />}
+              </div>
             </motion.div>
           ) : null}
 
@@ -118,48 +161,6 @@ const Auth = () => {
             </motion.div>
           ) : null}
         </AnimatePresence>
-
-        {auth && !textParams.includes(auth) ? (
-          <AnimatePresence mode="wait">
-            {auth === "signin" || auth === "signup" ? (
-              <motion.div
-                key="info-signup"
-                initial={{ right: 0 }}
-                transition={{ duration: 0.6 }}
-                className={styles.info_signup}
-              >
-                <motion.h1
-                  initial={{ opacity: 0, scale: 0 }}
-                  animate={{
-                    opacity: 1,
-                    scale: 1,
-                    transition: { duration: 0.3, type: "spring", delay: 0.6 },
-                  }}
-                >
-                  Authenticate! <span>It's Easy, Quick and Free</span>
-                </motion.h1>
-              </motion.div>
-            ) : (
-              <motion.div
-                key="info-verify"
-                initial={{ left: 0 }}
-                transition={{ duration: 0.6 }}
-                className={styles.info_verify}
-              >
-                <motion.h1
-                  initial={{ opacity: 0, scale: 0 }}
-                  animate={{
-                    opacity: 1,
-                    scale: 1,
-                    transition: { duration: 0.3, type: "spring", delay: 0.6 },
-                  }}
-                >
-                  Almost there! <span>Verify email to start playing!</span>
-                </motion.h1>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        ) : null}
 
         {auth === "redirecting" ? <Redirecting /> : null}
         {auth === "error" ? <Error /> : null}

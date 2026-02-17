@@ -30,6 +30,10 @@
     margin-bottom: 20px;
     text-shadow: 2px 2px 5px black;
     text-transform: capitalize;
+
+    @media (max-width: 600px) {
+      font-size: 1.5rem;
+    }
   }
 
   .local_auth {
@@ -107,15 +111,13 @@
           &:hover {
             background-color: var(--clr-primary-faded);
 
-            label {
-              .choose {
-                .icon {
-                  color: var(--clr-primary-600);
-                }
+            .choose {
+              .icon {
+                color: var(--clr-primary-600);
+              }
 
-                span {
-                  color: var(--clr-primary-600);
-                }
+              span {
+                color: var(--clr-primary-600);
               }
             }
           }
@@ -124,15 +126,13 @@
             background-color: rgba(48, 48, 48, 0.303);
             scale: 0.95;
 
-            label {
-              .choose {
-                .icon {
-                  color: var(--clr-primary-faded);
-                }
+            .choose {
+              .icon {
+                color: var(--clr-primary-faded);
+              }
 
-                span {
-                  color: var(--clr-primary-faded);
-                }
+              span {
+                color: var(--clr-primary-faded);
               }
             }
           }
@@ -141,6 +141,25 @@
 
       &:hover {
         border-color: var(--clr-primary-600);
+      }
+
+      @media (max-width: 600px) {
+        width: 100px;
+        height: 100px;
+
+        .choose_avatar {
+          button {
+            .choose {
+              .icon {
+                font-size: 1.5rem;
+              }
+
+              span {
+                font-size: 0.8rem;
+              }
+            }
+          }
+        }
       }
     }
 
@@ -242,6 +261,37 @@
           text-decoration: underline;
         }
       }
+
+      @media (max-width: 600px) {
+        width: 100%;
+        margin-top: 30px;
+
+        input {
+          height: 35px;
+          font-size: 0.6rem;
+          border-width: 1px;
+        }
+
+        .input_wrapper {
+          .icon {
+            height: 35px;
+            font-size: 1.2rem;
+          }
+        }
+
+        button {
+          height: 35px;
+          width: 200px;
+          font-size: 0.8rem;
+          align-self: center;
+          margin-top: 10px;
+        }
+
+        a {
+          font-size: 0.8rem;
+          margin-top: 20px;
+        }
+      }
     }
   }
 
@@ -264,15 +314,24 @@
       margin: 0 10px;
       color: var(--clr-light);
     }
+
+    @media (max-width: 600px) {
+      width: 100%;
+      margin: 20px auto;
+
+      span {
+        font-size: 0.9rem;
+      }
+    }
   }
 
   .signup {
     width: 100%;
-    margin: 0 auto;
     display: flex;
     justify-content: flex-end;
     align-items: center;
     margin-top: 50px;
+    padding-bottom: 20px;
 
     p {
       color: var(--clr-light);
@@ -288,6 +347,30 @@
       &:hover {
         color: var(--clr-primary-600);
         text-decoration: underline;
+      }
+    }
+
+    @media (max-width: 600px) {
+      margin-top: 30px;
+
+      p {
+        font-size: 0.8rem;
+      }
+
+      span {
+        font-size: 0.9rem;
+      }
+    }
+
+    @media (max-width: 330px) {
+      margin-top: 30px;
+
+      p {
+        font-size: 0.6rem;
+      }
+
+      span {
+        font-size: 0.8rem;
       }
     }
   }

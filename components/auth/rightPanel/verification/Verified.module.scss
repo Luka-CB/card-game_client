@@ -37,16 +37,24 @@
     margin-top: 20px;
     text-align: center;
     color: var(--clr-primary-400);
+    font-size: clamp(1rem, 3.5vw, 2rem);
   }
 
   small {
     margin-top: 50px;
     align-self: flex-start;
     color: var(--clr-light);
+    font-size: clamp(0.5rem, 2vw, 1.2rem);
 
     b {
       font-size: large;
       color: var(--clr-primary-200);
+    }
+  }
+
+  @media (max-width: 650px) {
+    small {
+      align-self: center;
     }
   }
 }

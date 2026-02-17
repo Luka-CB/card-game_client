@@ -42,16 +42,18 @@ const GetMoreModal = () => {
             <h4>To get more JCoins, you can watch ads below:</h4>
             <div className={styles.ads}>
               <div className={styles.ad}>
-                <h5>Watch 15 seconds of Ad</h5>
-                <div className={styles.ad_reward}>
-                  <p>get +50</p>
-                  <Image
-                    src="/coin1.png"
-                    alt="coin"
-                    width={25}
-                    height={25}
-                    className={styles.coin_image}
-                  />
+                <div className={styles.info}>
+                  <h5>Watch 15 seconds of Ad</h5>
+                  <div className={styles.ad_reward}>
+                    <p>get +50</p>
+                    <Image
+                      src="/coin1.png"
+                      alt="coin"
+                      width={25}
+                      height={25}
+                      className={styles.coin_image}
+                    />
+                  </div>
                 </div>
                 <button className={styles.play_btn}>
                   <span>Play Now</span>
@@ -59,16 +61,18 @@ const GetMoreModal = () => {
                 </button>
               </div>
               <div className={styles.ad}>
-                <h5>Watch 30 seconds of Ad</h5>
-                <div className={styles.ad_reward}>
-                  <p>get +100</p>
-                  <Image
-                    src="/coin1.png"
-                    alt="coin"
-                    width={25}
-                    height={25}
-                    className={styles.coin_image}
-                  />
+                <div className={styles.info}>
+                  <h5>Watch 30 seconds of Ad</h5>
+                  <div className={styles.ad_reward}>
+                    <p>get +100</p>
+                    <Image
+                      src="/coin1.png"
+                      alt="coin"
+                      width={25}
+                      height={25}
+                      className={styles.coin_image}
+                    />
+                  </div>
                 </div>
                 <button className={styles.play_btn}>
                   <span>Play Now</span>
@@ -76,16 +80,18 @@ const GetMoreModal = () => {
                 </button>
               </div>
               <div className={styles.ad}>
-                <h5>Watch 45 seconds of Ad</h5>
-                <div className={styles.ad_reward}>
-                  <p>get +150</p>
-                  <Image
-                    src="/coin1.png"
-                    alt="coin"
-                    width={25}
-                    height={25}
-                    className={styles.coin_image}
-                  />
+                <div className={styles.info}>
+                  <h5>Watch 45 seconds of Ad</h5>
+                  <div className={styles.ad_reward}>
+                    <p>get +150</p>
+                    <Image
+                      src="/coin1.png"
+                      alt="coin"
+                      width={25}
+                      height={25}
+                      className={styles.coin_image}
+                    />
+                  </div>
                 </div>
                 <button className={styles.play_btn}>
                   <span>Play Now</span>
@@ -93,16 +99,18 @@ const GetMoreModal = () => {
                 </button>
               </div>
               <div className={styles.ad}>
-                <h5>Watch 60 seconds of Ad</h5>
-                <div className={styles.ad_reward}>
-                  <p>get +200</p>
-                  <Image
-                    src="/coin1.png"
-                    alt="coin"
-                    width={25}
-                    height={25}
-                    className={styles.coin_image}
-                  />
+                <div className={styles.info}>
+                  <h5>Watch 60 seconds of Ad</h5>
+                  <div className={styles.ad_reward}>
+                    <p>get +200</p>
+                    <Image
+                      src="/coin1.png"
+                      alt="coin"
+                      width={25}
+                      height={25}
+                      className={styles.coin_image}
+                    />
+                  </div>
                 </div>
                 <button className={styles.play_btn}>
                   <span>Play Now</span>

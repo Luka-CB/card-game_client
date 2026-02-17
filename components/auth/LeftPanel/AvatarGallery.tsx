@@ -4,9 +4,12 @@ import styles from "./AvatarGallery.module.scss";
 import Image from "next/image";
 import useAvatarStore from "@/store/user/avatarStore";
 import { FaTimesCircle } from "react-icons/fa";
+import { ImCancelCircle } from "react-icons/im";
+import { MdOutlineDoneOutline } from "react-icons/md";
 import { useEffect, useRef, useState } from "react";
 import Loader from "@/components/loaders/Loader";
 import { AnimatePresence, motion } from "framer-motion";
+import useWindowSize from "@/hooks/useWindowSize";
 
 const LazyAvatar = ({
   av,
@@ -77,6 +80,7 @@ const AvatarGallery = () => {
     isAvatarGalleryOpen,
     toggleAvatarGallery,
   } = useAvatarStore();
+  const windowSize = useWindowSize();
 
   useEffect(() => {
     if (!avatars.length) {
@@ -132,14 +136,22 @@ const AvatarGallery = () => {
                   />
 
                   <button className={styles.done_btn} onClick={handleDone}>
-                    Done
+                    {windowSize.width <= 700 ? (
+                      <MdOutlineDoneOutline className={styles.icon} />
+                    ) : (
+                      "Done"
+                    )}
                   </button>
                   <button
                     className={styles.cancel_btn}
                     onClick={() => setNewAvatar("")}
                     disabled={!newAvatar}
                   >
-                    Cancel
+                    {windowSize.width <= 700 ? (
+                      <ImCancelCircle className={styles.icon} />
+                    ) : (
+                      "Cancel"
+                    )}
                   </button>
                 </div>
               )}

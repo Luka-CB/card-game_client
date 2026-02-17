@@ -17,6 +17,33 @@
   align-items: center;
   justify-content: center;
 
+  .info_verify {
+    display: none;
+    h1 {
+      color: var(--clr-primary-600);
+      font-size: clamp(1rem, 4vw, 4rem);
+      font-weight: 700;
+      margin-bottom: 20px;
+      text-align: center;
+      width: 80%;
+      text-shadow: 2px 2px 5px black;
+
+      span {
+        font-size: clamp(1rem, 2.5vw, 2.5rem);
+        color: var(--clr-light);
+      }
+    }
+
+    @media (max-width: 900px) {
+      position: absolute;
+      top: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 20px;
+    }
+  }
+
   h3 {
     background-color: var(--clr-success-800);
     color: var(--clr-light);

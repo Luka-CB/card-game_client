@@ -11,6 +11,7 @@ import useRatingStore from "@/store/user/stats/ratingStore";
 import useJCoinsStore from "@/store/user/stats/jCoinsStore";
 import { useEffect } from "react";
 import useUserStore from "@/store/user/userStore";
+import SideNav from "./SideNav";
 
 const Header = () => {
   const { toggleNav } = useNavStore();
@@ -31,31 +32,51 @@ const Header = () => {
     }
   }, [user, rating, fetchRating]);
 
-  return (
-    <div className={styles.header_container}>
-      <div className={styles.logo}>
-        <Link href="/">
-          <h1>LOGO</h1>
-        </Link>
-      </div>
+  const handleOpenGetMoreModal = () => {
+    toggleGetMoreModal();
+    toggleNav(false);
+  };
 
-      {windowSize.width <= 700 ? (
-        <nav>
-          <Avatar />
-          <button className={styles.menu_btn} onClick={() => toggleNav()}>
-            <TiThMenu className={styles.menu_icon} />
-          </button>
-        </nav>
-      ) : (
-        <MainNav
-          jCoins={jCoins as { value: string; raw: number } | null}
-          rating={
-            rating as { value: number; trend: "up" | "down" | "stable" } | null
-          }
-          toggleGetMoreModal={toggleGetMoreModal}
-        />
-      )}
-    </div>
+  return (
+    <>
+      <div className={styles.header_container}>
+        <div className={styles.logo}>
+          <Link href="/">
+            <h1>LOGO</h1>
+          </Link>
+        </div>
+
+        {windowSize.width <= 700 ? (
+          <nav>
+            <Avatar />
+            <button className={styles.menu_btn} onClick={() => toggleNav()}>
+              <TiThMenu className={styles.menu_icon} />
+            </button>
+          </nav>
+        ) : (
+          <MainNav
+            jCoins={jCoins as { value: string; raw: number } | null}
+            rating={
+              rating as {
+                value: number;
+                trend: "up" | "down" | "stable";
+              } | null
+            }
+            onOpenGetMoreModal={handleOpenGetMoreModal}
+          />
+        )}
+      </div>
+      <SideNav
+        jCoins={jCoins as { value: string; raw: number } | null}
+        rating={
+          rating as {
+            value: number;
+            trend: "up" | "down" | "stable";
+          } | null
+        }
+        onOpenGetMoreModal={handleOpenGetMoreModal}
+      />
+    </>
   );
 };
 
