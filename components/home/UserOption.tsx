@@ -8,15 +8,13 @@ import useLogoutStore from "@/store/auth/logoutStore";
 import BtnLoader from "../loaders/BtnLoader";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import useSocket from "@/hooks/useSocket";
-import useUserStore from "@/store/user/userStore";
+import useWindowSize from "@/hooks/useWindowSize";
 
 const UserOption = () => {
   const { isOpen, setIsOpen } = useUserOptionStore();
   const { status, logout } = useLogoutStore();
-  const { user } = useUserStore();
-  const socket = useSocket();
   const router = useRouter();
+  const windowSize = useWindowSize();
 
   useEffect(() => {
     if (status === "success") {
@@ -37,7 +35,9 @@ const UserOption = () => {
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: 50 }}
           transition={{ duration: 0.6, type: "spring" }}
-          className={styles.container}
+          className={
+            windowSize.width <= 800 ? styles.container_sm : styles.container
+          }
           onClick={(e) => e.stopPropagation()}
         >
           <Link href="/account" className={styles.link}>

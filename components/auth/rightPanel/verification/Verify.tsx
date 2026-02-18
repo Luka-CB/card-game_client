@@ -9,6 +9,8 @@ import Link from "next/link";
 import { CiWarning } from "react-icons/ci";
 import useChangeEmailStore from "@/store/email/changeEmailStore";
 import useSendVerifyEmailStore from "@/store/email/sendVerifyEmailStore";
+import { IoMdArrowRoundBack } from "react-icons/io";
+import { useRouter, useSearchParams } from "next/navigation";
 
 const Verify = () => {
   const { email, status, sendEmail } = useSendVerifyEmailStore();
@@ -16,6 +18,15 @@ const Verify = () => {
   const { status: changeEmailStatus, reset: changeEmailReset } =
     useChangeEmailStore();
   const { user } = useUserStore();
+
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    if (!user && !email) {
+      router.push("/?auth=signin");
+    }
+  }, [user, email]);
 
   useEffect(() => {
     if (signupStatus === "success" || changeEmailStatus === "success") {
@@ -33,12 +44,23 @@ const Verify = () => {
     );
   }
 
+  const handleRoute = (routeName: string) => {
+    const newParams = new URLSearchParams(searchParams.toString());
+    newParams.set("auth", routeName);
+    router.push(`?${newParams.toString()}`);
+  };
+
   return (
     <div className={styles.container}>
+      <div className={styles.info_verify}>
+        <h1>
+          Almost there! <span>Verify email to start playing!</span>
+        </h1>
+      </div>
       {status === "success" && signupStatus === "success" ? (
         <h3>Authenticated successfully!</h3>
       ) : status === "success" && changeEmailStatus === "success" ? (
-        <h3>Email sent to new email successfukky!</h3>
+        <h3>Email sent to new email successfully!</h3>
       ) : status === "success" ? (
         <h3>Email sent successfully!</h3>
       ) : null}
@@ -61,6 +83,12 @@ const Verify = () => {
           If it's not a correct email:{" "}
           <Link href="/?auth=change-email">change email</Link>
         </span>
+        <div className={styles.go_back_wrapper}>
+          <div className={styles.go_back} onClick={() => handleRoute("signin")}>
+            <IoMdArrowRoundBack className={styles.icon} />
+            <span>Go Back To Signin</span>
+          </div>
+        </div>
       </div>
     </div>
   );

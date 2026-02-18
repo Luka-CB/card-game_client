@@ -1,0 +1,315 @@
+.bg {
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(5px);
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1003;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  .modal {
+    background: #fff;
+    border-radius: 8px;
+    padding: 0 30px 40px 30px;
+    width: 800px;
+    position: absolute;
+
+    .warning {
+      position: absolute;
+      left: 0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 5px 0 0 10px;
+
+      .info_icon {
+        font-size: 1.5rem;
+        color: var(--clr-warning-600);
+      }
+
+      small {
+        color: var(--clr-warning-600);
+        font-size: 0.9rem;
+      }
+    }
+
+    h2 {
+      text-align: center;
+      margin: 20px 0;
+    }
+
+    .ads {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+      justify-items: center;
+      margin-top: 20px;
+
+      .ad {
+        width: 100%;
+        height: 200px;
+        border: 3px solid var(--clr-primary-600);
+        border-top-width: 5px;
+        border-left-width: 8px;
+        border-right-width: 8px;
+        border-radius: 20px;
+        box-shadow: 0 8px 8px -4px var(--clr-primary-400);
+        background-color: var(--clr-primary-faded);
+        transition: all 0.2s ease;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: space-around;
+        font-size: 1.5rem;
+        color: var(--clr-dark);
+
+        .info {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+
+          .ad_reward {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+
+            .coin_image {
+              width: 60px;
+              height: 60px;
+            }
+          }
+        }
+
+        .play_btn {
+          background-color: transparent;
+          border: none;
+          border-radius: 5px 10px;
+          background-color: var(--clr-primary-600);
+          padding: 5px 10px;
+          color: var(--clr-lighter);
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          font-size: 1.2rem;
+          cursor: pointer;
+          transition: all 0.1s ease;
+          box-shadow: 0 4px 6px -2px var(--clr-primary-400);
+
+          .play_icon {
+            margin-left: 5px;
+            font-size: 1.8rem;
+            transition: all 0.1s ease;
+          }
+
+          &:hover {
+            color: var(--clr-primary-200);
+            background-color: var(--clr-primary-800);
+          }
+
+          &:active {
+            color: rgb(196, 196, 196);
+            transform: scale(0.97);
+            box-shadow: 0 2px 4px -1px var(--clr-primary-400);
+          }
+        }
+
+        &:hover {
+          border-color: var(--clr-primary-400);
+          box-shadow: 0 12px 12px -6px var(--clr-primary-600);
+          transform: translateY(-5px);
+        }
+      }
+    }
+
+    .close_btn {
+      position: absolute;
+      top: 0;
+      right: 0;
+      color: var(--clr-dark);
+      background-color: transparent;
+      border: none;
+      font-size: 2rem;
+      border-radius: 5px;
+      cursor: pointer;
+
+      &:hover {
+        color: var(--clr-danger-600);
+      }
+
+      &:active {
+        color: rgba(70, 70, 70, 0.563);
+        transform: scale(0.9);
+      }
+    }
+
+    @media (max-width: 850px) {
+      padding: 0 20px 30px 20px;
+      width: 600px;
+    }
+
+    @media (max-width: 650px) {
+      padding: 0 20px 30px 20px;
+      width: 450px;
+
+      .ads {
+        .ad {
+          height: 150px;
+          border: 2px solid var(--clr-primary-600);
+          border-top-width: 3px;
+          border-left-width: 6px;
+          border-right-width: 6px;
+          border-radius: 10px;
+          font-size: 1.2rem;
+
+          .info {
+            .ad_reward {
+              gap: 5px;
+              margin-top: 5px;
+
+              .coin_image {
+                width: 50px;
+                height: 50px;
+              }
+            }
+          }
+
+          .play_btn {
+            border-radius: 5px 10px;
+            padding: 5px 10px;
+            font-size: 0.8rem;
+
+            .play_icon {
+              font-size: 1.2rem;
+            }
+          }
+        }
+      }
+
+      .close_btn {
+        position: absolute;
+        top: 0;
+        right: 0;
+        color: var(--clr-dark);
+        background-color: transparent;
+        border: none;
+        font-size: 2rem;
+        border-radius: 5px;
+        cursor: pointer;
+
+        &:hover {
+          color: var(--clr-danger-600);
+        }
+
+        &:active {
+          color: rgba(70, 70, 70, 0.563);
+          transform: scale(0.9);
+        }
+      }
+    }
+
+    @media (max-width: 500px) {
+      width: 100%;
+      border-radius: unset;
+
+      .ads {
+        grid-template-columns: 1fr;
+
+        .ad {
+          height: auto;
+          flex-direction: row;
+          padding: 0;
+          justify-content: space-between;
+          border: none;
+          box-shadow: 0 5px 5px -4px var(--clr-primary-200);
+
+          .info {
+            width: 70%;
+            background-color: var(--clr-dark-faded);
+            border-top-left-radius: 5px;
+            border-bottom-left-radius: 5px;
+            box-shadow: inset 0 0 2px rgba(0, 0, 0, 0.6);
+
+            h5 {
+              font-size: 0.8rem;
+              padding-top: 5px;
+            }
+
+            .ad_reward {
+              gap: 0;
+              margin-top: 0;
+              font-size: 0.7rem;
+
+              .coin_image {
+                width: 30px;
+                height: 30px;
+              }
+            }
+          }
+
+          .play_btn {
+            flex: 1;
+            height: 100%;
+            border-radius: unset;
+            border-top-right-radius: 5px;
+            border-bottom-right-radius: 5px;
+            padding: 5px 10px;
+            font-size: 0.7rem;
+            box-shadow: none;
+
+            .play_icon {
+              font-size: 1.2rem;
+            }
+          }
+        }
+      }
+    }
+
+    @media (max-width: 350px) {
+      h2 {
+        font-size: 1.2rem;
+        margin: 10px 0;
+      }
+
+      h4 {
+        font-size: 0.9rem;
+      }
+
+      .ads {
+        gap: 0.5rem;
+
+        .ad {
+          flex-direction: column;
+
+          .info {
+            border-top-left-radius: 5px;
+            border-top-right-radius: 5px;
+            border-bottom-left-radius: unset;
+            border-bottom-right-radius: unset;
+            width: 100%;
+          }
+
+          .play_btn {
+            width: 100%;
+            border-radius: unset;
+            border-bottom-left-radius: 5px;
+            border-bottom-right-radius: 5px;
+
+            .play_icon {
+              font-size: 1rem;
+            }
+          }
+
+          &:hover {
+            box-shadow: 0 6px 6px -4px var(--clr-primary-600);
+            transform: scale(1.05);
+          }
+        }
+      }
+    }
+  }
+}

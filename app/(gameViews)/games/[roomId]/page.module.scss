@@ -169,6 +169,102 @@
       }
     }
   }
+
+  .emoji_picker {
+    @include btn();
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    width: 50px;
+    height: 50px;
+    border-radius: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .emoji_icon {
+      font-size: 2rem;
+      color: var(--clr-dark);
+      cursor: pointer;
+    }
+
+    &:hover {
+      transition: all 0.1s ease;
+
+      .emoji_icon {
+        font-size: 2.5rem;
+        color: var(--clr-darker);
+      }
+    }
+
+    &:active {
+      background-color: var(--clr-primary-faded);
+      color: var(--clr-primary-faded);
+      transform: scale(0.95);
+      transition: all 0.1s ease;
+    }
+  }
+
+  .emoji_container {
+    position: absolute;
+    bottom: 80px;
+    right: 20px;
+    z-index: 100;
+  }
+
+  .chat_button {
+    @include btn();
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    width: 50px;
+    height: 50px;
+    border-radius: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .chat_icon {
+      font-size: 2rem;
+      color: var(--clr-dark);
+      cursor: pointer;
+    }
+
+    .chat_notification {
+      position: absolute;
+      top: -5px;
+      right: -5px;
+      background-color: var(--clr-danger-600);
+      color: var(--clr-light);
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      span {
+        font-size: 0.7rem;
+        font-weight: bold;
+      }
+    }
+
+    &:hover {
+      transition: all 0.1s ease;
+
+      .chat_icon {
+        font-size: 2.5rem;
+        color: var(--clr-darker);
+      }
+    }
+
+    &:active {
+      background-color: var(--clr-primary-faded);
+      color: var(--clr-primary-faded);
+      transform: scale(0.95);
+      transition: all 0.1s ease;
+    }
+  }
 }
 
 /* Large Tablets / Small Desktops */

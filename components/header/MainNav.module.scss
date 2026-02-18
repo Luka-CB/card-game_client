@@ -1,0 +1,102 @@
+.main_nav {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+
+  nav {
+    display: flex;
+    align-items: center;
+
+    ul {
+      display: flex;
+      align-items: center;
+      list-style: none;
+      margin-left: 20px;
+
+      a {
+        text-decoration: none;
+        color: var(--clr-light);
+        &:not(:first-child) {
+          margin-left: 20px;
+        }
+        transition: all 0.1s ease-in-out;
+
+        &:hover {
+          scale: 1.1;
+          color: var(--clr-primary-400);
+          text-shadow: 0 0 10px var(--clr-primary-200);
+        }
+      }
+
+      .active {
+        scale: 1.1;
+        color: var(--clr-primary-400);
+        text-shadow: 0 0 10px var(--clr-primary-200);
+        cursor: default;
+      }
+    }
+  }
+
+  .user {
+    display: flex;
+    align-items: flex-end;
+
+    .user_info {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      width: 170px;
+
+      .stats {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+        .rating {
+          display: flex;
+          align-items: center;
+
+          .stable_rating_icon {
+            color: var(--clr-warning-400);
+            font-size: 1.7rem;
+          }
+
+          .up_rating_icon {
+            color: var(--clr-success-400);
+            font-size: 1.5rem;
+          }
+
+          .down_rating_icon {
+            color: var(--clr-danger-400);
+            font-size: 1.5rem;
+          }
+
+          span {
+            color: var(--clr-primary-400);
+            font-size: 1.2rem;
+            margin-left: 5px;
+          }
+        }
+
+        .coins {
+          margin-right: 10px;
+          display: flex;
+          align-items: center;
+          cursor: pointer;
+
+          span {
+            color: var(--clr-primary-400);
+            font-size: 1.2rem;
+          }
+        }
+      }
+
+      p {
+        color: var(--clr-light);
+        font-size: 1rem;
+        margin-right: 10px;
+      }
+    }
+  }
+}

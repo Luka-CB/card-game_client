@@ -28,6 +28,8 @@ const Cards = () => {
     };
   }, [socket]);
 
+  console.log("Rooms in Cards component:", rooms);
+
   return (
     <div className={styles.room_cards}>
       {rooms?.length > 0 ? (

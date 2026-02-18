@@ -1,0 +1,39 @@
+.timerContainer {
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.timer {
+  width: 100px;
+  height: 100px;
+}
+
+.shadowPulsate {
+  animation: shadowPulsate 0.5s infinite alternate;
+  width: 100px;
+  height: 100px;
+}
+
+@keyframes shadowPulsate {
+  from {
+    filter: drop-shadow(0 0 5px rgba(255, 0, 0, 0.5));
+  }
+  to {
+    filter: drop-shadow(0 0 10px rgba(255, 0, 0, 0.9));
+  }
+}
+
+@media (max-width: 992px) {
+  .timer {
+    width: 70px;
+    height: 70px;
+  }
+
+  .shadowPulsate {
+    width: 70px;
+    height: 70px;
+  }
+}

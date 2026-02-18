@@ -4,6 +4,10 @@ export interface RoomUser {
   status: string;
   avatar: string | null;
   botAvatar: string | null;
+  color: {
+    value: string;
+    textColor: string;
+  };
 }
 
 export interface Room {
@@ -11,8 +15,9 @@ export interface Room {
   name: string;
   password: string | null;
   bett: string | null;
-  type: "classic" | "nines" | "betting";
+  type: "classic" | "nines";
   status: "public" | "private";
+  hasChat?: boolean;
   isActive?: boolean;
   hisht: string;
   createdAt: Date;
@@ -39,16 +44,18 @@ export type Suit = "hearts" | "diamonds" | "clubs" | "spades";
 export type Rank = "6" | "7" | "8" | "9" | "10" | "J" | "Q" | "K" | "A";
 export type Strength = "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9";
 
-export type Card =
-  | { suit: Suit; rank: Rank; strength: Strength; id: string }
-  | {
-      joker: true;
-      strength: string;
-      id: string;
-      color: string;
-      type: string;
-      requestedSuit: string;
-    };
+export type Card = {
+  id: string;
+  joker: boolean;
+  suit: Suit | null;
+  rank: Rank | null;
+  strength: string;
+  color: string | null;
+  isJoker?: boolean;
+  isTrump?: boolean;
+  type?: string | null;
+  requestedSuit?: string | null;
+};
 
 export interface HandBid {
   playerId: string;
@@ -88,6 +95,7 @@ export interface Round {
   gameHand: number;
   handNumber: number;
   bid: number | null;
+  win: number | null;
   points: {
     value: number;
     isCut: boolean;
@@ -125,4 +133,25 @@ export interface GameInfo {
   playedCards?: PlayedCard[] | null;
   lastPlayedCards?: PlayedCard[] | null;
   scoreBoard?: ScoreBoard[] | null;
+}
+
+export interface chatUser {
+  id: string;
+  username: string;
+  avatar: string | null;
+  color: { value: string; textColor: string } | null;
+}
+
+export interface ChatMessage {
+  id: string;
+  sender: chatUser;
+  content: string;
+  timestamp: Date;
+}
+
+export interface ChatRoom {
+  roomId: string;
+  unreadMessages: { [userId: string]: number };
+  messages: ChatMessage[];
+  hasChatOpen: { [userId: string]: boolean };
 }

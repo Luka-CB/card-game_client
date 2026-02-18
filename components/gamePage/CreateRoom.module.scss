@@ -21,6 +21,11 @@
     box-shadow: 2px 2px 15px black;
     position: relative;
 
+    @media (max-width: 500px) {
+      width: 100%;
+      border-radius: unset;
+    }
+
     .close_icon {
       position: absolute;
       top: 0;
@@ -78,6 +83,19 @@
         background-color: var(--clr-primary-800);
         color: var(--clr-light);
       }
+
+      @media (max-width: 400px) {
+        margin-bottom: 1rem;
+
+        .item,
+        .item_active {
+          padding: 0.5rem 1rem;
+
+          span {
+            font-size: 0.7rem;
+          }
+        }
+      }
     }
 
     .visibility {
@@ -129,6 +147,24 @@
           text-shadow: 0 0 2px var(--clr-primary-800);
         }
       }
+
+      @media (max-width: 400px) {
+        margin-bottom: 1rem;
+
+        .item,
+        .item_active {
+          margin: 0 10px;
+
+          .icon {
+            font-size: 0.8rem;
+          }
+
+          span {
+            font-size: 0.7rem;
+            margin-top: 3px;
+          }
+        }
+      }
     }
 
     form {
@@ -141,7 +177,7 @@
         display: flex;
         align-items: center;
         gap: 10px;
-        margin: 20px 0;
+        margin: 30px 0 20px 0;
 
         b {
           color: var(--clr-dark);
@@ -168,6 +204,79 @@
         }
       }
 
+      .toggle_box {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+
+        span {
+          font-size: 1rem;
+          font-weight: bold;
+          color: #333;
+        }
+      }
+
+      .toggle_switch {
+        position: relative;
+        display: inline-block;
+        width: 56px;
+        height: 28px;
+        cursor: pointer;
+
+        input[type="checkbox"] {
+          opacity: 0;
+          width: 0;
+          height: 0;
+          position: absolute;
+
+          &:checked + .slider {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            box-shadow:
+              0 0 5px rgba(102, 126, 234, 0.7),
+              0 0 5px rgba(118, 75, 162, 0.7);
+          }
+
+          &:checked + .slider::before {
+            transform: translateX(28px);
+          }
+        }
+      }
+
+      .slider {
+        position: absolute;
+        pointer-events: none; // Let clicks pass through to input
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        box-shadow: inset 0 0 3px rgba(0, 0, 0, 0.454);
+        border-radius: 34px;
+        transition: all 0.3s ease;
+
+        &::before {
+          content: "";
+          position: absolute;
+          height: 20px;
+          width: 20px;
+          left: 4px;
+          bottom: 4px;
+          background-color: white;
+          border-radius: 50%;
+          transition: transform 0.3s ease;
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+      }
+
+      .toggle_switch:hover .slider {
+        background-color: #b3b3b3;
+      }
+
+      .toggle_switch input:checked + .slider:hover {
+        background: linear-gradient(135deg, #5568d3 0%, #6a3f8f 100%);
+      }
+
       .input_box {
         display: flex;
         flex-direction: column;
@@ -179,11 +288,78 @@
         label {
           color: var(--clr-dark);
           padding: 5px 0;
+          font-weight: bold;
         }
 
         input {
           @include input();
           padding-right: 10px;
+        }
+      }
+
+      .bet_box,
+      .bet_box_error {
+        position: relative;
+        display: flex;
+        align-items: center;
+        margin-top: 12px;
+
+        label {
+          color: var(--clr-dark);
+          padding: 5px 0;
+          font-weight: bold;
+        }
+
+        input {
+          @include input();
+          padding-right: 10px;
+          width: 80px;
+          margin-left: 10px;
+        }
+
+        .info {
+          display: flex;
+          align-items: center;
+          margin-left: 10px;
+
+          small {
+            color: var(--clr-dark);
+            margin-right: 5px;
+          }
+
+          img {
+            width: 30px;
+            height: 30px;
+          }
+        }
+
+        .error_message {
+          position: absolute;
+          margin-top: 5px;
+          color: var(--clr-danger-800);
+          top: 100%;
+          left: 25%;
+          font-size: small;
+        }
+
+        @media (max-width: 300px) {
+          width: 100%;
+          flex-direction: column;
+          align-items: flex-start;
+        }
+      }
+
+      .bet_box_error {
+        input {
+          border-color: var(--clr-danger-800);
+          background-color: var(--clr-danger-faded);
+          color: var(--clr-danger-800);
+        }
+
+        .info {
+          small {
+            color: var(--clr-danger-800);
+          }
         }
       }
 
@@ -199,6 +375,122 @@
           color: var(--clr-light);
           border-color: var(--clr-primary-600);
           background-color: var(--clr-primary-600);
+        }
+      }
+
+      @media (max-width: 400px) {
+        margin-top: 10px;
+
+        .radio_box {
+          margin: 20px 0 10px 0;
+
+          b {
+            font-size: 0.8rem;
+          }
+
+          .inputs {
+            display: flex;
+            gap: 5px;
+
+            input[type="radio"] {
+              width: 13px;
+              height: 13px;
+
+              &:not(:first-child) {
+                margin-left: 10px;
+              }
+            }
+
+            label {
+              font-size: 0.7rem;
+            }
+          }
+        }
+
+        .input_box {
+          label {
+            font-size: 0.8rem;
+          }
+
+          input {
+            @include input();
+            padding-right: 0px;
+            height: 35px;
+            font-size: small;
+          }
+        }
+
+        .bet_box,
+        .bet_box_error {
+          label {
+            font-size: 0.8rem;
+          }
+
+          input {
+            @include input();
+            width: 60px;
+            height: 35px;
+            font-size: small;
+            margin-left: 5px;
+          }
+
+          .info {
+            margin-left: 5px;
+
+            small {
+              font-size: 0.7rem;
+            }
+
+            img {
+              width: 20px;
+              height: 20px;
+            }
+
+            b {
+              font-size: 0.8rem;
+            }
+          }
+
+          .error_message {
+            left: 20%;
+            font-size: 0.7rem;
+          }
+        }
+
+        .toggle_box {
+          gap: 0.5rem;
+          margin-bottom: 1rem;
+
+          span {
+            font-size: 0.8rem;
+          }
+        }
+
+        .toggle_switch {
+          width: 46px;
+          height: 20px;
+        }
+
+        .slider {
+          &::before {
+            height: 14px;
+            width: 14px;
+            left: 3px;
+            bottom: 3px;
+          }
+        }
+
+        .submit_btn {
+          font-size: 0.9rem;
+          height: 30px;
+          width: 150px;
+          align-self: center;
+
+          &:hover {
+            color: var(--clr-primary-800);
+            border-color: var(--clr-primary-600);
+            background-color: var(--clr-primary-faded);
+          }
         }
       }
     }

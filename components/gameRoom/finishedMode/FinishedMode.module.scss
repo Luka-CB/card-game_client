@@ -1,0 +1,121 @@
+@use "../../../styles/mixins" as *;
+
+.container {
+  position: absolute;
+  background-color: var(--clr-primary-800);
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-around;
+
+  .exit_button {
+    position: absolute;
+    top: 1.5rem;
+    right: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background-color: var(--clr-warning-800);
+    color: var(--clr-white);
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    box-shadow: 0 0 5px var(--clr-warning-800);
+    transition:
+      background-color 0.3s,
+      box-shadow 0.3s;
+
+    &:hover {
+      background-color: var(--clr-warning-400);
+      box-shadow: 0 0 10px var(--clr-warning-400);
+
+      span {
+        color: var(--clr-lighter);
+      }
+
+      .exit_icon {
+        color: var(--clr-primary-400);
+      }
+    }
+
+    span {
+      color: var(--clr-primary-600);
+      transition: color 0.3s;
+    }
+
+    .exit_icon {
+      width: 2rem;
+      height: 2rem;
+      color: var(--clr-primary-800);
+      transition: color 0.3s;
+    }
+  }
+
+  h1 {
+    margin-bottom: 2rem;
+    color: var(--clr-accent-200);
+    font-size: 3rem;
+  }
+
+  .notice {
+    p {
+      font-size: 1.5rem;
+
+      b {
+        font-size: 1.8rem;
+      }
+    }
+  }
+
+  .user_list {
+    display: flex;
+    gap: 5rem;
+
+    .user_card {
+      width: 150px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+
+      .user_info {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+
+        .avatar {
+          border: 4px solid rgb(169, 144, 4);
+          width: 80px;
+          height: 80px;
+          border-radius: 50%;
+          overflow: hidden;
+          margin-bottom: 0.5rem;
+
+          img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+          }
+        }
+
+        b {
+          display: block;
+          margin-bottom: 0.5rem;
+          font-size: 0.9rem;
+        }
+      }
+
+      .indicator {
+        width: 100%;
+        background-color: rgb(51, 2, 175);
+        box-shadow: 0 0 5px rgb(51, 2, 175);
+        justify-self: flex-end;
+      }
+    }
+  }
+}
