@@ -69,13 +69,27 @@
 
           .down_rating_icon {
             color: var(--clr-danger-400);
-            font-size: 1.5rem;
+            font-size: 1.3rem;
           }
 
-          span {
-            color: var(--clr-primary-400);
-            font-size: 1.2rem;
+          .stable_rating_value,
+          .up_rating_value,
+          .down_rating_value {
+            color: var(--clr-light);
+            font-size: 1rem;
             margin-left: 5px;
+          }
+
+          .stable_rating_value {
+            color: var(--clr-warning-400);
+          }
+
+          .up_rating_value {
+            color: var(--clr-success-400);
+          }
+
+          .down_rating_value {
+            color: var(--clr-danger-400);
           }
         }
 
@@ -85,9 +99,19 @@
           align-items: center;
           cursor: pointer;
 
-          span {
+          .coins_value,
+          .negative_coins,
+          .warning_coins {
             color: var(--clr-primary-400);
-            font-size: 1.2rem;
+            font-size: 1rem;
+          }
+
+          .negative_coins {
+            color: var(--clr-danger-400);
+          }
+
+          .warning_value {
+            color: var(--clr-warning-400);
           }
         }
       }

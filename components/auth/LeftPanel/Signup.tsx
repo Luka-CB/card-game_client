@@ -2,7 +2,7 @@
 
 import styles from "./Sign.module.scss";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import useSignupStore from "@/store/auth/signupStore";
 import useAvatarStore from "@/store/user/avatarStore";
 import BtnLoader from "../../loaders/BtnLoader";
@@ -23,17 +23,21 @@ const Signup = () => {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [gender, setGender] = useState<"male" | "female" | null>("male");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [avatarError, setAvatarError] = useState(false);
 
   const [visiblePassword, setVisiblePassword] = useState(false);
   const [visibleConfirmPassword, setVisibleConfirmPassword] = useState(false);
 
-  const handleRoute = (routeName: string) => {
-    const newParams = new URLSearchParams(searchParams.toString());
-    newParams.set("auth", routeName);
-    router.push(`?${newParams.toString()}`);
-  };
+  const handleRoute = useCallback(
+    (routeName: string) => {
+      const newParams = new URLSearchParams(searchParams.toString());
+      newParams.set("auth", routeName);
+      router.push(`?${newParams.toString()}`);
+    },
+    [router, searchParams],
+  );
 
   useEffect(() => {
     let timeOut: NodeJS.Timeout;
@@ -57,7 +61,7 @@ const Signup = () => {
       setConfirmPassword("");
       handleRoute("verify");
     }
-  }, [setAvatar, status, user]);
+  }, [setAvatar, status, user, setUser, handleRoute]);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -72,7 +76,7 @@ const Signup = () => {
       return;
     }
 
-    signup({ username, email, avatar, password });
+    signup({ username, email, gender, avatar, password });
   };
 
   return (
@@ -171,6 +175,31 @@ const Signup = () => {
                 <IoIosEyeOff />
               </div>
             )}
+          </div>
+          <div className={styles.radio_wrapper}>
+            <strong>Your Gender:</strong>
+            <div className={styles.male}>
+              <input
+                type="radio"
+                name="gender"
+                value="male"
+                id="male"
+                checked={gender === "male"}
+                onChange={() => setGender("male")}
+              />
+              <label htmlFor="male">Male</label>
+            </div>
+            <div className={styles.female}>
+              <input
+                type="radio"
+                name="gender"
+                value="female"
+                id="female"
+                checked={gender === "female"}
+                onChange={() => setGender("female")}
+              />
+              <label htmlFor="female">Female</label>
+            </div>
           </div>
           <button type="submit" disabled={status === "loading"}>
             {status === "loading" ? <BtnLoader /> : "Sign Up"}

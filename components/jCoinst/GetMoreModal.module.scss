@@ -147,6 +147,70 @@
       }
     }
 
+    @media (max-height: 600px) {
+      height: 400px;
+
+      h2 {
+        font-size: 1rem;
+      }
+
+      h4 {
+        font-size: 0.8rem;
+      }
+
+      .ads {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+        justify-items: center;
+        margin-top: 20px;
+
+        .ad {
+          height: 120px;
+          border: 2px solid var(--clr-primary-600);
+          border-top-width: 2px;
+          border-left-width: 5px;
+          border-right-width: 5px;
+          border-radius: 10px;
+          box-shadow: 0 8px 8px -4px var(--clr-primary-400);
+          font-size: 1rem;
+
+          .info {
+            .ad_reward {
+              gap: 0;
+              margin-top: 0;
+
+              p {
+                font-size: 0.7rem;
+              }
+
+              .coin_image {
+                width: 30px;
+                height: 30px;
+              }
+            }
+          }
+
+          .play_btn {
+            border-radius: 5px 10px;
+            padding: 5px;
+            font-size: 0.7rem;
+
+            .play_icon {
+              margin-left: 5px;
+              font-size: 1rem;
+              transition: all 0.1s ease;
+            }
+          }
+        }
+      }
+    }
+
+    @media (max-height: 400px) {
+      overflow-y: auto;
+      height: 300px;
+    }
+
     @media (max-width: 850px) {
       padding: 0 20px 30px 20px;
       width: 600px;

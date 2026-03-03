@@ -19,7 +19,7 @@ const JokerPrompt = ({
 }: JokerPromptProps) => {
   const handleJokerClick = (
     type: "need" | "pass" | "takes",
-    requestedSuit: string = ""
+    requestedSuit: string = "",
   ) => {
     playedCardHandler({ ...jokerCard, type, requestedSuit });
     clearJokerCard();
@@ -29,7 +29,7 @@ const JokerPrompt = ({
     <motion.div
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3, typepe: "spring" }}
+      transition={{ duration: 0.3, type: "spring" }}
       className={styles.joker_prompt}
     >
       <div className={styles.close_btn} onClick={clearJokerCard}>
@@ -102,13 +102,13 @@ const JokerPrompt = ({
             className={styles.take_btn}
             onClick={() => handleJokerClick("need")}
           >
-            I'll take it
+            I&apos;ll take it
           </button>
           <button
             className={styles.no_btn}
             onClick={() => handleJokerClick("pass")}
           >
-            Don't need it
+            I don&apos;t need it
           </button>
         </div>
       )}

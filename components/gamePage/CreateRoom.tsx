@@ -3,7 +3,7 @@
 import { createPortal } from "react-dom";
 import styles from "./CreateRoom.module.scss";
 import { FaLock, FaLockOpen, FaTimesCircle } from "react-icons/fa";
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import useCreateRoomStore from "@/store/gamePage/createRoomStore";
 import { AnimatePresence, motion } from "framer-motion";
 import { v4 as uuidv4 } from "uuid";
@@ -79,7 +79,7 @@ const CreateRoom = () => {
 
     const room = {
       id: uuidv4(),
-      name,
+      name: name.trim() !== "" ? name : `Room ${rooms.length + 1}`,
       password: currentStatus === "private" ? password : null,
       bett: bett ? bett : null,
       type: type,
@@ -107,6 +107,14 @@ const CreateRoom = () => {
       resetModal();
     }
   };
+
+  useEffect(() => {
+    if (toggleCreateRoomModal.toggle) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "auto";
+    }
+  }, [toggleCreateRoomModal.toggle]);
 
   if (typeof document === "undefined") {
     return null;
@@ -195,8 +203,10 @@ const CreateRoom = () => {
                   type="text"
                   name="name"
                   id="name"
-                  required
                   value={name}
+                  placeholder={
+                    rooms.length > 0 ? `Room ${rooms.length + 1}` : "Room 1"
+                  }
                   onChange={(e) => setName(e.target.value)}
                 />
               </div>

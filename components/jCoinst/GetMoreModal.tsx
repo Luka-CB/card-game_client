@@ -6,10 +6,19 @@ import { IoMdCloseCircle } from "react-icons/io";
 import { FaPlay, FaCircleInfo } from "react-icons/fa6";
 import { AnimatePresence, motion } from "framer-motion";
 import useJCoinsStore from "@/store/user/stats/jCoinsStore";
+import { useEffect } from "react";
 
 const GetMoreModal = () => {
   const { isGetMoreModalOpen, toggleGetMoreModal, hasWarning } =
     useJCoinsStore();
+
+  useEffect(() => {
+    if (isGetMoreModalOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "auto";
+    }
+  }, [isGetMoreModalOpen]);
 
   return (
     <AnimatePresence>

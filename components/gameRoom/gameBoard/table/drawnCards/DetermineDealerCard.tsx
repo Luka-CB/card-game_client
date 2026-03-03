@@ -16,66 +16,66 @@ const DetermineDealerCard = ({ card, index, playerPositionIndex }: Props) => {
 
   const cardImage = CardDeck.find(
     (c: { suit: string; rank: string; image: string; color?: string }) =>
-      c.suit === card.suit && c.rank === card.rank
+      c.suit === card.suit && c.rank === card.rank,
   )?.image;
 
   const jokerImageBlack = CardDeck.find(
     (c: { suit: string; rank: string; image: string; color?: string }) =>
-      c.rank === "JOKER" && c.color === "black"
+      c.rank === "JOKER" && c.color === "black",
   )?.image;
 
   const jokerImageRed = CardDeck.find(
     (c: { suit: string; rank: string; image: string; color?: string }) =>
-      c.rank === "JOKER" && c.color === "red"
+      c.rank === "JOKER" && c.color === "red",
   )?.image;
 
   const offset = index * 3;
 
   const getInitial = () => {
     switch (playerPositionIndex) {
-      case 0: // bottom
+      case 0:
         return {
           opacity: 0.5,
           translateY:
             windowSize.width <= 600
               ? 30
               : (windowSize.width < 1000 && windowSize.width > 600) ||
-                windowSize.height <= 800
-              ? 50
-              : 100,
+                  windowSize.height <= 800
+                ? 50
+                : 100,
         };
-      case 1: // left
+      case 1:
         return {
           opacity: 0.5,
           translateX:
             windowSize.width <= 600
               ? -30
               : (windowSize.width < 1000 && windowSize.width > 600) ||
-                windowSize.height <= 800
-              ? -50
-              : -100,
+                  windowSize.height <= 800
+                ? -50
+                : -100,
         };
-      case 2: // top
+      case 2:
         return {
           opacity: 0.5,
           translateY:
             windowSize.width <= 600
               ? -30
               : (windowSize.width < 1000 && windowSize.width > 600) ||
-                windowSize.height <= 800
-              ? -50
-              : -100,
+                  windowSize.height <= 800
+                ? -50
+                : -100,
         };
-      case 3: // right
+      case 3:
         return {
           opacity: 0.5,
           translateX:
             windowSize.width <= 600
               ? 30
               : (windowSize.width < 1000 && windowSize.width > 600) ||
-                windowSize.height <= 800
-              ? 50
-              : 100,
+                  windowSize.height <= 800
+                ? 50
+                : 100,
         };
       default:
         return {};
@@ -84,14 +84,14 @@ const DetermineDealerCard = ({ card, index, playerPositionIndex }: Props) => {
 
   const getAnimate = () => {
     switch (playerPositionIndex) {
-      case 0: // bottom
-      case 2: // top
+      case 0:
+      case 2:
         return {
           opacity: 1,
           translateY: 0,
         };
-      case 1: // left
-      case 3: // right
+      case 1:
+      case 3:
         return {
           opacity: 1,
           translateX: 0,
@@ -119,36 +119,36 @@ const DetermineDealerCard = ({ card, index, playerPositionIndex }: Props) => {
       {cardImage ? (
         <Image
           src={cardImage}
-          alt={card.rank}
+          alt={card.rank || "card"}
           width={
             windowSize.height <= 350
               ? 40
               : windowSize.height <= 600 && windowSize.height > 350
-              ? 50
-              : windowSize.height <= 800 && windowSize.height > 600
-              ? 70
-              : windowSize.width <= 600
-              ? 50
-              : windowSize.width <= 900 && windowSize.width > 600
-              ? 70
-              : windowSize.width < 1300 && windowSize.width > 900
-              ? 90
-              : 100
+                ? 50
+                : windowSize.height <= 800 && windowSize.height > 600
+                  ? 70
+                  : windowSize.width <= 600
+                    ? 50
+                    : windowSize.width <= 900 && windowSize.width > 600
+                      ? 70
+                      : windowSize.width < 1300 && windowSize.width > 900
+                        ? 90
+                        : 100
           }
           height={
             windowSize.height <= 350
               ? 60
               : windowSize.height <= 600 && windowSize.height > 350
-              ? 70
-              : windowSize.height <= 800 && windowSize.height > 600
-              ? 100
-              : windowSize.width <= 600
-              ? 70
-              : windowSize.width <= 900 && windowSize.width > 600
-              ? 100
-              : windowSize.width < 1300 && windowSize.width > 900
-              ? 130
-              : 150
+                ? 70
+                : windowSize.height <= 800 && windowSize.height > 600
+                  ? 100
+                  : windowSize.width <= 600
+                    ? 70
+                    : windowSize.width <= 900 && windowSize.width > 600
+                      ? 100
+                      : windowSize.width < 1300 && windowSize.width > 900
+                        ? 130
+                        : 150
           }
         />
       ) : (
@@ -163,31 +163,31 @@ const DetermineDealerCard = ({ card, index, playerPositionIndex }: Props) => {
             windowSize.height <= 350
               ? 40
               : windowSize.height <= 600 && windowSize.height > 350
-              ? 50
-              : windowSize.height <= 800 && windowSize.height > 600
-              ? 70
-              : windowSize.width <= 600
-              ? 50
-              : windowSize.width <= 900 && windowSize.width > 600
-              ? 70
-              : windowSize.width < 1300 && windowSize.width > 900
-              ? 90
-              : 100
+                ? 50
+                : windowSize.height <= 800 && windowSize.height > 600
+                  ? 70
+                  : windowSize.width <= 600
+                    ? 50
+                    : windowSize.width <= 900 && windowSize.width > 600
+                      ? 70
+                      : windowSize.width < 1300 && windowSize.width > 900
+                        ? 90
+                        : 100
           }
           height={
             windowSize.height <= 350
               ? 60
               : windowSize.height <= 600 && windowSize.height > 350
-              ? 70
-              : windowSize.height <= 800 && windowSize.height > 600
-              ? 100
-              : windowSize.width <= 600
-              ? 70
-              : windowSize.width <= 900 && windowSize.width > 600
-              ? 100
-              : windowSize.width < 1300 && windowSize.width > 900
-              ? 130
-              : 150
+                ? 70
+                : windowSize.height <= 800 && windowSize.height > 600
+                  ? 100
+                  : windowSize.width <= 600
+                    ? 70
+                    : windowSize.width <= 900 && windowSize.width > 600
+                      ? 100
+                      : windowSize.width < 1300 && windowSize.width > 900
+                        ? 130
+                        : 150
           }
         />
       )}

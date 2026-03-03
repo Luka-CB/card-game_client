@@ -9,7 +9,9 @@ export interface userIFace {
   originalUsername: string;
   avatar: string;
   email: string;
+  gender: "male" | "female" | null;
   isVerified: boolean;
+  isAdmin: boolean;
 }
 
 interface UserStore {

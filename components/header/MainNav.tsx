@@ -66,7 +66,17 @@ const MainNav: React.FC<MainNavProps> = ({
               {rating?.trend === "stable" && (
                 <PiChartLineLight className={styles.stable_rating_icon} />
               )}
-              <span>{rating !== null ? rating.value : "0"}</span>
+              <span
+                className={
+                  rating && rating.trend === "up"
+                    ? styles.up_rating_value
+                    : rating && rating.trend === "down"
+                      ? styles.down_rating_value
+                      : styles.stable_rating_value
+                }
+              >
+                {rating !== null ? rating.value : "0"}
+              </span>
             </div>
             <div className={styles.coins} onClick={onOpenGetMoreModal}>
               <Image
@@ -76,7 +86,17 @@ const MainNav: React.FC<MainNavProps> = ({
                 height={40}
                 className={styles.coin_img}
               />
-              <span>{jCoins !== null ? jCoins.value : "0"}</span>
+              <span
+                className={
+                  jCoins && jCoins.raw < 0
+                    ? styles.negative_coins
+                    : jCoins && jCoins.raw >= 0 && jCoins.raw < 100
+                      ? styles.warning_value
+                      : styles.coins_value
+                }
+              >
+                {jCoins !== null ? jCoins.value : "0"}
+              </span>
             </div>
           </div>
           <p>

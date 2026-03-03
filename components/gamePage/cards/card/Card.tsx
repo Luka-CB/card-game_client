@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { FaLock, FaLockOpen, FaRocketchat } from "react-icons/fa";
 import styles from "../Cards.module.scss";
 import {
@@ -16,7 +16,6 @@ import useRoomStore from "@/store/gamePage/roomStore";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import useJCoinsStore from "@/store/user/stats/jCoinsStore";
-import { color } from "framer-motion";
 
 interface CardProps {
   room: Room | null;
@@ -30,22 +29,40 @@ const Card: React.FC<CardProps> = ({ room }) => {
   const { setMsg } = useFlashMsgStore();
   const router = useRouter();
 
+  const isLeavingRef = useRef(false);
+
   const roomUser = room?.users.find((roomUser) => roomUser.id === user?._id);
 
   useEffect(() => {
     if (!room && !user) return;
 
+    if (isLeavingRef.current) return;
+
     if (roomUser && roomUser.status === "active" && room?.users.length === 4) {
       const timeout = setTimeout(() => {
-        router.push(`/games/${room.id}`);
+        if (!isLeavingRef.current) {
+          router.push(`/games/${room.id}`);
+        }
       }, 1000);
 
       return () => clearTimeout(timeout);
     }
-  }, [room, router, user]);
+  }, [room, router, user, roomUser]);
+
+  useEffect(() => {
+    if (!roomUser || roomUser.status === "left") {
+      const timeout = setTimeout(() => {
+        isLeavingRef.current = false;
+      }, 1000);
+
+      return () => clearTimeout(timeout);
+    }
+  }, [roomUser]);
 
   const handleLeave = () => {
     if (room && user) {
+      isLeavingRef.current = true;
+
       if (roomUser?.status === "active") {
         socket?.emit("leaveRoom", room.id, user._id);
       } else {
@@ -64,6 +81,8 @@ const Card: React.FC<CardProps> = ({ room }) => {
 
   const handleJoin = () => {
     if (room && user) {
+      isLeavingRef.current = false;
+
       if (room.status === "private") {
         setTogglePasswordPrompt(true);
         return;
@@ -98,6 +117,8 @@ const Card: React.FC<CardProps> = ({ room }) => {
   const handleRejoin = () => {
     if (!socket || !room || !user) return;
 
+    isLeavingRef.current = false;
+
     socket.emit("updateUserStatus", room.id, user._id, "active");
     const timeout = setTimeout(() => {
       router.push(`/games/${room.id}`);
@@ -116,7 +137,7 @@ const Card: React.FC<CardProps> = ({ room }) => {
     return () => {
       socket.off("error");
     };
-  }, [socket]);
+  }, [socket, setMsg]);
 
   return (
     <div

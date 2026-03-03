@@ -73,7 +73,7 @@
         width: 100%;
         display: flex;
         align-items: center;
-        justify-content: space-between;
+        justify-content: flex-end;
         font-size: 1rem;
         color: var(--clr-dark);
 
@@ -95,14 +95,49 @@
         .stable_rating_icon {
           color: var(--clr-warning-600);
         }
+
+        .stable_rating_value,
+        .up_rating_value,
+        .down_rating_value {
+          color: var(--clr-dark);
+          font-size: 1rem;
+          margin-left: 5px;
+        }
+
+        .stable_rating_value {
+          color: var(--clr-warning-600);
+        }
+
+        .up_rating_value {
+          color: var(--clr-success-600);
+        }
+
+        .down_rating_value {
+          color: var(--clr-danger-600);
+        }
       }
 
       .coins {
         display: flex;
         align-items: center;
-        justify-content: space-between;
+        justify-content: space-around;
         width: 100%;
         cursor: pointer;
+
+        .coins_value,
+        .negative_coins,
+        .warning_coins {
+          color: var(--clr-dark);
+          font-size: 1rem;
+        }
+
+        .negative_coins {
+          color: var(--clr-danger-600);
+        }
+
+        .warning_value {
+          color: var(--clr-warning-600);
+        }
       }
     }
 

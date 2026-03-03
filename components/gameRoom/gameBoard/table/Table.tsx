@@ -11,8 +11,9 @@ import CardDeck from "./cardDeck/CardDeck";
 import DrawnCards from "./drawnCards/DrawnCards";
 import PlayedCards from "./playedCards/PlayedCards";
 import LastPlayedCards from "./lastPlayedCards/LastPlayedCards";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import usePlayedCardsStore from "@/store/gamePage/playedCardsStore";
+import { Socket } from "socket.io-client";
 
 interface TableProps {
   gameInfo: GameInfo | null;
@@ -21,11 +22,12 @@ interface TableProps {
     users: RoomUser[];
     hisht: string;
     type: string;
+    bett: string | null;
   } | null;
   visibleCards: { [key: string]: PlayingCard[] };
   rotatedPlayers: RoomUser[];
   dealingCards?: Record<string, number>;
-  socket?: any;
+  socket?: Socket | null;
 }
 
 const Table: React.FC<TableProps> = ({
@@ -47,14 +49,14 @@ const Table: React.FC<TableProps> = ({
       const bids = gameInfo?.handBids
         ?.map((hb) =>
           hb.bids.map((b) =>
-            b.handNumber === gameInfo?.handCount ? b.bid : null
-          )
+            b.handNumber === gameInfo?.handCount ? b.bid : null,
+          ),
         )
         .flat()
         .filter((s) => s !== null);
 
       const bidSum =
-        bids && bids.reduce((acc: any, bid) => acc + (bid as number), 0);
+        bids?.reduce((acc: number, bid) => acc + (bid as number), 0) ?? 0;
 
       if (gameInfo?.currentHand && bidSum < gameInfo?.currentHand) {
         stuffing = gameInfo?.currentHand - bidSum;
@@ -64,13 +66,21 @@ const Table: React.FC<TableProps> = ({
     }
 
     return { stuffing, tearing };
-  }, [gameInfo?.status, gameInfo?.handBids, gameInfo?.currentHand]);
+  }, [
+    gameInfo?.status,
+    gameInfo?.handBids,
+    gameInfo?.currentHand,
+    gameInfo?.handCount,
+  ]);
 
-  const handleRoundWinner = useCallback((winnerCard: PlayedCard) => {
-    if (winnerCard) {
-      setRoundWinnerId(winnerCard.playerId);
-    }
-  }, []);
+  const handleRoundWinner = useCallback(
+    (winnerCard: PlayedCard) => {
+      if (winnerCard) {
+        setRoundWinnerId(winnerCard.playerId);
+      }
+    },
+    [setRoundWinnerId],
+  );
 
   useEffect(() => {
     if (!socket) return;
@@ -92,7 +102,7 @@ const Table: React.FC<TableProps> = ({
       handBids: gameInfo?.handBids as HandBid[] | null,
       rotatedPlayers: rotatedPlayers as RoomUser[],
     }),
-    [gameInfo, rotatedPlayers]
+    [gameInfo, rotatedPlayers],
   );
 
   return (
@@ -108,6 +118,7 @@ const Table: React.FC<TableProps> = ({
           <BidModal data={bidModalData} />
         )}
       <span className={styles.hisht}>Hisht: {room?.hisht}</span>
+      {room?.bett && <span className={styles.bett}>Bett: {room?.bett}</span>}
       <div className={styles.table_surface}>
         <PlayedCards
           playedCards={gameInfo?.playedCards || []}

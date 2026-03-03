@@ -24,7 +24,7 @@ const ChangePassword = () => {
   const token = searchParams.get("token");
 
   useEffect(() => {
-    let timeout: any;
+    let timeout: NodeJS.Timeout;
 
     if (error) {
       timeout = setTimeout(() => {
@@ -40,7 +40,7 @@ const ChangePassword = () => {
     }
 
     return () => clearTimeout(timeout);
-  }, [status, error]);
+  }, [status, error, router, setError, reset]);
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();

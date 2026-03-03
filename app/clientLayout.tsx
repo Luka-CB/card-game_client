@@ -33,7 +33,7 @@ export default function ClientLayout({
 
   useEffect(() => {
     getUser();
-  }, []);
+  }, [getUser]);
 
   return (
     <html lang="en">

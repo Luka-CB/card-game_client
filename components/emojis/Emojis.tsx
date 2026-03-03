@@ -1,9 +1,6 @@
 import useWindowSize from "@/hooks/useWindowSize";
 import styles from "./Emojis.module.scss";
-import EmojiPicker, {
-  EmojiClickData,
-  SuggestionMode,
-} from "emoji-picker-react";
+import EmojiPicker, { EmojiClickData } from "emoji-picker-react";
 import { useEffect, useState } from "react";
 import { BsPlusCircleFill } from "react-icons/bs";
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useCallback, useEffect, useState } from "react";
 import useUserStore from "@/store/user/userStore";
 import styles from "./ChangeEmail.module.scss";
 import useChangeEmailStore from "@/store/email/changeEmailStore";
@@ -17,18 +17,21 @@ const ChangeEmail = () => {
 
   const [email, setEmail] = useState("");
 
-  const handleRoute = (routeName: string) => {
-    const newParams = new URLSearchParams(searchParams.toString());
-    newParams.set("auth", routeName);
-    router.push(`?${newParams.toString()}`);
-  };
+  const handleRoute = useCallback(
+    (routeName: string) => {
+      const newParams = new URLSearchParams(searchParams.toString());
+      newParams.set("auth", routeName);
+      router.push(`?${newParams.toString()}`);
+    },
+    [router, searchParams],
+  );
 
   useEffect(() => {
     if (status === "success") {
       handleRoute("verify");
       setEmail("");
     }
-  }, [status, router]);
+  }, [status, router, handleRoute]);
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();

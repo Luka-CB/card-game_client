@@ -120,12 +120,12 @@ const Chat: React.FC<ChatProps> = ({ roomId, closeChat, player, messages }) => {
           >
             <div className={styles.player}>
               <Image
-                src={msg.sender.avatar || "/default-avatar.jpeg"}
-                alt={msg.sender.username}
+                src={msg.sender?.avatar || "/default-avatar.jpeg"}
+                alt={msg.sender?.username}
                 width={30}
                 height={30}
                 style={{
-                  border: `2px solid ${msg.sender.color?.value || "#000"}`,
+                  border: `2px solid ${msg.sender?.color?.value || "#000"}`,
                   borderRadius: "50%",
                   objectFit: "cover",
                 }}

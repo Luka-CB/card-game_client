@@ -24,15 +24,15 @@ const BidModal: React.FC<BidModalProps> = ({ data }) => {
   const bids =
     data.handBids
       ?.map((bid) =>
-        bid.bids?.map((b) => (data.handCount === b.handNumber ? b.bid : null))
+        bid.bids?.map((b) => (data.handCount === b.handNumber ? b.bid : null)),
       )
       .flat()
       .filter((s) => s !== undefined) || [];
 
-  const bidSum = bids.reduce((acc: any, bid) => acc + (bid as number), 0);
+  const bidSum = bids.reduce((acc: number, bid) => acc + (bid as number), 0);
 
   const playerIndex = data.rotatedPlayers?.findIndex(
-    (p) => p.id === data.currentPlayerId
+    (p) => p.id === data.currentPlayerId,
   );
   const nextPlayerId =
     data.rotatedPlayers[(playerIndex + 1) % data.rotatedPlayers.length].id;

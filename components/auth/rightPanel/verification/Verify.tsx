@@ -26,7 +26,7 @@ const Verify = () => {
     if (!user && !email) {
       router.push("/?auth=signin");
     }
-  }, [user, email]);
+  }, [user, email, router]);
 
   useEffect(() => {
     if (signupStatus === "success" || changeEmailStatus === "success") {
@@ -34,7 +34,13 @@ const Verify = () => {
       signupReset();
       changeEmailReset();
     }
-  }, [signupStatus, changeEmailStatus]);
+  }, [
+    signupStatus,
+    changeEmailStatus,
+    sendEmail,
+    signupReset,
+    changeEmailReset,
+  ]);
 
   if (status === "loading") {
     return (
@@ -65,22 +71,22 @@ const Verify = () => {
         <h3>Email sent successfully!</h3>
       ) : null}
       <p>
-        We've sent you a verification email, please check your email and verify
-        it.
+        We&apos;ve sent you a verification email, please check your email and
+        verify it.
       </p>
-      <small>If you didn't recieve email</small>
+      <small>If you didn&apos;t recieve email</small>
       <button onClick={sendEmail}>Send Again</button>
       <div className={styles.notice}>
         <span className={styles.text_one}>
-          <CiWarning className={styles.icon} /> Please make sure, that you've
-          used <b>valid email</b> for registration
+          <CiWarning className={styles.icon} /> Please make sure, that
+          you&apos;ve used <b>valid email</b> for registration
         </span>
         <span className={styles.text_two}>
-          This is the email you've used for registration:{" "}
+          This is the email you&apos;ve used for registration:{" "}
           <b>{email ? email : user?.email}</b>
         </span>
         <span className={styles.text_three}>
-          If it's not a correct email:{" "}
+          If it&apos;s not a correct email:{" "}
           <Link href="/?auth=change-email">change email</Link>
         </span>
         <div className={styles.go_back_wrapper}>

@@ -1,13 +1,17 @@
-import React, { useEffect } from "react";
+import React, { useMemo } from "react";
 import { HandBid, GameInfo, PlayingCard, RoomUser } from "@/utils/interfaces";
 import GameRounds from "../../gameControls/gameRounds/GameRounds";
 import styles from "./Players.module.scss";
 import Image from "next/image";
-import { FaCrown } from "react-icons/fa6";
 import useWindowSize from "@/hooks/useWindowSize";
 import { substringText } from "@/utils/misc";
-import Timer from "../timer/TimerCircle";
-import useTimerStore from "@/store/gamePage/timerStore";
+
+interface TimerData {
+  duration: number;
+  startedAt: number;
+  playerId: string;
+  type: string;
+}
 
 interface PlayersProps {
   rotatedPlayers: RoomUser[];
@@ -29,6 +33,8 @@ interface PlayersProps {
   messagePopups: Record<string, { message: string; timestamp: Date } | null>;
   showChat: boolean;
   emojiPopup: { playerId: string; emoji: string; timestamp: Date } | null;
+  timerData: TimerData | null;
+  timerProgress: number;
 }
 
 const getPlayerPosition = (index: number) => {
@@ -46,6 +52,12 @@ const getPlayerPosition = (index: number) => {
   }
 };
 
+const interpolateColor = (value: number): string => {
+  const r = Math.round(255 * value);
+  const g = Math.round(255 * (1 - value));
+  return `rgb(${r}, ${g}, 0)`;
+};
+
 const Players: React.FC<PlayersProps> = ({
   rotatedPlayers,
   user,
@@ -57,139 +69,180 @@ const Players: React.FC<PlayersProps> = ({
   messagePopups,
   showChat,
   emojiPopup,
+  timerData,
+  timerProgress,
 }) => {
-  const { duration, setDuration } = useTimerStore();
-
   const windowSize = useWindowSize();
 
-  useEffect(() => {
-    if (
-      gameInfo?.status === "playing" ||
-      gameInfo?.status === "bid" ||
-      gameInfo?.status === "choosingTrump"
-    ) {
-      setDuration(20);
-    }
-  }, [gameInfo?.status]);
+  const radius = 32;
+  const circumference = 2 * Math.PI * radius;
+  const strokeDashoffset = circumference * timerProgress;
+  const ringColor = interpolateColor(timerProgress);
 
-  console.log(emojiPopup);
+  const choosingTrumpHand = useMemo(() => hand.slice(0, 3), [hand]);
 
   return (
     <div className={styles.players}>
-      {rotatedPlayers.map((player, index) => (
-        <div
-          key={player.id}
-          className={`${styles.player} ${getPlayerPosition(index)}`}
-        >
-          {gameInfo?.status !== "playing" &&
-            gameInfo?.status === "choosingTrump" &&
-            player.id === user?._id &&
-            gameInfo?.currentPlayerId === user?._id && (
-              <GameRounds
-                rotatedPlayers={rotatedPlayers}
-                hand={hand.slice(0, 3)}
-                gameInfo={gameInfo as GameInfo}
-                user={user as { _id: string }}
-                roomUsers={room.users || []}
-              />
-            )}
+      {rotatedPlayers.map((player, index) => {
+        const isCurrentTurn = timerData?.playerId === player.id;
+        const isActive =
+          room?.users?.find((u) => u.id === player.id)?.status === "active";
+        const secondsLeft =
+          timerData && isCurrentTurn
+            ? Math.max(0, Math.ceil(timerData.duration * (1 - timerProgress)))
+            : null;
 
-          {player.id === user?._id &&
-            (gameInfo?.status === "playing" || gameInfo?.status === "bid") && (
-              <GameRounds
-                rotatedPlayers={rotatedPlayers}
-                hand={hand}
-                gameInfo={gameInfo as GameInfo}
-                user={user as { _id: string }}
-                roomUsers={room.users || []}
-              />
-            )}
+        const showTimer =
+          isCurrentTurn && secondsLeft !== null && secondsLeft > 0;
 
-          {(gameInfo?.status === "bid" ||
-            gameInfo?.status === "playing" ||
-            gameInfo?.status === "choosingTrump") &&
-            gameInfo?.currentPlayerId === player.id &&
-            index !== 0 &&
-            duration && (
-              <div
-                className={`${styles.count_down} ${getPlayerPosition(
-                  index,
-                )}_clock`}
-              >
-                <Timer duration={duration as number} />
-              </div>
-            )}
-
-          {(gameInfo?.status === "playing" ||
-            gameInfo?.status === "bid" ||
-            gameInfo?.status === "choosingTrump") &&
-            gameInfo.currentPlayerId === player.id &&
-            index === 0 &&
-            duration && (
-              <div className={`${styles.count_down_current_player}`}>
-                <Timer duration={duration as number} />
-              </div>
-            )}
+        return (
           <div
-            className={styles.player_info}
-            title={player.username.length > 10 ? player.username : undefined}
+            key={player.id}
+            className={`${styles.player} ${getPlayerPosition(index)}`}
           >
-            {!showChat && messagePopups[player.id] && (
-              <div className={styles.message_popup}>
-                <span>{messagePopups[player.id]?.message}</span>
-              </div>
-            )}
-
-            {emojiPopup && emojiPopup.playerId === player.id && (
-              <div className={styles.emoji_popup}>
-                <span>{emojiPopup.emoji}</span>
-              </div>
-            )}
-            <div className={styles.avatar_container}>
-              {room?.users?.find((u) => u.id === player.id)?.status ===
-              "active" ? (
-                <Image
-                  src={player.avatar || "/avatars/avatar-1.jpeg"}
-                  alt={player.username}
-                  width={100}
-                  height={100}
-                  style={{
-                    border: `3px solid ${player.color?.value}`,
-                    borderRadius: "50%",
-                  }}
-                  className={styles.avatar}
-                />
-              ) : (
-                <Image
-                  src={player.botAvatar || "/bots/bot-1.jpeg"}
-                  alt={player.username}
-                  width={80}
-                  height={80}
-                  className={styles.avatar}
+            {gameInfo?.status !== "playing" &&
+              gameInfo?.status === "choosingTrump" &&
+              player.id === user?._id &&
+              gameInfo?.currentPlayerId === user?._id && (
+                <GameRounds
+                  rotatedPlayers={rotatedPlayers}
+                  hand={choosingTrumpHand}
+                  gameInfo={gameInfo as GameInfo}
+                  user={user as { _id: string }}
+                  roomUsers={room.users || []}
                 />
               )}
-              {index === 0 && <FaCrown className={styles.crown} />}
+
+            {player.id === user?._id &&
+              (gameInfo?.status === "playing" ||
+                gameInfo?.status === "bid") && (
+                <GameRounds
+                  rotatedPlayers={rotatedPlayers}
+                  hand={hand}
+                  gameInfo={gameInfo as GameInfo}
+                  user={user as { _id: string }}
+                  roomUsers={room.users || []}
+                />
+              )}
+
+            <div
+              className={styles.player_info}
+              title={
+                player.username && player.username.length > 10
+                  ? player.username
+                  : undefined
+              }
+            >
+              {!showChat && messagePopups[player.id] && (
+                <div className={styles.message_popup}>
+                  <span>{messagePopups[player.id]?.message}</span>
+                </div>
+              )}
+
+              {emojiPopup && emojiPopup.playerId === player.id && (
+                <div className={styles.emoji_popup}>
+                  <span>{emojiPopup.emoji}</span>
+                </div>
+              )}
+
+              <div
+                className={`${styles.avatar_container} ${isCurrentTurn ? styles.timer_active : ""}`}
+              >
+                {isCurrentTurn && (
+                  <svg className={styles.timer_ring} viewBox="0 0 72 72">
+                    <circle
+                      cx="36"
+                      cy="36"
+                      r={radius}
+                      fill="none"
+                      stroke="rgba(255, 255, 255, 0.15)"
+                      strokeWidth="4"
+                    />
+                    <circle
+                      cx="36"
+                      cy="36"
+                      r={radius}
+                      fill="none"
+                      stroke={ringColor}
+                      strokeWidth="4"
+                      strokeDasharray={circumference}
+                      strokeDashoffset={strokeDashoffset}
+                      strokeLinecap="round"
+                      transform="rotate(-90 36 36)"
+                    />
+                  </svg>
+                )}
+
+                {showTimer && (
+                  <div
+                    className={styles.seconds_left}
+                    style={{ color: ringColor }}
+                  >
+                    {secondsLeft}
+                  </div>
+                )}
+
+                {isActive ? (
+                  <Image
+                    src={player.avatar || "/avatars/avatar-1.jpeg"}
+                    alt={player.username || "avatar"}
+                    width={100}
+                    height={100}
+                    style={{
+                      border: `3px solid ${player.color?.value}`,
+                      borderRadius: "50%",
+                    }}
+                    className={styles.avatar}
+                  />
+                ) : (
+                  <Image
+                    src={player.botAvatar || "/bots/bot-1.jpeg"}
+                    alt={player.username || "avatar"}
+                    width={80}
+                    height={80}
+                    style={{
+                      border: `3px solid ${player.color?.value}`,
+                      borderRadius: "50%",
+                    }}
+                    className={styles.avatar}
+                  />
+                )}
+                {player.status !== "active" && (
+                  <div className={styles.bot_label}>
+                    <small>bot</small>
+                  </div>
+                )}
+              </div>
+              {(gameInfo?.status === "dealing" ||
+                gameInfo?.status === "choosingTrump") &&
+              (windowSize.width <= 800 || windowSize.height <= 800) ? null : (
+                <>
+                  <div className={styles.name}>
+                    <span className={styles.username}>
+                      {substringText(player.username || "", 8)}
+                    </span>
+                    {player.id === user?._id && (
+                      <span className={styles.you}>You</span>
+                    )}
+                  </div>
+                  <div className={styles.bid}>
+                    <b>{getBids(player.id)}</b>/
+                    <span
+                      className={
+                        getBids(player.id) === getWins(player.id)
+                          ? styles.success
+                          : styles.warning
+                      }
+                    >
+                      {getWins(player.id)}
+                    </span>
+                  </div>
+                </>
+              )}
             </div>
-            {(gameInfo?.status === "dealing" ||
-              gameInfo?.status === "choosingTrump") &&
-            (windowSize.width <= 800 || windowSize.height <= 800) ? null : (
-              <>
-                <div className={styles.name}>
-                  <span className={styles.username}>
-                    {substringText(player.username, 8)}
-                  </span>
-                  {player.id === user?._id && (
-                    <span className={styles.you}>You</span>
-                  )}
-                </div>
-                <div className={styles.bid}>
-                  <b>{getBids(player.id)}</b>/<span>{getWins(player.id)}</span>
-                </div>
-              </>
-            )}
           </div>
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 };

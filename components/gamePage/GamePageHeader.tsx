@@ -17,7 +17,7 @@ const GamePageHeader: React.FC<propsIFace> = ({ type }) => {
     <header className={styles.header}>
       <div className={styles.col1}>
         <div className={styles.item}>
-          <div className={styles.indicator}></div>
+          <div className={styles.indicator} />
           <FaUsers className={styles.icon} />
           <small>players</small>
           <b>5689</b>
