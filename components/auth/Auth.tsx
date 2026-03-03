@@ -36,7 +36,7 @@ const Auth = () => {
       newParams.set("auth", "verify");
       router.push(`?${newParams.toString()}`);
     }
-  }, [user, router, auth, loading]);
+  }, [user, router, auth, loading, searchParams]);
 
   useEffect(() => {
     if (!user || !user.isVerified || auth === "redirecting") {
@@ -97,7 +97,7 @@ const Auth = () => {
                     transition: { duration: 0.3, type: "spring", delay: 0.6 },
                   }}
                 >
-                  Authenticate! <span>It's Easy, Quick and Free</span>
+                  Authenticate! <span>It&apos;s Easy, Quick and Free</span>
                 </motion.h1>
               </motion.div>
             </motion.div>

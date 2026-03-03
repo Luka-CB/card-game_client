@@ -31,6 +31,9 @@ import FinishedMode from "@/components/gameRoom/finishedMode/FinishedMode";
 import { BsFillEmojiSunglassesFill } from "react-icons/bs";
 import Emojis from "@/components/emojis/Emojis";
 import Chat from "@/components/chat/Chat";
+import { soundManager } from "@/utils/sounds";
+import SoundControl from "@/components/gameRoom/SoundControl";
+import useSoundStore from "@/store/soundStore";
 
 const GameRoom: React.FC = () => {
   const [room, setRoom] = useState<Room | null>(null);
@@ -55,6 +58,15 @@ const GameRoom: React.FC = () => {
     Record<string, { message: string; timestamp: Date } | null>
   >({});
 
+  const [timerData, setTimerData] = useState<{
+    duration: number;
+    startedAt: number;
+    playerId: string;
+    type: string;
+  } | null>(null);
+  const [timerProgress, setTimerProgress] = useState(0);
+  const timerAnimRef = useRef<number | null>(null);
+
   const [revealInProgress, setRevealInProgress] = useState(false);
   const [currentDealingRound, setCurrentDealingRound] = useState(0);
 
@@ -62,9 +74,10 @@ const GameRoom: React.FC = () => {
   const dealingLockRef = useRef(false);
 
   const windowSize = useWindowSize();
+  const { toggleSlider } = useSoundStore();
 
   const stateChangeRef = useRef<{
-    lastGameInfo: GameInfo | null;
+    lastGameInfo: string | null;
     isProcessing: boolean;
   }>({
     lastGameInfo: null,
@@ -105,7 +118,6 @@ const GameRoom: React.FC = () => {
   const rotatedPlayers = useMemo(() => {
     if (!user || !room) return [];
 
-    // Sort players by ID to ensure consistent order
     const sortedPlayers = [...room.users].sort((a, b) =>
       a.id.localeCompare(b.id),
     );
@@ -131,6 +143,7 @@ const GameRoom: React.FC = () => {
     });
   };
 
+  // Effect to handle incoming emoji popups
   useEffect(() => {
     if (!socket || !roomId) return;
 
@@ -152,6 +165,7 @@ const GameRoom: React.FC = () => {
     };
   }, [socket, roomId]);
 
+  // Effect to get room data and listen for updates
   useEffect(() => {
     if (!socket || !roomId) return;
 
@@ -175,20 +189,17 @@ const GameRoom: React.FC = () => {
     };
   }, [socket, roomId, user, router]);
 
+  // Effect to get game info and listen for updates
   useEffect(() => {
     if (!socket || !roomId) return;
 
     const handleGameInfo = (data: GameInfo) => {
       if (!data || data.roomId !== roomId) return;
 
-      if (
-        stateChangeRef.current.lastGameInfo &&
-        JSON.stringify(stateChangeRef.current.lastGameInfo) ===
-          JSON.stringify(data)
-      )
-        return;
+      const serialized = JSON.stringify(data);
+      if (stateChangeRef.current.lastGameInfo === serialized) return;
 
-      stateChangeRef.current.lastGameInfo = data;
+      stateChangeRef.current.lastGameInfo = serialized;
       setGameInfo(data);
     };
 
@@ -197,10 +208,10 @@ const GameRoom: React.FC = () => {
 
     return () => {
       socket.off("getGameInfo", handleGameInfo);
-      stateChangeRef.current.lastGameInfo = null;
     };
   }, [socket, roomId]);
 
+  // Effect to Create Chat if enabled for the room
   useEffect(() => {
     if (!socket || !room || !roomId) return;
 
@@ -209,6 +220,7 @@ const GameRoom: React.FC = () => {
     socket.emit("createChat", roomId);
   }, [socket, room, roomId]);
 
+  // Effect to get chat messages and Set Chat data
   useEffect(() => {
     if (!socket || !roomId) return;
 
@@ -228,6 +240,7 @@ const GameRoom: React.FC = () => {
     };
   }, [socket, roomId]);
 
+  // Effect to handle incoming chat message popups
   useEffect(() => {
     if (!socket || !roomId || !user) return;
 
@@ -263,44 +276,211 @@ const GameRoom: React.FC = () => {
     };
   }, [socket, roomId, user, showChat]);
 
-  // useEffect(() => {
-  //   if (!socket) return;
-
-  //   const handlePrepare = () => {
-  //     setVisibleCards({});
-  //     setRevealInProgress(true);
-  //   };
-
-  //   const handleStep = (step: {
-  //     targetPlayerId: string;
-  //     card: PlayingCard;
-  //   }) => {
-  //     if (!revealInProgressRef.current) return;
-
-  //     const { targetPlayerId, card } = step;
-  //     setVisibleCards((prev) => ({
-  //       ...prev,
-  //       [targetPlayerId]: [...(prev[targetPlayerId] || []), card],
-  //     }));
-  //   };
-
-  //   const handleDone = () => {
-  //     setRevealInProgress(false);
-  //   };
-
-  //   socket.on("dealerRevealPrepare", handlePrepare);
-  //   socket.on("dealerRevealStep", handleStep);
-  //   socket.on("dealerRevealDone", handleDone);
-
-  //   return () => {
-  //     socket.off("dealerRevealPrepare", handlePrepare);
-  //     socket.off("dealerRevealStep", handleStep);
-  //     socket.off("dealerRevealDone", handleDone);
-  //   };
-  // }, [socket]);
-
+  // Effect to handle dealer reveal socket events
   useEffect(() => {
-    if (!socket || !gameInfo) return;
+    if (!socket) return;
+
+    const handlePrepare = () => {
+      setVisibleCards({});
+      setRevealInProgress(true);
+    };
+
+    const handleStep = (step: {
+      targetPlayerId: string;
+      card: PlayingCard;
+    }) => {
+      if (!revealInProgressRef.current) return;
+
+      soundManager.play("dealerReveal");
+
+      const { targetPlayerId, card } = step;
+      setVisibleCards((prev) => ({
+        ...prev,
+        [targetPlayerId]: [...(prev[targetPlayerId] || []), card],
+      }));
+    };
+
+    const handleDone = () => {
+      setRevealInProgress(false);
+    };
+
+    socket.on("dealerRevealPrepare", handlePrepare);
+    socket.on("dealerRevealStep", handleStep);
+    socket.on("dealerRevealDone", handleDone);
+
+    return () => {
+      socket.off("dealerRevealPrepare", handlePrepare);
+      socket.off("dealerRevealStep", handleStep);
+      socket.off("dealerRevealDone", handleDone);
+    };
+  }, [socket]);
+
+  // Effect to handle timer start and expiration events
+  useEffect(() => {
+    if (!socket) return;
+
+    const stopAnim = () => {
+      if (timerAnimRef.current) {
+        cancelAnimationFrame(timerAnimRef.current);
+        timerAnimRef.current = null;
+      }
+    };
+
+    const onTimerStarted = (data: {
+      remainingTime?: number;
+      timer?: {
+        duration?: number;
+        startTime?: number;
+        playerId?: string;
+        type?: string;
+      };
+    }) => {
+      stopAnim();
+      setTimerProgress(0);
+      setTimerData({
+        duration: data.remainingTime ?? data.timer?.duration ?? 20,
+        startedAt: data.timer?.startTime ?? Date.now(),
+        playerId: data.timer?.playerId ?? "",
+        type: data.timer?.type ?? "playing",
+      });
+    };
+
+    const onTimerExpired = () => {
+      stopAnim();
+      setTimerData(null);
+      setTimerProgress(0);
+    };
+
+    socket.on("timerStarted", onTimerStarted);
+    socket.on("timerExpired", onTimerExpired);
+
+    return () => {
+      stopAnim();
+      socket.off("timerStarted", onTimerStarted);
+      socket.off("timerExpired", onTimerExpired);
+    };
+  }, [socket]);
+
+  // Effect to handle timer animation
+  useEffect(() => {
+    if (!timerData) {
+      setTimerProgress(0);
+      return;
+    }
+
+    const { duration, startedAt } = timerData;
+    const durationMs = duration * 1000;
+
+    const animate = () => {
+      const elapsed = Date.now() - startedAt;
+      const progress = Math.min(1, elapsed / durationMs);
+      setTimerProgress(progress);
+
+      if (progress < 1) {
+        timerAnimRef.current = requestAnimationFrame(animate);
+      }
+    };
+
+    if (timerAnimRef.current) {
+      cancelAnimationFrame(timerAnimRef.current);
+      timerAnimRef.current = null;
+    }
+
+    timerAnimRef.current = requestAnimationFrame(animate);
+
+    return () => {
+      if (timerAnimRef.current) {
+        cancelAnimationFrame(timerAnimRef.current);
+        timerAnimRef.current = null;
+      }
+    };
+  }, [timerData]);
+
+  // Timer data listener - separate from animation
+  useEffect(() => {
+    if (!socket) return;
+
+    const handleTimer = (data: {
+      duration: number;
+      startedAt: number;
+      playerId: string;
+      type: string;
+    }) => {
+      if (!data) return;
+
+      setTimerData((prev) => {
+        if (
+          prev &&
+          prev.playerId === data.playerId &&
+          prev.startedAt === data.startedAt
+        ) {
+          return prev;
+        }
+        return data;
+      });
+    };
+
+    socket.on("timer", handleTimer);
+
+    return () => {
+      socket.off("timer", handleTimer);
+    };
+  }, [socket]);
+
+  // Effect to clean up timer animation on certain game state changes
+  useEffect(() => {
+    const status = gameInfo?.status;
+
+    if (status === "dealing" || status === "waiting" || status === "finished") {
+      setTimerData(null);
+    }
+  }, [gameInfo?.status]);
+
+  const gameInfoRef = useRef(gameInfo);
+  useEffect(() => {
+    gameInfoRef.current = gameInfo;
+  }, [gameInfo]);
+
+  const rotatedPlayersRef = useRef(rotatedPlayers);
+  useEffect(() => {
+    rotatedPlayersRef.current = rotatedPlayers;
+  }, [rotatedPlayers]);
+
+  // Effect to handle dealing card socket events
+  useEffect(() => {
+    if (!socket) return;
+
+    // Function to Animate dealing cards to players
+    const animateDealing = async (
+      players: typeof rotatedPlayers,
+      targetPerPlayer: number,
+      dealerId: string | null,
+    ) => {
+      if (!dealerId || !socket || !roomId) return;
+
+      const dealerIndex = players.findIndex((p) => p.id === dealerId);
+
+      const dealingOrder = [
+        ...players.slice(dealerIndex + 1),
+        ...players.slice(0, dealerIndex + 1),
+      ];
+
+      for (let round = 1; round <= targetPerPlayer; round++) {
+        for (const player of dealingOrder) {
+          soundManager.play("dealCard");
+
+          setDealingCards((prev) => ({
+            ...prev,
+            [player.id]: round,
+          }));
+
+          await new Promise((res) => setTimeout(res, 400));
+        }
+        setCurrentDealingRound(round);
+      }
+
+      socket.emit("dealingAnimationDone", roomId);
+    };
 
     const onDealCards = (data: {
       hand: PlayingCard[];
@@ -311,23 +491,23 @@ const GameRoom: React.FC = () => {
         setHand(data.hand);
       }
 
-      const dealerId = gameInfo.dealerId as string | null;
-      if (!dealerId || rotatedPlayers.length === 0) return;
+      const gi = gameInfoRef.current;
+      const players = rotatedPlayersRef.current;
+      const dealerId = gi?.dealerId as string | null;
+      if (!dealerId || players.length === 0) return;
 
-      const dealerIndex = rotatedPlayers.findIndex((p) => p.id === dealerId);
+      const dealerIndex = players.findIndex((p) => p.id === dealerId);
       if (dealerIndex === -1) return;
-      const starterId =
-        rotatedPlayers[(dealerIndex + 1) % rotatedPlayers.length]?.id;
+      const starterId = players[(dealerIndex + 1) % players.length]?.id;
 
       if (data.playerId !== starterId) return;
       if (dealingLockRef.current) return;
 
       dealingLockRef.current = true;
       setCurrentDealingRound(0);
-
       setDealingCards({});
 
-      animateDealing(rotatedPlayers, data.round, dealerId)
+      animateDealing(players, data.round, dealerId)
         .catch(() => {})
         .finally(() => {
           dealingLockRef.current = false;
@@ -338,29 +518,43 @@ const GameRoom: React.FC = () => {
     return () => {
       socket.off("dealCards", onDealCards);
     };
-  }, [socket, user?._id, rotatedPlayers, gameInfo?.dealerId, gameInfo]);
+  }, [socket, user?._id, roomId]);
 
+  // Effect to handle setting newHand after dealing is done
   useEffect(() => {
-    if (!gameInfo || !user) return;
+    if (!gameInfo?.hands || !user?._id) return;
     const playerHand = gameInfo.hands?.find((h) => h.playerId === user._id);
-    if (playerHand) {
-      if (
-        hand.length !== playerHand.hand.length ||
-        hand.some((c, i) => c.id !== playerHand.hand[i].id)
-      ) {
-        setHand(playerHand.hand as PlayingCard[]);
-      }
-    }
+    if (!playerHand) return;
+
+    const newHand = playerHand.hand as PlayingCard[];
+
+    setHand((prev) => {
+      if (prev.length !== newHand.length) return newHand;
+      const changed = prev.some((c, i) => c.id !== newHand[i]?.id);
+      return changed ? newHand : prev;
+    });
   }, [gameInfo?.hands, user?._id]);
 
+  // Effect to handle scoreBoard creation and reset
+  const hasCreatedScoreBoard = useRef(false);
   useEffect(() => {
-    if (!gameInfo || !socket) return;
+    if (!gameInfo?.status || !gameInfo?.scoreBoard || !socket) return;
 
-    if (gameInfo.status === "bid" && !gameInfo.scoreBoard) {
+    if (
+      gameInfo.status === "bid" &&
+      !gameInfo.scoreBoard &&
+      !hasCreatedScoreBoard.current
+    ) {
+      hasCreatedScoreBoard.current = true;
       socket.emit("createScoreBoard", roomId);
     }
-  }, [gameInfo, socket]);
 
+    if (gameInfo.status === "waiting" || gameInfo.status === "finished") {
+      hasCreatedScoreBoard.current = false;
+    }
+  }, [gameInfo?.status, gameInfo?.scoreBoard, socket, roomId]);
+
+  // Effect to handle leaving room if no room
   useEffect(() => {
     const timeout = setTimeout(() => {
       if (!room) {
@@ -373,41 +567,13 @@ const GameRoom: React.FC = () => {
     };
   }, [room, router]);
 
+  // Effect to clean up visible cards on unmount
   useEffect(() => {
     return () => {
       setVisibleCards({});
       visibleRef.current = {};
     };
   }, []);
-
-  const animateDealing = async (
-    players: typeof rotatedPlayers,
-    targetPerPlayer: number,
-    dealerId: string | null,
-  ) => {
-    if (!dealerId || !socket || !roomId) return;
-
-    const dealerIndex = players.findIndex((p) => p.id === dealerId);
-
-    const dealingOrder = [
-      ...players.slice(dealerIndex + 1),
-      ...players.slice(0, dealerIndex + 1),
-    ];
-
-    for (let round = 1; round <= targetPerPlayer; round++) {
-      for (const player of dealingOrder) {
-        setDealingCards((prev) => ({
-          ...prev,
-          [player.id]: round,
-        }));
-
-        await new Promise((res) => setTimeout(res, 400));
-      }
-      setCurrentDealingRound(round);
-    }
-
-    socket.emit("dealingAnimationDone", roomId);
-  };
 
   if (loading) {
     return (
@@ -454,7 +620,7 @@ const GameRoom: React.FC = () => {
     return foundUser;
   };
 
-  const handleOpenChat = (e: React.MouseEvent) => {
+  const handleOpenChat = () => {
     if (!socket || !roomId || !user) return;
 
     if (!showChat) {
@@ -477,6 +643,7 @@ const GameRoom: React.FC = () => {
       className={styles.game_room}
       onClick={() => {
         setShowEmojiPicker(false);
+        toggleSlider(false);
       }}
     >
       {!isScoreBoardOpen && (
@@ -487,11 +654,12 @@ const GameRoom: React.FC = () => {
               : styles.close_btn
           }
           onClick={() => setShowLeaveModal(true)}
-          // disabled={
-          //   gameInfo?.status === "dealing" ||
-          //   gameInfo?.status === "trump" ||
-          //   gameInfo?.status === "bid"
-          // }
+          disabled={
+            gameInfo?.status === "dealing" ||
+            gameInfo?.status === "trump" ||
+            gameInfo?.status === "bid" ||
+            gameInfo?.status === "choosingTrump"
+          }
         >
           <FaTimesCircle className={styles.close_icon} />
           {windowSize.width >= 1200 && windowSize.height >= 700 && (
@@ -501,12 +669,20 @@ const GameRoom: React.FC = () => {
       )}
 
       <button
-        className={styles.scoreBoard_btn}
+        className={
+          gameInfo?.status === "finished"
+            ? styles.scoreBoard_btn_finished
+            : styles.scoreBoard_btn
+        }
         onClick={() => setIsScoreBoardOpen(!isScoreBoardOpen)}
       >
         <PiKeyboard className={styles.scoreBoard_icon} />
         <span>Score board</span>
       </button>
+
+      <div className={styles.sound_control_container}>
+        <SoundControl />
+      </div>
 
       {!room.hasChat && (
         <button
@@ -535,7 +711,7 @@ const GameRoom: React.FC = () => {
       {room.hasChat && (
         <button
           className={styles.chat_button}
-          onClick={(e) => handleOpenChat(e)}
+          onClick={handleOpenChat}
           title="Open Chat"
         >
           <IoChatbubbleEllipsesOutline className={styles.chat_icon} />
@@ -581,6 +757,7 @@ const GameRoom: React.FC = () => {
         <FinishedMode
           users={room?.users as RoomUser[]}
           roomId={roomId as string}
+          bett={room?.bett as string}
           scoreBoard={gameInfo?.scoreBoard as ScoreBoard[]}
           user={user as { _id: string }}
         />
@@ -679,6 +856,8 @@ const GameRoom: React.FC = () => {
                 timestamp: Date;
               } | null
             }
+            timerData={timerData}
+            timerProgress={timerProgress}
           />
         </>
       )}

@@ -10,6 +10,7 @@ interface jCoinsStore {
     raw: number;
   } | null;
   fetchJCoins: () => Promise<void>;
+  clearJCoins: () => void;
   isGetMoreModalOpen: boolean;
   hasWarning?: boolean;
   toggleGetMoreModal: (withWarning?: boolean) => void;
@@ -38,6 +39,7 @@ const useJCoinsStore = create<jCoinsStore>((set) => ({
       set({ status: "failed" });
     }
   },
+  clearJCoins: () => set({ jCoins: null, status: "idle" }),
 }));
 
 export default useJCoinsStore;

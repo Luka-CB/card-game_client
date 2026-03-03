@@ -21,7 +21,7 @@ const UserOption = () => {
       router.push("/");
       setIsOpen(false);
     }
-  }, [status, router]);
+  }, [status, router, setIsOpen]);
 
   const handleLogout = () => {
     logout();

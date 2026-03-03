@@ -5,6 +5,7 @@ import Image from "next/image";
 import useWindowSize from "@/hooks/useWindowSize";
 import { motion } from "framer-motion";
 import usePlayedCardsStore from "@/store/gamePage/playedCardsStore";
+import { soundManager } from "@/utils/sounds";
 
 interface PlayedCardsProps {
   playedCards: PlayedCard[];
@@ -27,7 +28,7 @@ const PlayedCards: React.FC<PlayedCardsProps> = ({
     number | null
   >(null);
   const [cardsToAnimate, setCardsToAnimate] = useState<PlayedCard[] | null>(
-    null
+    null,
   );
 
   const winnerIndex = useMemo(() => {
@@ -43,24 +44,42 @@ const PlayedCards: React.FC<PlayedCardsProps> = ({
         animationWinnerIndex === 0
           ? "30vh"
           : animationWinnerIndex === 2
-          ? "-30vh"
-          : 0,
+            ? "-30vh"
+            : 0,
       x:
         animationWinnerIndex === 1
           ? "-50vh"
           : animationWinnerIndex === 3
-          ? "50vh"
-          : 0,
+            ? "50vh"
+            : 0,
     }),
-    [animationWinnerIndex]
+    [animationWinnerIndex],
   );
 
   useEffect(() => {
     if (winnerIndex !== null && playedCards.length === 4) {
       setCardsToAnimate(playedCards);
       setAnimationWinnerIndex(winnerIndex);
+
+      soundManager.play("winCards");
     }
   }, [winnerIndex, playedCards]);
+
+  useEffect(() => {
+    if (playedCards.length > 0) {
+      const lastPlayedCard = playedCards[playedCards.length - 1];
+
+      if (lastPlayedCard.card.joker && lastPlayedCard.card.type) {
+        if (lastPlayedCard.card.type === "pass") {
+          soundManager.play("slideUnder");
+        } else {
+          soundManager.play("playJoker");
+        }
+      } else {
+        soundManager.play("playCard");
+      }
+    }
+  }, [playedCards]);
 
   const handleAnimationComplete = () => {
     setAnimationWinnerIndex(null);
@@ -82,7 +101,7 @@ const PlayedCards: React.FC<PlayedCardsProps> = ({
           key={playerId}
           className={`${styles.card} ${styles.card}_${getPlayerIndex(
             playerId,
-            rotatedPlayers
+            rotatedPlayers,
           )}`}
           style={{
             zIndex: card.type === "pass" ? 0 : index + 1,
@@ -95,87 +114,87 @@ const PlayedCards: React.FC<PlayedCardsProps> = ({
                   ? "/cards/joker-black.png"
                   : "/cards/joker-red.png"
               }
-              alt={`${card.rank} of ${card.suit}`}
+              alt={`${card.rank} of ${card.suit}` || "joker"}
               width={
                 windowSize.height <= 450
                   ? 30
-                  : windowSize.height <= 550 && windowSize.height > 450
-                  ? 40
-                  : windowSize.height <= 900 &&
-                    windowSize.height > 600 &&
-                    windowSize.width > 600
-                  ? 50
-                  : windowSize.width <= 600
-                  ? 40
-                  : windowSize.width <= 990 && windowSize.width > 600
-                  ? 50
-                  : windowSize.width <= 1150 && windowSize.width > 990
-                  ? 70
-                  : windowSize.width < 1300 && windowSize.width > 1150
-                  ? 90
-                  : 100
+                  : windowSize.height <= 600 && windowSize.height > 450
+                    ? 40
+                    : windowSize.height <= 900 &&
+                        windowSize.height > 600 &&
+                        windowSize.width > 600
+                      ? 50
+                      : windowSize.width <= 600
+                        ? 40
+                        : windowSize.width <= 990 && windowSize.width > 600
+                          ? 50
+                          : windowSize.width <= 1150 && windowSize.width > 990
+                            ? 70
+                            : windowSize.width < 1300 && windowSize.width > 1150
+                              ? 90
+                              : 100
               }
               height={
                 windowSize.height <= 450
                   ? 45
                   : windowSize.height <= 600 && windowSize.height > 450
-                  ? 60
-                  : windowSize.height <= 900 &&
-                    windowSize.height > 600 &&
-                    windowSize.width > 600
-                  ? 8
-                  : windowSize.width <= 600
-                  ? 55
-                  : windowSize.width <= 990 && windowSize.width > 600
-                  ? 70
-                  : windowSize.width <= 1150 && windowSize.width > 990
-                  ? 100
-                  : windowSize.width < 1300 && windowSize.width > 1150
-                  ? 130
-                  : 150
+                    ? 60
+                    : windowSize.height <= 900 &&
+                        windowSize.height > 600 &&
+                        windowSize.width > 600
+                      ? 80
+                      : windowSize.width <= 600
+                        ? 55
+                        : windowSize.width <= 990 && windowSize.width > 600
+                          ? 70
+                          : windowSize.width <= 1150 && windowSize.width > 990
+                            ? 100
+                            : windowSize.width < 1300 && windowSize.width > 1150
+                              ? 130
+                              : 150
               }
             />
           ) : (
             <Image
               src={`/cards/${card.suit}-${card.rank?.toLowerCase()}.png`}
-              alt={`${card.rank} of ${card.suit}`}
+              alt={`${card.rank} of ${card.suit}` || "card"}
               width={
                 windowSize.height <= 450
                   ? 30
                   : windowSize.height <= 600 && windowSize.height > 450
-                  ? 40
-                  : windowSize.height <= 900 &&
-                    windowSize.height > 600 &&
-                    windowSize.width > 600
-                  ? 50
-                  : windowSize.width <= 600
-                  ? 40
-                  : windowSize.width <= 990 && windowSize.width > 600
-                  ? 50
-                  : windowSize.width <= 1150 && windowSize.width > 990
-                  ? 70
-                  : windowSize.width < 1300 && windowSize.width > 1150
-                  ? 90
-                  : 100
+                    ? 40
+                    : windowSize.height <= 900 &&
+                        windowSize.height > 600 &&
+                        windowSize.width > 600
+                      ? 50
+                      : windowSize.width <= 600
+                        ? 40
+                        : windowSize.width <= 990 && windowSize.width > 600
+                          ? 50
+                          : windowSize.width <= 1150 && windowSize.width > 990
+                            ? 70
+                            : windowSize.width < 1300 && windowSize.width > 1150
+                              ? 90
+                              : 100
               }
               height={
                 windowSize.height <= 450
                   ? 45
                   : windowSize.height <= 600 && windowSize.height > 450
-                  ? 60
-                  : windowSize.height <= 900 &&
-                    windowSize.height > 600 &&
-                    windowSize.width > 600
-                  ? 80
-                  : windowSize.width <= 600
-                  ? 55
-                  : windowSize.width <= 990 && windowSize.width > 600
-                  ? 70
-                  : windowSize.width <= 1150 && windowSize.width > 990
-                  ? 100
-                  : windowSize.width < 1300 && windowSize.width > 1150
-                  ? 130
-                  : 150
+                    ? 60
+                    : windowSize.height <= 900 &&
+                        windowSize.height > 600 &&
+                        windowSize.width > 600
+                      ? 80
+                      : windowSize.width <= 600
+                        ? 55
+                        : windowSize.width <= 990 && windowSize.width > 600
+                          ? 70
+                          : windowSize.width <= 1150 && windowSize.width > 990
+                            ? 100
+                            : windowSize.width < 1300 && windowSize.width > 1150
+                              ? 130
+                              : 150
               }
             />
           )}

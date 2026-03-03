@@ -123,7 +123,8 @@
     }
   }
 
-  .scoreBoard_btn {
+  .scoreBoard_btn,
+  .scoreBoard_btn_finished {
     @include btn();
     position: absolute;
     top: 3%;
@@ -136,6 +137,7 @@
     background-color: transparent;
     border-color: var(--clr-warning-800);
     border-width: 1px;
+    z-index: 1000;
 
     .scoreBoard_icon {
       font-size: 1.3rem;
@@ -170,6 +172,47 @@
     }
   }
 
+  .scoreBoard_btn_finished {
+    border-color: var(--clr-dark);
+    border-width: 2px;
+
+    .scoreBoard_icon {
+      color: var(--clr-dark);
+    }
+
+    span {
+      color: var(--clr-dark);
+      font-weight: 600;
+    }
+
+    &:hover {
+      border-color: var(--clr-darker);
+      background-color: var(--clr-dark-faded);
+
+      span,
+      .scoreBoard_icon {
+        color: var(--clr-darker);
+      }
+    }
+
+    &:active {
+      border-color: var(--clr-dark-faded);
+      background-color: var(--clr-dark-faded);
+
+      span,
+      .scoreBoard_icon {
+        color: var(--clr-dark-faded);
+      }
+    }
+  }
+
+  .sound_control_container {
+    position: absolute;
+    bottom: 30px;
+    right: 80px;
+    z-index: 1000;
+  }
+
   .emoji_picker {
     @include btn();
     position: absolute;
@@ -181,6 +224,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    z-index: 1;
 
     .emoji_icon {
       font-size: 2rem;

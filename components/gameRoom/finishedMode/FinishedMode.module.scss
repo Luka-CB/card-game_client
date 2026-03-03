@@ -4,7 +4,7 @@
   position: absolute;
   background-color: var(--clr-primary-800);
   width: 100%;
-  height: 100%;
+  height: 100vh;
   top: 0;
   left: 0;
   z-index: 10;
@@ -12,6 +12,19 @@
   flex-direction: column;
   align-items: center;
   justify-content: space-around;
+  overflow-y: auto;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  @media (max-width: 600px) {
+    justify-content: center;
+  }
+
+  @media (max-height: 750px) {
+    display: block;
+  }
 
   .exit_button {
     position: absolute;
@@ -55,15 +68,66 @@
       color: var(--clr-primary-800);
       transition: color 0.3s;
     }
+
+    @media (max-width: 1000px) {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      span {
+        display: none;
+      }
+
+      .exit_icon {
+        width: 2.5rem;
+        height: 2.5rem;
+      }
+    }
+
+    @media (max-width: 600px) {
+      top: 0.5rem;
+      right: 0.5rem;
+      width: 40px;
+      height: 40px;
+
+      .exit_icon {
+        width: 1.7rem;
+        height: 1.7rem;
+      }
+
+      &:hover {
+        box-shadow: 0 0 5px var(--clr-warning-400);
+      }
+    }
   }
 
   h1 {
     margin-bottom: 2rem;
     color: var(--clr-accent-200);
     font-size: 3rem;
+
+    @media (max-width: 900px) {
+      font-size: 2rem;
+    }
+
+    @media (max-width: 600px) {
+      font-size: 1.3rem;
+    }
+
+    @media (max-height: 750px) {
+      text-align: center;
+      padding-top: 30px;
+    }
   }
 
   .notice {
+    text-align: center;
+    padding: 0 10px;
+
     p {
       font-size: 1.5rem;
 
@@ -71,11 +135,30 @@
         font-size: 1.8rem;
       }
     }
+
+    @media (max-width: 900px) {
+      p {
+        font-size: 1rem;
+
+        b {
+          font-size: 1.3rem;
+        }
+      }
+    }
+
+    @media (max-width: 600px) {
+      margin-bottom: 3rem;
+    }
   }
 
   .user_list {
     display: flex;
     gap: 5rem;
+
+    @media (max-height: 750px) {
+      justify-content: center;
+      padding: 50px 0;
+    }
 
     .user_card {
       width: 150px;
@@ -89,14 +172,14 @@
         align-items: center;
 
         .avatar {
-          border: 4px solid rgb(169, 144, 4);
+          border: 4px solid;
           width: 80px;
           height: 80px;
           border-radius: 50%;
           overflow: hidden;
           margin-bottom: 0.5rem;
 
-          img {
+          .avatar_image {
             width: 100%;
             height: 100%;
             object-fit: cover;
@@ -112,9 +195,83 @@
 
       .indicator {
         width: 100%;
-        background-color: rgb(51, 2, 175);
-        box-shadow: 0 0 5px rgb(51, 2, 175);
         justify-self: flex-end;
+      }
+    }
+
+    @media (max-width: 900px) {
+      gap: 3rem;
+
+      .user_card {
+        width: 100px;
+
+        .user_info {
+          .avatar {
+            border-width: 2px;
+            width: 60px;
+            height: 60px;
+            margin-bottom: 0.3rem;
+          }
+
+          b {
+            margin-bottom: 0.2rem;
+            font-size: 0.6rem;
+          }
+        }
+      }
+    }
+
+    @media (max-width: 600px) {
+      gap: 1.5rem;
+
+      .user_card {
+        width: 60px;
+
+        .user_info {
+          .avatar {
+            border-width: 2px;
+            width: 50px;
+            height: 50px;
+            margin-bottom: 0.3rem;
+          }
+
+          .username {
+            width: 50px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            text-align: center;
+          }
+
+          b {
+            margin-bottom: 0.1rem;
+            font-size: 0.5rem;
+          }
+        }
+      }
+    }
+
+    @media (max-width: 350px) {
+      gap: 1.5rem;
+
+      .user_card {
+        width: 30px;
+
+        .user_info {
+          .avatar {
+            width: 40px;
+            height: 40px;
+            margin-bottom: 0.1rem;
+          }
+
+          .username {
+            width: 40px;
+          }
+
+          .score {
+            font-size: 0.4rem;
+          }
+        }
       }
     }
   }

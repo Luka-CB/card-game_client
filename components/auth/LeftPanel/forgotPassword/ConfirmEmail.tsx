@@ -34,7 +34,7 @@ const ConfirmEmail = () => {
       <h2>Confirm Email</h2>
       <form onSubmit={handleSubmit}>
         <label htmlFor="email">
-          Enter Email that you've used for registration
+          Enter Email that you&apos;ve used for registration
         </label>
         <input
           type="email"

@@ -236,6 +236,38 @@
         }
       }
 
+      .radio_wrapper {
+        display: flex;
+        align-items: center;
+        height: 40px;
+
+        strong {
+          color: var(--clr-light);
+          font-size: 0.8rem;
+        }
+
+        .male,
+        .female {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin-left: 10px;
+
+          input[type="radio"] {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--clr-primary-600);
+            margin-bottom: 0;
+          }
+
+          label {
+            color: var(--clr-light);
+            font-size: 0.7rem;
+            margin-left: 5px;
+          }
+        }
+      }
+
       button {
         @include btn();
         margin-top: 20px;

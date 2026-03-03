@@ -24,7 +24,7 @@ const Error = () => {
           registered with us!
         </p>
         <small>
-          We will try to fix this error, if it's coming from our end!
+          We will try to fix this error, if it&apos;s coming from our end!
         </small>
         <div className={styles.go_back}>
           <IoMdArrowRoundBack className={styles.icon} />

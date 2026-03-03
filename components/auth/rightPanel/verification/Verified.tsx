@@ -21,10 +21,10 @@ const Verified = () => {
 
   useEffect(() => {
     if (token) verifyEmail(token);
-  }, [token]);
+  }, [token, verifyEmail]);
 
   useEffect(() => {
-    let timeout: any;
+    let timeout: NodeJS.Timeout;
 
     if (status === "success") {
       if (countDown < 1) {
@@ -38,7 +38,7 @@ const Verified = () => {
     }
 
     return () => clearTimeout(timeout);
-  }, [status, countDown]);
+  }, [status, countDown, router, setIsVerified]);
 
   if (status === "loading") {
     return (

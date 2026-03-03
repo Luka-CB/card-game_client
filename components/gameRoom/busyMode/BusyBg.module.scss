@@ -15,7 +15,8 @@
     width: 600px;
 
     p {
-      font-size: 1.5rem;
+      font-size: clamp(1rem, 2vw, 1.5rem);
+      padding: 0 10px;
       font-weight: 600;
       color: var(--clr-dark);
       text-align: center;
@@ -56,6 +57,17 @@
           background-color: var(--clr-success-faded);
           border-color: var(--clr-success-600);
           color: var(--clr-success-600);
+        }
+      }
+
+      @media (max-width: 600px) {
+        flex-direction: column;
+        padding: 0 20px;
+
+        .btn_play,
+        .btn_leave {
+          width: 100%;
+          margin: 10px 0;
         }
       }
     }

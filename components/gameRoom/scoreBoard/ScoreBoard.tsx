@@ -1,5 +1,5 @@
 import styles from "./ScoreBoard.module.scss";
-import { HandWin, RoomUser, Round, ScoreBoard } from "@/utils/interfaces";
+import { RoomUser, Round, ScoreBoard } from "@/utils/interfaces";
 import { substringText } from "@/utils/misc";
 import { motion } from "framer-motion";
 import useWindowSize from "@/hooks/useWindowSize";
@@ -21,7 +21,7 @@ const ScoreBoardModal: React.FC<ScoreBoardProps> = ({
   const windowSize = useWindowSize();
 
   const getPlayerName = (playerId: string) => {
-    const user = roomUsers?.find((user) => user.id === playerId);
+    const user = roomUsers?.find((user) => user?.id === playerId);
     return user?.username || "Unknown Player";
   };
 
@@ -35,8 +35,8 @@ const ScoreBoardModal: React.FC<ScoreBoardProps> = ({
         onClick={(e) => e.stopPropagation()}
       >
         <div className={styles.board}>
-          {scoreBoard?.map((score) => (
-            <div key={score.playerId} className={styles.player}>
+          {scoreBoard?.map((score, playerIndex) => (
+            <div key={score.playerId || playerIndex} className={styles.player}>
               {windowSize.height <= 900 ? (
                 <section className={styles.player_name_fixed}>
                   <div
@@ -63,26 +63,42 @@ const ScoreBoardModal: React.FC<ScoreBoardProps> = ({
                 </section>
               )}
               <section className={styles.round}>
-                {score.roundOne?.map((round) => (
-                  <RoundContent key={round.id} round={round} hisht={hisht} />
+                {score.roundOne?.map((round, i) => (
+                  <RoundContent
+                    key={round?.id ?? `rl-${i}`}
+                    round={round}
+                    hisht={hisht}
+                  />
                 ))}
               </section>
               <RoundSum roundSum={score.roundSumOne || 0} />
               <section className={styles.round}>
-                {score.roundTwo?.map((round) => (
-                  <RoundContent key={round.id} round={round} hisht={hisht} />
+                {score.roundTwo?.map((round, i) => (
+                  <RoundContent
+                    key={round?.id ?? `r2-${i}`}
+                    round={round}
+                    hisht={hisht}
+                  />
                 ))}
               </section>
               <RoundSum roundSum={score.roundSumTwo || 0} />
               <section className={styles.round}>
-                {score.roundThree?.map((round) => (
-                  <RoundContent key={round.id} round={round} hisht={hisht} />
+                {score.roundThree?.map((round, i) => (
+                  <RoundContent
+                    key={round?.id ?? `r3-${i}`}
+                    round={round}
+                    hisht={hisht}
+                  />
                 ))}
               </section>
               <RoundSum roundSum={score.roundSumThree || 0} />
               <section className={styles.round}>
-                {score.roundFour?.map((round) => (
-                  <RoundContent key={round.id} round={round} hisht={hisht} />
+                {score.roundFour?.map((round, i) => (
+                  <RoundContent
+                    key={round?.id ?? `r4-${i}`}
+                    round={round}
+                    hisht={hisht}
+                  />
                 ))}
               </section>
               <RoundSum roundSum={score.roundSumFour || 0} />
@@ -99,36 +115,36 @@ const ScoreBoardModal: React.FC<ScoreBoardProps> = ({
 
 const RoundContent = ({ round, hisht }: { round: Round; hisht: string }) => {
   const pointsClass = () => {
-    if (round.win === round.bid) {
+    if (round?.win === round?.bid) {
       return styles.points_won;
     }
     return styles.points;
   };
 
   const point = () => {
-    if (round.points.isBonus) {
+    if (round.points?.isBonus) {
       return (
         <div className={styles.bonus}>
-          <span>{round.points.value}</span>
+          <span>{round.points?.value}</span>
           <b>x</b>
           <small>2</small>
         </div>
       );
     } else if (round.points.isCut) {
-      return <span className={styles.cut}>{round.points.value}</span>;
+      return <span className={styles.cut}>{round.points?.value}</span>;
     } else {
-      return <span>{round.points.value}</span>;
+      return <span>{round.points?.value}</span>;
     }
   };
 
   return (
     <div className={styles.round_content}>
-      <span className={styles.game_hand}>{round.gameHand}.</span>
-      <span className={styles.bid}>{round.bid || "-"}</span>
+      <span className={styles.game_hand}>{round?.gameHand}.</span>
+      <span className={styles.bid}>{round?.bid || "-"}</span>
       <div className={pointsClass()}>
-        {round.points.value > 0 ? (
+        {round?.points?.value > 0 ? (
           point()
-        ) : round.points.value < 0 ? (
+        ) : round?.points?.value < 0 ? (
           <div className={styles.hisht}>
             <div className={styles.line_one}></div>
             <div className={styles.line_two}></div>

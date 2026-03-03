@@ -433,6 +433,63 @@
     }
   }
 
+  @media (max-height: 800px) {
+    .room_card,
+    .room_card_active {
+      width: 400px;
+      height: 200px;
+
+      header {
+        h4 {
+          font-size: 0.6rem;
+        }
+
+        .game_type {
+          font-size: 0.6rem;
+          padding: 3px 5px;
+
+          .dash {
+            font-size: 0.8rem;
+          }
+
+          .bett {
+            span {
+              font-size: 0.5rem;
+            }
+          }
+        }
+
+        .status {
+          .icon {
+            font-size: 0.8rem;
+          }
+
+          span {
+            font-size: 0.7rem;
+            margin-left: 5px;
+          }
+        }
+      }
+
+      .body {
+        height: 100px;
+        display: flex;
+        align-items: center;
+
+        .user {
+          width: 70px;
+          height: 70px;
+        }
+      }
+
+      footer {
+        .left {
+          font-size: 0.7rem;
+        }
+      }
+    }
+  }
+
   @media (max-width: 450px) {
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
 

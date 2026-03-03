@@ -12,6 +12,7 @@ interface SignupStore {
   signup: (userData: {
     username: string;
     email: string;
+    gender: "male" | "female" | null;
     avatar?: string;
     password: string;
   }) => Promise<void>;
@@ -28,6 +29,7 @@ const useSignupStore = create<SignupStore>((set) => ({
   signup: async (userData: {
     username: string;
     email: string;
+    gender: "male" | "female" | null;
     avatar?: string;
     password: string;
   }) => {
@@ -37,9 +39,12 @@ const useSignupStore = create<SignupStore>((set) => ({
       const user = {
         _id: data.data._id,
         username: data.data.username,
+        originalUsername: data.data.originalUsername,
         avatar: data.data.avatar,
         email: data.data.email,
+        gender: data.data.gender,
         isVerified: data.data.isVerified,
+        isAdmin: data.data.isAdmin,
       };
 
       set({ user, status: "success" });

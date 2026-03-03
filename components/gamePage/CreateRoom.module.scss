@@ -39,6 +39,10 @@
       &:hover {
         color: var(--clr-danger-600);
       }
+
+      @media (max-height: 600px) {
+        font-size: 1rem;
+      }
     }
 
     .game_type {
@@ -90,6 +94,20 @@
         .item,
         .item_active {
           padding: 0.5rem 1rem;
+
+          span {
+            font-size: 0.7rem;
+          }
+        }
+      }
+
+      @media (max-height: 600px) {
+        margin-top: 0;
+        margin-bottom: 0.5;
+
+        .item,
+        .item_active {
+          padding: 0.2rem 0.5rem;
 
           span {
             font-size: 0.7rem;
@@ -162,6 +180,22 @@
           span {
             font-size: 0.7rem;
             margin-top: 3px;
+          }
+        }
+      }
+
+      @media (max-height: 600px) {
+        margin-bottom: 0;
+
+        .item,
+        .item_active {
+          .icon {
+            font-size: 0.7rem;
+          }
+
+          span {
+            font-size: 0.5rem;
+            margin-left: 2px;
           }
         }
       }
@@ -491,6 +525,125 @@
             border-color: var(--clr-primary-600);
             background-color: var(--clr-primary-faded);
           }
+        }
+      }
+
+      @media (max-height: 650px) {
+        margin-top: 0;
+
+        .radio_box {
+          gap: 5px;
+          margin: 10px 0;
+
+          b {
+            font-size: 0.7rem;
+          }
+
+          .inputs {
+            display: flex;
+            gap: 5px;
+
+            input[type="radio"] {
+              width: 15px;
+              height: 15px;
+
+              &:not(:first-child) {
+                margin-left: 5px;
+              }
+            }
+
+            label {
+              font-size: 0.8rem;
+            }
+          }
+        }
+
+        .input_box {
+          display: flex;
+          flex-direction: column;
+
+          &:not(:first-child) {
+            margin-top: 5px;
+          }
+
+          label {
+            font-size: 0.7rem;
+            padding: 1px;
+          }
+
+          input {
+            height: 30px;
+            font-size: 0.7rem;
+          }
+        }
+
+        .bet_box,
+        .bet_box_error {
+          position: relative;
+          display: flex;
+          align-items: center;
+          margin-top: 12px;
+
+          label {
+            font-size: 0.7rem;
+          }
+
+          input {
+            width: 50px;
+            height: 30px;
+            font-size: 0.7rem;
+            margin-left: 5px;
+          }
+
+          .info {
+            margin-left: 5px;
+
+            small {
+              font-size: 0.7rem;
+            }
+
+            img {
+              width: 20px;
+              height: 20px;
+            }
+          }
+
+          .error_message {
+            left: 50%;
+            font-size: 0.7rem;
+          }
+        }
+
+        .toggle_box {
+          gap: 0.2rem;
+          margin-bottom: 0.5rem;
+
+          span {
+            font-size: 0.7rem;
+          }
+        }
+
+        .toggle_switch {
+          width: 46px;
+          height: 18px;
+        }
+
+        .slider {
+          &::before {
+            height: 12px;
+            width: 12px;
+            left: 3px;
+            bottom: 3px;
+          }
+        }
+
+        .submit_btn {
+          font-size: 0.8rem;
+          height: 25px;
+          width: fit-content;
+          padding: 3px 10px;
+          border-radius: 5px;
+          align-self: center;
         }
       }
     }

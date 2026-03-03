@@ -5,10 +5,13 @@ import { GiExitDoor } from "react-icons/gi";
 import { useEffect, useState } from "react";
 import useSocket from "@/hooks/useSocket";
 import { useRouter } from "next/navigation";
+import { soundManager } from "@/utils/sounds";
+import Image from "next/image";
 
 interface FinishedModeProps {
   users: RoomUser[];
   roomId?: string;
+  bett?: string;
   scoreBoard?: ScoreBoard[];
   user?: { _id: string };
 }
@@ -16,6 +19,7 @@ interface FinishedModeProps {
 const FinishedMode: React.FC<FinishedModeProps> = ({
   users,
   roomId,
+  bett,
   scoreBoard,
   user,
 }) => {
@@ -23,6 +27,10 @@ const FinishedMode: React.FC<FinishedModeProps> = ({
 
   const socket = useSocket();
   const router = useRouter();
+
+  useEffect(() => {
+    soundManager.play("gameFinished");
+  }, []);
 
   useEffect(() => {
     if (countDown === 0) {
@@ -51,19 +59,19 @@ const FinishedMode: React.FC<FinishedModeProps> = ({
   const usersByScore = [...users].sort((a, b) => {
     const scoreA = getPlayerScore(a.id);
     const scoreB = getPlayerScore(b.id);
-    return scoreA - scoreB;
+    return scoreB - scoreA;
   });
 
   const getAwardedPointsByRank = (rank: number) => {
     switch (rank) {
       case 1:
-        return -300;
-      case 2:
-        return -150;
-      case 3:
-        return 150;
-      case 4:
         return 300;
+      case 2:
+        return 150;
+      case 3:
+        return -150;
+      case 4:
+        return -300;
       default:
         return 0;
     }
@@ -71,14 +79,41 @@ const FinishedMode: React.FC<FinishedModeProps> = ({
 
   const getIndicatorHeight = (score: number) => {
     switch (score) {
-      case -300:
-        return "150px";
-      case -150:
-        return "250px";
-      case 150:
-        return "350px";
       case 300:
         return "450px";
+      case 150:
+        return "350px";
+      case -150:
+        return "250px";
+      case -300:
+        return "150px";
+      default:
+        return "0px";
+    }
+  };
+
+  const getAwardsPointsForBett = (rank: number) => {
+    const bettValue = parseInt(bett || "0");
+    switch (rank) {
+      case 1:
+        return bettValue * 4;
+      case 2:
+      case 3:
+      case 4:
+        return -bettValue;
+      default:
+        return 0;
+    }
+  };
+
+  const getIndicatorHeightForBett = (points: number) => {
+    switch (points) {
+      case bett ? parseInt(bett) * 4 : 0:
+        return "400px";
+      case bett ? -parseInt(bett) : 0:
+      case bett ? -parseInt(bett) : 0:
+      case bett ? -parseInt(bett) : 0:
+        return "150px";
       default:
         return "0px";
     }
@@ -105,15 +140,26 @@ const FinishedMode: React.FC<FinishedModeProps> = ({
         {usersByScore.map((user) => (
           <div key={user.id} className={styles.user_card}>
             <div className={styles.user_info}>
-              <div className={styles.avatar}>
+              <div
+                className={styles.avatar}
+                style={{
+                  borderColor: user.color ? user.color.value : "#000",
+                  boxShadow: user.color
+                    ? `0 0 10px ${user.color?.value}80`
+                    : "0 0 10px #000",
+                }}
+              >
                 {user.avatar ? (
-                  <img
+                  <Image
                     src={
                       (user.status !== "active"
                         ? user.botAvatar
-                        : user.avatar) ?? undefined
+                        : user.avatar) ?? "/default-avatar.jpeg"
                     }
-                    alt={user.username}
+                    alt={user.username || "avatar"}
+                    width={50}
+                    height={50}
+                    className={styles.avatar_image}
                   />
                 ) : (
                   <div className={styles.placeholder_avatar}>
@@ -125,21 +171,41 @@ const FinishedMode: React.FC<FinishedModeProps> = ({
               <b className={styles.score}>
                 Score: <small>{getPlayerScore(user.id)}</small>
               </b>
-              <b className={styles.points}>
-                {getAwardedPointsByRank(usersByScore.indexOf(user) + 1) > 0
-                  ? `+${getAwardedPointsByRank(usersByScore.indexOf(user) + 1)}`
-                  : getAwardedPointsByRank(usersByScore.indexOf(user) + 1)}
-              </b>
+              {bett ? (
+                <b className={styles.points}>
+                  {getAwardsPointsForBett(usersByScore.indexOf(user) + 1) > 0
+                    ? `+${getAwardsPointsForBett(usersByScore.indexOf(user) + 1)}`
+                    : getAwardsPointsForBett(usersByScore.indexOf(user) + 1)}
+                </b>
+              ) : (
+                <b className={styles.points}>
+                  {getAwardedPointsByRank(usersByScore.indexOf(user) + 1) > 0
+                    ? `+${getAwardedPointsByRank(usersByScore.indexOf(user) + 1)}`
+                    : getAwardedPointsByRank(usersByScore.indexOf(user) + 1)}
+                </b>
+              )}
             </div>
             <motion.div
               initial={{ height: "0px" }}
               animate={{
-                height: getIndicatorHeight(
-                  getAwardedPointsByRank(usersByScore.indexOf(user) + 1),
-                ),
+                height: bett
+                  ? getIndicatorHeightForBett(
+                      getAwardsPointsForBett(usersByScore.indexOf(user) + 1),
+                    )
+                  : getIndicatorHeight(
+                      getAwardedPointsByRank(usersByScore.indexOf(user) + 1),
+                    ),
               }}
               transition={{ duration: 4, delay: 1.5, type: "tween" }}
               className={styles.indicator}
+              style={{
+                backgroundColor: user.color
+                  ? user.color.value
+                  : "rgb(51, 2, 175)",
+                boxShadow: user.color
+                  ? `0 0 3px ${user.color.value}`
+                  : "0 0 3px rgb(51, 2, 175)",
+              }}
             ></motion.div>
           </div>
         ))}
