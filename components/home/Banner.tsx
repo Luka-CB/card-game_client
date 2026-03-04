@@ -3,6 +3,13 @@
 import Image from "next/image";
 import styles from "./Banner.module.scss";
 import useUserStore from "@/store/user/userStore";
+import localFont from "next/font/local";
+
+const bytesized = localFont({
+  src: "../../public/fonts/Bytesized-Regular.ttf",
+  variable: "--font-bytesized",
+  display: "swap",
+});
 
 const Banner = () => {
   const { user } = useUserStore();
@@ -32,7 +39,10 @@ const Banner = () => {
         )}
       </div>
       <div className={styles.glitch_wrapper}>
-        <div className={styles.glitch} data-glitch="Joker Clash">
+        <div
+          className={`${styles.glitch} ${bytesized.className}`}
+          data-glitch="Joker Clash"
+        >
           Joker Clash
         </div>
       </div>

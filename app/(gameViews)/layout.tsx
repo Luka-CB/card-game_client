@@ -1,16 +1,28 @@
-import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useUserStore } from "@/stores/userStore";
+import Loader from "@/components/Loader";
 
 export default async function GameViewsLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const cookieStore = await cookies();
-  const token = cookieStore.get("sid")?.value;
+  const router = useRouter();
+  const { user, loading, getUser } = useUserStore();
 
-  if (!token) {
-    redirect("/");
+  useEffect(() => {
+    getUser();
+  }, [getUser]);
+
+  useEffect(() => {
+    if (!loading && !user) {
+      router.replace("/?auth=signin");
+    }
+  }, [loading, user, router]);
+
+  if (loading || !user) {
+    return <Loader />;
   }
 
   return <>{children}</>;
