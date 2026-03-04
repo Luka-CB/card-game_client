@@ -1,9 +1,11 @@
+"use client";
+
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useUserStore } from "@/stores/userStore";
-import Loader from "@/components/Loader";
+import useUserStore from "@/store/user/userStore";
+import Loader from "@/components/loaders/Loader";
 
-export default async function GameViewsLayout({
+export default function GameViewsLayout({
   children,
 }: {
   children: React.ReactNode;
