@@ -1,4 +1,4 @@
-@use "../../styles/mixins" as *;
+@use "mixins" as *;
 
 .your_turn_popup {
   @include bgColor(light);
