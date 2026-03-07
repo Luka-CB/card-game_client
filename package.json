@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "predev": "npx kill-port 3000",
     "dev": "next dev --turbopack",
     "build": "next build --webpack",
     "start": "next start",
@@ -25,11 +26,11 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
-    "@types/node": "^20",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
+    "@types/node": "^20.19.35",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
     "eslint": "^9",
     "eslint-config-next": "^16.1.6",
-    "typescript": "^5"
+    "typescript": "^5.9.3"
   }
 }

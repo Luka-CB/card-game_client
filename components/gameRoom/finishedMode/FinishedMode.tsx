@@ -34,7 +34,7 @@ const FinishedMode: React.FC<FinishedModeProps> = ({
 
   useEffect(() => {
     if (countDown === 0) {
-      router.push("/games");
+      router.push("/rooms");
     }
     const timer = setInterval(() => {
       setCountdown((prev) => prev - 1);
@@ -46,7 +46,7 @@ const FinishedMode: React.FC<FinishedModeProps> = ({
   const exitRoom = () => {
     if (!socket) return;
     socket.emit("updateUserStatus", roomId, user?._id, "left");
-    router.push("/games");
+    router.push("/rooms");
   };
 
   const getPlayerScore = (playerId: string) => {

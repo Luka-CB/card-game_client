@@ -19,7 +19,7 @@
   }
 
   .border {
-    width: 102%;
+    width: 100%;
     height: 50px;
     border-radius: 10px;
     background: rgb(70, 81, 91);
@@ -30,7 +30,7 @@
     );
     position: absolute;
     bottom: -10px;
-    left: -15px;
+    left: 0px;
     clip-path: polygon(
       38% 50%,
       62% 50%,
@@ -42,12 +42,17 @@
       0 0,
       34% 0
     );
+
+    @media (max-width: 900px) {
+      border-radius: unset;
+    }
   }
 
   .user_count {
     position: absolute;
     bottom: 5px;
     left: 0;
+    padding-left: 10px;
     display: flex;
     align-items: center;
 

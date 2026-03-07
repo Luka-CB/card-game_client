@@ -41,7 +41,7 @@ const Card: React.FC<CardProps> = ({ room }) => {
     if (roomUser && roomUser.status === "active" && room?.users.length === 4) {
       const timeout = setTimeout(() => {
         if (!isLeavingRef.current) {
-          router.push(`/games/${room.id}`);
+          router.push(`/rooms/${room.id}`);
         }
       }, 1000);
 
@@ -121,7 +121,7 @@ const Card: React.FC<CardProps> = ({ room }) => {
 
     socket.emit("updateUserStatus", room.id, user._id, "active");
     const timeout = setTimeout(() => {
-      router.push(`/games/${room.id}`);
+      router.push(`/rooms/${room.id}`);
     }, 500);
 
     return () => clearTimeout(timeout);

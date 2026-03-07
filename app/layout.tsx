@@ -11,6 +11,11 @@ const roboto = Roboto({
 export const metadata: Metadata = {
   title: "Joker Clash",
   description: "Joker Card Game",
+  icons: {
+    icon: "/logo-icon.ico",
+    shortcut: "/logo-icon.ico",
+    apple: "/logo-icon.ico",
+  },
 };
 
 export default function RootLayout({

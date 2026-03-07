@@ -131,8 +131,8 @@ const SideNav: React.FC<SideNavProps> = ({
                 </Link>
 
                 <Link
-                  href="/games"
-                  className={pathname === "/games" ? styles.active : undefined}
+                  href="/rooms"
+                  className={pathname === "/rooms" ? styles.active : undefined}
                   onClick={() => toggleNav()}
                 >
                   Rooms

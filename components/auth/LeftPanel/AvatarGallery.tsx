@@ -123,8 +123,6 @@ const AvatarGallery = () => {
             className={styles.gallery}
           >
             <div className={styles.header}>
-              <h2>Select Your Avatar</h2>
-
               {(avatar || newAvatar) && (
                 <div className={styles.preview}>
                   <Image
@@ -136,28 +134,21 @@ const AvatarGallery = () => {
                   />
 
                   <button className={styles.done_btn} onClick={handleDone}>
-                    {windowSize.width <= 700 ? (
-                      <MdOutlineDoneOutline className={styles.icon} />
-                    ) : (
-                      "Done"
-                    )}
+                    <MdOutlineDoneOutline className={styles.icon} />
                   </button>
                   <button
                     className={styles.cancel_btn}
                     onClick={() => setNewAvatar("")}
                     disabled={!newAvatar}
                   >
-                    {windowSize.width <= 700 ? (
-                      <ImCancelCircle className={styles.icon} />
-                    ) : (
-                      "Cancel"
-                    )}
+                    <ImCancelCircle className={styles.icon} />
                   </button>
                 </div>
               )}
               <button className={styles.close_btn} onClick={handleClose}>
                 <FaTimesCircle />
               </button>
+              <h2>Select Your Avatar</h2>
             </div>
 
             {status === "loading" && (

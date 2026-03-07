@@ -106,7 +106,7 @@ const GameRoom: React.FC = () => {
     if (!socket || !roomId) return;
 
     socket.emit("updateUserStatus", roomId, user?._id, "inactive");
-    router.push("/games");
+    router.push("/rooms");
 
     setShowLeaveModal(false);
   };
@@ -179,7 +179,7 @@ const GameRoom: React.FC = () => {
 
     socket.on("roomDestroyed", (data: { roomId: string }) => {
       if (data.roomId === roomId) {
-        router.push("/games");
+        router.push("/rooms");
       }
     });
 
@@ -558,7 +558,7 @@ const GameRoom: React.FC = () => {
   useEffect(() => {
     const timeout = setTimeout(() => {
       if (!room) {
-        router.push("/games");
+        router.push("/rooms");
       }
     }, 1000);
 

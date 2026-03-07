@@ -12,6 +12,7 @@ import useJCoinsStore from "@/store/user/stats/jCoinsStore";
 import { useEffect } from "react";
 import useUserStore from "@/store/user/userStore";
 import SideNav from "./SideNav";
+import Image from "next/image";
 
 const Header = () => {
   const { toggleNav } = useNavStore();
@@ -42,16 +43,32 @@ const Header = () => {
       <div className={styles.header_container}>
         <div className={styles.logo}>
           <Link href="/">
-            <h1>LOGO</h1>
+            <Image
+              src="/logos/title-logo.png"
+              alt="Joker Clash Logo"
+              width={120}
+              height={70}
+              className={styles.logo_image}
+            />
           </Link>
         </div>
 
         {windowSize.width <= 700 ? (
           <nav>
-            <Avatar />
-            <button className={styles.menu_btn} onClick={() => toggleNav()}>
-              <TiThMenu className={styles.menu_icon} />
-            </button>
+            {user && user._id ? (
+              <>
+                <Avatar />
+                <button className={styles.menu_btn} onClick={() => toggleNav()}>
+                  <TiThMenu className={styles.menu_icon} />
+                </button>
+              </>
+            ) : (
+              <div className={styles.auth_links}>
+                <Link href="/?auth=signin">Sign In</Link>
+                <div className={styles.divider}>|</div>
+                <Link href="/?auth=signup">Sign Up</Link>
+              </div>
+            )}
           </nav>
         ) : (
           <MainNav

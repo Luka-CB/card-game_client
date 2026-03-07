@@ -14,6 +14,7 @@ import Redirecting from "./Redirecting";
 import Error from "./Error";
 import ChangePassword from "./LeftPanel/forgotPassword/ChangePassword";
 import ConfirmEmail from "./LeftPanel/forgotPassword/ConfirmEmail";
+import Link from "next/link";
 
 const leftSlideParams = ["signin", "signup", "confirm-email"];
 const rightSlideParams = ["verify", "change-email"];
@@ -99,6 +100,20 @@ const Auth = () => {
                 >
                   Authenticate! <span>It&apos;s Easy, Quick and Free</span>
                 </motion.h1>
+                <div className={styles.links}>
+                  <Link href="/rules" className={styles.link}>
+                    Game Rules
+                  </Link>
+                  <Link href="/about" className={styles.link}>
+                    About Us
+                  </Link>
+                  <Link href="/privacy" className={styles.link}>
+                    Privacy Policy
+                  </Link>
+                  <Link href="/terms" className={styles.link}>
+                    Terms of Service
+                  </Link>
+                </div>
               </motion.div>
             </motion.div>
           ) : null}

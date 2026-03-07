@@ -11,6 +11,7 @@ import Oauth from "./Oauth";
 import { IoMdEye, IoIosEyeOff } from "react-icons/io";
 import useUserStore from "@/store/user/userStore";
 import Image from "next/image";
+import Link from "next/link";
 
 const Signup = () => {
   const router = useRouter();
@@ -215,6 +216,20 @@ const Signup = () => {
       <div className={styles.signup}>
         <p>Already have an account?</p>
         <span onClick={() => handleRoute("signin")}>Sign In</span>
+      </div>
+      <div className={styles.links}>
+        <Link href="/rules" className={styles.link}>
+          Game Rules
+        </Link>
+        <Link href="/about" className={styles.link}>
+          About Us
+        </Link>
+        <Link href="/privacy" className={styles.link}>
+          Privacy Policy
+        </Link>
+        <Link href="/terms" className={styles.link}>
+          Terms of Service
+        </Link>
       </div>
     </div>
   );

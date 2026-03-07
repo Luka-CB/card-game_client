@@ -28,6 +28,28 @@
     display: flex;
     align-items: center;
 
+    .auth_links {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+
+      a {
+        color: var(--clr-light);
+        text-decoration: none;
+        transition: all 0.1s ease-in-out;
+        font-size: 0.8rem;
+
+        &:hover {
+          color: var(--clr-primary-400);
+          text-shadow: 0 0 9px var(--clr-primary-200);
+        }
+      }
+
+      .divider {
+        color: var(--clr-light);
+      }
+    }
+
     .menu_btn {
       display: flex;
       align-items: center;

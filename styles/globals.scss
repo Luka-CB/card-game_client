@@ -6,14 +6,22 @@
   margin: 0;
 }
 
+html,
+body {
+  height: 100%;
+}
+
 body {
   background-image: linear-gradient(135deg, #111112 10%, #0d2119 100%);
   background-repeat: no-repeat;
   background-attachment: fixed;
   width: 80%;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
   margin: auto;
 
-  @media (max-width: 800px) {
+  @media (max-width: 900px) {
     width: 100%;
   }
 
@@ -26,7 +34,9 @@ body {
   }
 
   main {
+    flex: 1;
     max-width: 2100px;
+    min-height: 0;
     margin: auto;
     font-family: "Atkinson Hyperlegible Mono", serif;
     font-optical-sizing: auto;

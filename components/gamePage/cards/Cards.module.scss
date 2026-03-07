@@ -3,12 +3,41 @@
 .room_cards {
   margin-top: 20px;
   width: 100%;
-  min-height: 50vh;
+  height: 75vh;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(405px, 1fr));
   justify-items: center;
   gap: 2rem 0.2rem;
   padding-bottom: 100px;
+  overflow-y: auto;
+  padding: 20px 0;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  .placeholder_card {
+    @include bgColor();
+    width: 400px;
+    height: 225px;
+    border-radius: 10px;
+    box-shadow: 2px 3px 15px rgba(0, 0, 0, 0.302);
+    border: 1.5px solid var(--clr-light-faded);
+    opacity: 0.5;
+    animation: pulse 1.5s infinite;
+
+    @keyframes pulse {
+      0% {
+        opacity: 0.5;
+      }
+      50% {
+        opacity: 0.8;
+      }
+      100% {
+        opacity: 0.5;
+      }
+    }
+  }
 
   .room_card,
   .room_card_active {

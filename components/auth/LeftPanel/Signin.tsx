@@ -119,6 +119,20 @@ const Signin = () => {
         <p>Don&apos;t have an account?</p>
         <span onClick={handleRoute}>Sign Up</span>
       </div>
+      <div className={styles.links}>
+        <Link href="/rules" className={styles.link}>
+          Game Rules
+        </Link>
+        <Link href="/about" className={styles.link}>
+          About Us
+        </Link>
+        <Link href="/privacy" className={styles.link}>
+          Privacy Policy
+        </Link>
+        <Link href="/terms" className={styles.link}>
+          Terms of Service
+        </Link>
+      </div>
     </div>
   );
 };
