@@ -1,4 +1,4 @@
-@use "../../../styles/mixins" as *;
+@use "mixins" as *;
 
 @import url("https://fonts.googleapis.com/css2?family=Edu+NSW+ACT+Hand+Pre:wght@400..700&display=swap");
 
@@ -9,7 +9,7 @@
   width: 100%;
   height: 100%;
   background-color: rgba(0, 0, 0, 0.177);
-  z-index: 100;
+  z-index: 1000;
 
   .container {
     @include bgColor(light);

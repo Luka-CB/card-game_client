@@ -39,19 +39,19 @@ const LastPlayedCards: React.FC<LastPlayedCardsProps> = ({
                 height < 800
                   ? 20
                   : width < 1000 && width > 600
-                  ? 25
-                  : width < 600
-                  ? 20
-                  : 35
+                    ? 25
+                    : width < 600
+                      ? 20
+                      : 35
               }
               height={
                 height < 800
                   ? 30
                   : width < 1000 && width > 600
-                  ? 40
-                  : width < 600
-                  ? 30
-                  : 50
+                    ? 40
+                    : width < 600
+                      ? 30
+                      : 50
               }
             />
           </div>
@@ -70,7 +70,7 @@ const LastPlayedCards: React.FC<LastPlayedCardsProps> = ({
               <div
                 key={playerId}
                 className={`${styles.card} ${styles.card}_${getPlayerIndex(
-                  playerId
+                  playerId,
                 )}`}
                 style={{ zIndex: index + 1 }}
               >
@@ -81,14 +81,14 @@ const LastPlayedCards: React.FC<LastPlayedCardsProps> = ({
                         ? "/cards/joker-black.png"
                         : "/cards/joker-red.png"
                     }
-                    alt={`${card.rank} of ${card.suit}`}
+                    alt={`${card.rank} of ${card.suit}` || "joker"}
                     width={50}
                     height={80}
                   />
                 ) : (
                   <Image
                     src={`/cards/${card.suit}-${card.rank?.toLowerCase()}.png`}
-                    alt={`${card.rank} of ${card.suit}`}
+                    alt={`${card.rank} of ${card.suit}` || "card"}
                     width={40}
                     height={60}
                   />

@@ -1,75 +1,99 @@
 "use client";
 
-import useUserStore from "@/store/user/userStore";
 import styles from "./Header.module.scss";
-import { FaCaretDown } from "react-icons/fa6";
-import Image from "next/image";
-import UserOption from "../home/UserOption";
-import useUserOptionStore from "@/store/user/userOptionStore";
+import { TiThMenu } from "react-icons/ti";
+import useWindowSize from "@/hooks/useWindowSize";
+import MainNav from "./MainNav";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useMemo } from "react";
-import { getStoredRandomAvatar } from "@/utils/misc";
+import Avatar from "./Avatar";
+import useNavStore from "@/store/navStore";
+import useRatingStore from "@/store/user/stats/ratingStore";
+import useJCoinsStore from "@/store/user/stats/jCoinsStore";
+import { useEffect } from "react";
+import useUserStore from "@/store/user/userStore";
+import SideNav from "./SideNav";
+import Image from "next/image";
 
 const Header = () => {
+  const { toggleNav } = useNavStore();
+  const windowSize = useWindowSize();
   const { user } = useUserStore();
-  const { setIsOpen, isOpen } = useUserOptionStore();
-  const pathname = usePathname();
+  const { fetchJCoins, jCoins, toggleGetMoreModal } = useJCoinsStore();
+  const { fetchRating, rating } = useRatingStore();
 
-  const avatar = useMemo(() => {
-    return user?.avatar || getStoredRandomAvatar();
-  }, [user?.avatar]);
+  useEffect(() => {
+    if (user && !jCoins) {
+      fetchJCoins();
+    }
+  }, [user, jCoins, fetchJCoins]);
+
+  useEffect(() => {
+    if (user && !rating) {
+      fetchRating();
+    }
+  }, [user, rating, fetchRating]);
+
+  const handleOpenGetMoreModal = () => {
+    toggleGetMoreModal();
+    toggleNav(false);
+  };
 
   return (
-    <header className={styles.header}>
-      <nav>
+    <>
+      <div className={styles.header_container}>
         <div className={styles.logo}>
           <Link href="/">
-            <h1>LOGO</h1>
+            <Image
+              src="/logos/title-logo.png"
+              alt="Joker Clash Logo"
+              width={120}
+              height={70}
+              className={styles.logo_image}
+            />
           </Link>
         </div>
-        <ul>
-          {pathname !== "/" && (
-            <>
-              <Link
-                href="/games"
-                className={pathname === "/games" ? styles.active : undefined}
-              >
-                Games
-              </Link>
-            </>
-          )}
-          <Link
-            href="/about-us"
-            className={pathname === "/about-us" ? styles.active : undefined}
-          >
-            About Us
-          </Link>
-          <Link
-            href="/about-game"
-            className={pathname === "/about-game" ? styles.active : undefined}
-          >
-            About Game
-          </Link>
-        </ul>
-      </nav>
-      <div className={styles.user}>
-        <p>{user?.username}</p>
-        <div className={styles.avatar} onClick={() => setIsOpen(!isOpen)}>
-          <Image
-            src={avatar}
-            alt="avatar"
-            width={50}
-            height={50}
-            className={styles.avatar_img}
+
+        {windowSize.width <= 700 ? (
+          <nav>
+            {user && user._id ? (
+              <>
+                <Avatar />
+                <button className={styles.menu_btn} onClick={() => toggleNav()}>
+                  <TiThMenu className={styles.menu_icon} />
+                </button>
+              </>
+            ) : (
+              <div className={styles.auth_links}>
+                <Link href="/?auth=signin">Sign In</Link>
+                <div className={styles.divider}>|</div>
+                <Link href="/?auth=signup">Sign Up</Link>
+              </div>
+            )}
+          </nav>
+        ) : (
+          <MainNav
+            jCoins={jCoins as { value: string; raw: number } | null}
+            rating={
+              rating as {
+                value: number;
+                trend: "up" | "down" | "stable";
+              } | null
+            }
+            onOpenGetMoreModal={handleOpenGetMoreModal}
           />
-          <div className={styles.caret}>
-            <FaCaretDown className={styles.caret_icon} />
-          </div>
-        </div>
-        <UserOption />
+        )}
       </div>
-    </header>
+      <SideNav
+        jCoins={jCoins as { value: string; raw: number } | null}
+        rating={
+          rating as {
+            value: number;
+            trend: "up" | "down" | "stable";
+          } | null
+        }
+        onOpenGetMoreModal={handleOpenGetMoreModal}
+      />
+    </>
   );
 };
 

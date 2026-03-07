@@ -12,10 +12,7 @@ const Cards = () => {
   const socket = useSocket();
 
   useEffect(() => {
-    if (!socket) {
-      console.log("No socket");
-      return;
-    }
+    if (!socket) return;
 
     socket.emit("getRooms");
 
@@ -26,14 +23,14 @@ const Cards = () => {
     return () => {
       socket.off("getRooms");
     };
-  }, [socket]);
+  }, [socket, setRooms]);
 
   return (
     <div className={styles.room_cards}>
       {rooms?.length > 0 ? (
         rooms
-          .filter((room) => room && room.id) // Filter out invalid rooms
-          .map((room) => <Card key={room.id} room={room} />) // Use room.id as the key
+          .filter((room) => room && room.id)
+          .map((room) => <Card key={room.id} room={room} />)
       ) : (
         <p className={styles.empty_message}>No rooms available. Create one!</p>
       )}

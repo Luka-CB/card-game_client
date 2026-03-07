@@ -47,7 +47,7 @@ const BusyBg: React.FC<BusyBgProps> = ({
         }}
         className={styles.content}
       >
-        <p>You're out of the game. The bot is playing instead of you.</p>
+        <p>You&apos;re out of the game. The bot is playing instead of you.</p>
         <div className={styles.btns}>
           <button className={styles.btn_play} onClick={handleRejoin}>
             Continue Playing

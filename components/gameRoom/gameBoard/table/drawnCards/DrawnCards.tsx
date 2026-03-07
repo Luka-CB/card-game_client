@@ -9,16 +9,11 @@ interface DrawnCardsProps {
   playerPositionIndex: number;
   playerId: string;
   dealingCards: Record<string, number>;
-  user: {
-    _id: string;
-  };
   gameInfo: {
     dealerId: string | null;
     status: string;
     currentPlayerId: string;
   };
-  isChoosingTrump: boolean;
-  nextPlayerId: string | null;
 }
 
 const DrawnCards = ({
@@ -26,10 +21,7 @@ const DrawnCards = ({
   playerPositionIndex,
   playerId,
   dealingCards,
-  user,
   gameInfo,
-  isChoosingTrump,
-  nextPlayerId,
 }: DrawnCardsProps) => {
   const playerPosition =
     playerPositionIndex === 0
@@ -55,23 +47,16 @@ const DrawnCards = ({
         </div>
       )}
 
-      {isChoosingTrump && nextPlayerId !== user._id && (
+      {(gameInfo?.status === "choosingTrump" ||
+        (gameInfo?.dealerId && gameInfo?.status === "dealing")) && (
         <DealtCards
           dealingCards={dealingCards}
           playerPositionIndex={playerPositionIndex}
           playerId={playerId}
+          currentPlayerId={gameInfo.currentPlayerId}
+          status={gameInfo.status}
         />
       )}
-
-      {gameInfo?.dealerId &&
-        gameInfo?.status === "dealing" &&
-        !isChoosingTrump && (
-          <DealtCards
-            dealingCards={dealingCards}
-            playerPositionIndex={playerPositionIndex}
-            playerId={playerId}
-          />
-        )}
     </motion.div>
   );
 };

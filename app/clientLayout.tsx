@@ -10,6 +10,9 @@ import FlashMsg from "@/components/falshMsg/FlashMsg";
 import useFlashMsgStore from "@/store/flashMsgStore";
 import { usePathname } from "next/navigation";
 import useLastPlayedCardsStore from "@/store/gamePage/lastPlayedCardsStore";
+import GetMoreModal from "@/components/jCoinst/GetMoreModal";
+import Footer from "@/components/footer/Footer";
+import CookieConsent from "@/components/CookieConsent";
 
 export default function ClientLayout({
   children,
@@ -32,7 +35,7 @@ export default function ClientLayout({
 
   useEffect(() => {
     getUser();
-  }, []);
+  }, [getUser]);
 
   return (
     <html lang="en">
@@ -48,6 +51,9 @@ export default function ClientLayout({
             <main>{children}</main>
           </>
         )}
+        <GetMoreModal />
+        {!isGameRoom && <Footer />}
+        <CookieConsent />
       </body>
     </html>
   );

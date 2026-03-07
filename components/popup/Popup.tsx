@@ -15,7 +15,7 @@ export const UserTurnPopup = ({ username }: { username: string }) => {
         transition={{ duration: 0.5 }}
         className={styles.your_turn_popup}
       >
-        <p>it's your turn</p>
+        <p>it&apos;s your turn</p>
         <b title={username.length > 6 ? username : undefined}>
           {substringText(username, 6)}
         </b>
