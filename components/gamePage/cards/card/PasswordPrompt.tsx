@@ -7,10 +7,15 @@ import { Room } from "@/utils/interfaces";
 import useRoomStore from "@/store/gamePage/roomStore";
 interface PasswordPromptProps {
   room: Room;
+  clickedRoomId: string | null;
   user: { id: string; username: string; avatar: string | null } | null;
 }
 
-const PasswordPrompt: React.FC<PasswordPromptProps> = ({ room, user }) => {
+const PasswordPrompt: React.FC<PasswordPromptProps> = ({
+  room,
+  clickedRoomId,
+  user,
+}) => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const socket = useSocket();
@@ -50,7 +55,7 @@ const PasswordPrompt: React.FC<PasswordPromptProps> = ({ room, user }) => {
     }
   };
 
-  if (!togglePasswordPrompt) return null;
+  if (!togglePasswordPrompt || clickedRoomId !== room.id) return null;
 
   return (
     <div className={styles.password_prompt}>

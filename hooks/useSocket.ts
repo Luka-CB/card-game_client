@@ -1,21 +1,34 @@
 import { useEffect, useState } from "react";
 import { io, Socket } from "socket.io-client";
 
+let socketSingleton: Socket | null = null;
+
 export default function useSocket() {
-  const [socket, setSocket] = useState<Socket | null>(null);
+  const [socket, setSocket] = useState<Socket | null>(socketSingleton);
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      const socketInstance = io(process.env.NEXT_PUBLIC_API_URL, {
-        transports: ["websocket"],
-      });
-
-      setSocket(socketInstance);
-
-      return () => {
-        socketInstance.disconnect();
-      };
+    if (socketSingleton) {
+      setSocket(socketSingleton);
+      return;
     }
+
+    if (typeof window === "undefined") return;
+
+    socketSingleton = io(process.env.NEXT_PUBLIC_API_URL, {
+      transports: ["websocket"],
+    });
+
+    setSocket(socketSingleton);
+
+    const handleBeforeUnload = () => {
+      socketSingleton?.disconnect();
+      socketSingleton = null;
+    };
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
   }, []);
 
   return socket;

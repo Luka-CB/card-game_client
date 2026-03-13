@@ -40,7 +40,8 @@
   }
 
   .room_card,
-  .room_card_active {
+  .room_card_active,
+  .room_card_joined {
     @include bgColor();
     width: 400px;
     height: 225px;
@@ -141,7 +142,7 @@
           margin: 0 5px;
         }
 
-        .bett {
+        .bet {
           display: flex;
           align-items: center;
 
@@ -225,6 +226,23 @@
         }
       }
 
+      .leave_btn {
+        @include btn();
+        padding: 5px 10px;
+        height: auto;
+        background-color: transparent;
+        border-color: var(--clr-danger-800);
+        color: var(--clr-danger-800);
+        font-size: small;
+        z-index: 1;
+
+        &:hover {
+          background-color: var(--clr-danger-faded);
+          color: var(--clr-danger-600);
+          border-color: var(--clr-danger-600);
+        }
+      }
+
       .join_btn {
         @include btn();
         padding: 5px 10px;
@@ -296,7 +314,6 @@
   }
 
   .room_card_active {
-    // filter: blur(4px);
     border: 6px solid var(--clr-primary-faded);
 
     &::after {
@@ -333,9 +350,16 @@
     }
   }
 
+  .room_card_joined {
+    border: 2px solid var(--clr-success-800);
+  }
+
   @media (max-width: 1020px) {
+    grid-template-columns: none;
+
     .room_card,
-    .room_card_active {
+    .room_card_active,
+    .room_card_joined {
       width: 600px;
       height: 300px;
 
@@ -353,7 +377,7 @@
             font-size: 1rem;
           }
 
-          .bett {
+          .bet {
             span {
               font-size: 0.6rem;
             }
@@ -400,14 +424,16 @@
 
   @media (max-width: 700px) {
     .room_card,
-    .room_card_active {
+    .room_card_active,
+    .room_card_joined {
       width: 500px;
     }
   }
 
   @media (max-width: 600px) {
     .room_card,
-    .room_card_active {
+    .room_card_active,
+    .room_card_joined {
       width: 400px;
       height: 200px;
 
@@ -424,7 +450,7 @@
             font-size: 0.8rem;
           }
 
-          .bett {
+          .bet {
             span {
               font-size: 0.5rem;
             }
@@ -464,7 +490,8 @@
 
   @media (max-height: 800px) {
     .room_card,
-    .room_card_active {
+    .room_card_active,
+    .room_card_joined {
       width: 400px;
       height: 200px;
 
@@ -481,7 +508,7 @@
             font-size: 0.8rem;
           }
 
-          .bett {
+          .bet {
             span {
               font-size: 0.5rem;
             }
@@ -523,8 +550,9 @@
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
 
     .room_card,
-    .room_card_active {
-      width: 300px;
+    .room_card_active,
+    .room_card_joined {
+      width: 90%;
       height: 200px;
 
       header {
@@ -540,7 +568,7 @@
             font-size: 0.6rem;
           }
 
-          .bett {
+          .bet {
             span {
               font-size: 0.5rem;
             }

@@ -12,7 +12,7 @@ const bytesized = localFont({
 });
 
 const Banner = () => {
-  const { user } = useUserStore();
+  const { user, usersOnline } = useUserStore();
 
   return (
     <div className={styles.banner}>
@@ -28,7 +28,7 @@ const Banner = () => {
         <div className={styles.online}>
           <div className={styles.dot}></div>
           <small>online</small>
-          <span>2469</span>
+          <span>{usersOnline?.length || 0}</span>
         </div>
         {user && user?.isAdmin && (
           <div className={styles.total}>

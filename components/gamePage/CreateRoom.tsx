@@ -21,8 +21,8 @@ const CreateRoom = () => {
   const [type, setType] = useState<"classic" | "nines">("classic");
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
-  const [bett, setBett] = useState("");
-  const [bettError, setBettError] = useState("");
+  const [bet, setBet] = useState("");
+  const [betError, setBetError] = useState("");
   const [hisht, setHisht] = useState("200");
   const [toggleChat, setToggleChat] = useState(false);
 
@@ -40,10 +40,10 @@ const CreateRoom = () => {
     setToggleCreateRoom(false, null);
     setName("");
     setPassword("");
-    setBett("");
+    setBet("");
     setHisht("200");
     setToggleChat(false);
-    setBettError("");
+    setBetError("");
   };
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
@@ -60,13 +60,13 @@ const CreateRoom = () => {
       return;
     }
 
-    if (bett && parseInt(bett) < 50) {
-      setBettError("Bett must be at least 50");
+    if (bet && parseInt(bet) < 50) {
+      setBetError("Bet must be at least 50");
       return;
     }
 
-    if (bett && jCoins && parseInt(bett) > jCoins.raw) {
-      setBettError("You don't have enough JCoins");
+    if (bet && jCoins && parseInt(bet) > jCoins.raw) {
+      setBetError("You don't have enough JCoins");
       return;
     }
 
@@ -81,7 +81,7 @@ const CreateRoom = () => {
       id: uuidv4(),
       name: name.trim() !== "" ? name : `Room ${rooms.length + 1}`,
       password: currentStatus === "private" ? password : null,
-      bett: bett ? bett : null,
+      bet: bet ? bet : null,
       type: type,
       status: currentStatus,
       hisht,
@@ -223,18 +223,16 @@ const CreateRoom = () => {
                   />
                 </div>
               ) : null}
-              <div
-                className={bettError ? styles.bet_box_error : styles.bet_box}
-              >
-                <label htmlFor="bett">Bett (optional):</label>
+              <div className={betError ? styles.bet_box_error : styles.bet_box}>
+                <label htmlFor="bet">Bet (optional):</label>
                 <input
                   type="number"
-                  name="bett"
-                  id="bett"
-                  value={bett}
+                  name="bet"
+                  id="bet"
+                  value={bet}
                   onChange={(e) => {
-                    setBett(e.target.value);
-                    setBettError("");
+                    setBet(e.target.value);
+                    setBetError("");
                   }}
                 />
                 <div className={styles.info}>
@@ -242,8 +240,8 @@ const CreateRoom = () => {
                   <Image src="/coin1.png" alt="coin" width={20} height={20} />
                   <b>50</b>
                 </div>
-                {bettError && (
-                  <span className={styles.error_message}>{bettError}</span>
+                {betError && (
+                  <span className={styles.error_message}>{betError}</span>
                 )}
               </div>
               <div className={styles.radio_box}>

@@ -11,7 +11,7 @@ import Image from "next/image";
 interface FinishedModeProps {
   users: RoomUser[];
   roomId?: string;
-  bett?: string;
+  bet?: string;
   scoreBoard?: ScoreBoard[];
   user?: { _id: string };
 }
@@ -19,7 +19,7 @@ interface FinishedModeProps {
 const FinishedMode: React.FC<FinishedModeProps> = ({
   users,
   roomId,
-  bett,
+  bet,
   scoreBoard,
   user,
 }) => {
@@ -92,27 +92,28 @@ const FinishedMode: React.FC<FinishedModeProps> = ({
     }
   };
 
-  const getAwardsPointsForBett = (rank: number) => {
-    const bettValue = parseInt(bett || "0");
+  const getAwardsPointsForBet = (rank: number) => {
+    const betValue = parseInt(bet || "0");
     switch (rank) {
       case 1:
-        return bettValue * 4;
+        return betValue * 4;
       case 2:
       case 3:
       case 4:
-        return -bettValue;
+        return -betValue;
       default:
         return 0;
     }
   };
 
-  const getIndicatorHeightForBett = (points: number) => {
+  const getIndicatorHeightForBet = (points: number) => {
+    const betValue = parseInt(bet || "0");
     switch (points) {
-      case bett ? parseInt(bett) * 4 : 0:
+      case betValue * 4:
         return "400px";
-      case bett ? -parseInt(bett) : 0:
-      case bett ? -parseInt(bett) : 0:
-      case bett ? -parseInt(bett) : 0:
+      case -betValue:
+      case -betValue:
+      case -betValue:
         return "150px";
       default:
         return "0px";
@@ -171,11 +172,11 @@ const FinishedMode: React.FC<FinishedModeProps> = ({
               <b className={styles.score}>
                 Score: <small>{getPlayerScore(user.id)}</small>
               </b>
-              {bett ? (
+              {bet ? (
                 <b className={styles.points}>
-                  {getAwardsPointsForBett(usersByScore.indexOf(user) + 1) > 0
-                    ? `+${getAwardsPointsForBett(usersByScore.indexOf(user) + 1)}`
-                    : getAwardsPointsForBett(usersByScore.indexOf(user) + 1)}
+                  {getAwardsPointsForBet(usersByScore.indexOf(user) + 1) > 0
+                    ? `+${getAwardsPointsForBet(usersByScore.indexOf(user) + 1)}`
+                    : getAwardsPointsForBet(usersByScore.indexOf(user) + 1)}
                 </b>
               ) : (
                 <b className={styles.points}>
@@ -188,9 +189,9 @@ const FinishedMode: React.FC<FinishedModeProps> = ({
             <motion.div
               initial={{ height: "0px" }}
               animate={{
-                height: bett
-                  ? getIndicatorHeightForBett(
-                      getAwardsPointsForBett(usersByScore.indexOf(user) + 1),
+                height: bet
+                  ? getIndicatorHeightForBet(
+                      getAwardsPointsForBet(usersByScore.indexOf(user) + 1),
                     )
                   : getIndicatorHeight(
                       getAwardedPointsByRank(usersByScore.indexOf(user) + 1),

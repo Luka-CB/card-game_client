@@ -1,10 +1,11 @@
 .banner {
   position: fixed;
-  width: 40%;
+  width: 60%;
   min-width: 250px;
+  max-width: 60%;
+  border-radius: 10px;
   z-index: 9999;
   padding: 0.9rem 1rem;
-  border-radius: 10px;
   border: 1px solid rgba(148, 163, 184, 0.25);
   background: rgba(12, 17, 30, 0.95);
   color: #dbe6ff;
@@ -14,46 +15,41 @@
   align-items: center;
   justify-content: space-between;
 
-  @media (max-width: 700px) {
-    width: 90%;
+  @media (max-width: 800px) {
+    width: 100%;
+    border-radius: unset;
   }
-}
 
-.actions {
-  display: flex;
-  width: 100%;
-  justify-content: flex-end;
-  gap: 0.6rem;
-  margin-top: 50px;
+  p {
+    width: 100%;
+    font-size: small;
 
-  @media (max-width: 700px) {
-    flex-direction: column;
+    a {
+      color: var(--clr-primary-600);
+      text-decoration: underline;
+      margin-left: 5px;
+      transition: all 0.2s ease;
+
+      &:hover {
+        color: var(--clr-primary-400);
+      }
+    }
   }
-}
 
-.accept,
-.reject {
-  border: 0;
-  border-radius: 8px;
-  padding: 0.45rem 0.75rem;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
+  .btn {
+    align-self: flex-end;
+    background: var(--clr-warning-600);
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    font-weight: bold;
+    width: 100px;
+    padding: 5px 0;
+    cursor: pointer;
+    transition: all 0.2s ease;
 
-.accept {
-  background: #3b82f6;
-  color: white;
-
-  &:hover {
-    background: #2563eb;
-  }
-}
-
-.reject {
-  background: #334155;
-  color: white;
-
-  &:hover {
-    background: #1e293b;
+    &:hover {
+      background: var(--clr-warning-400);
+    }
   }
 }
