@@ -5,9 +5,11 @@ import Card from "./card/Card";
 import styles from "./Cards.module.scss";
 import useSocket from "@/hooks/useSocket";
 import useRoomStore from "@/store/gamePage/roomStore";
+import useFilterStore from "@/store/gamePage/filterStore";
 
 const Cards = () => {
   const { rooms, setRooms } = useRoomStore();
+  const { checkedFilters } = useFilterStore();
 
   const socket = useSocket();
 
@@ -24,6 +26,11 @@ const Cards = () => {
       socket.off("getRooms");
     };
   }, [socket, setRooms]);
+
+  useEffect(() => {
+    if (!socket) return;
+    socket.emit("getRooms", checkedFilters);
+  }, [socket, checkedFilters]);
 
   return (
     <div className={styles.room_cards}>

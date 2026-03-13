@@ -1,5 +1,5 @@
 .flash_msg_error {
-  position: absolute;
+  position: fixed;
   color: var(--clr-light);
   font-size: large;
   left: 50%;
@@ -15,7 +15,7 @@
 }
 
 .flash_msg_success {
-  position: absolute;
+  position: fixed;
   color: var(--clr-light);
   font-size: large;
   top: 2%;

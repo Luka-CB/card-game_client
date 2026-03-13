@@ -14,7 +14,7 @@ export interface Room {
   id: string;
   name: string;
   password: string | null;
-  bett: string | null;
+  bet: string | null;
   type: "classic" | "nines";
   status: "public" | "private";
   hasChat?: boolean;

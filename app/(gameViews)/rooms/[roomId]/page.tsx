@@ -757,7 +757,7 @@ const GameRoom: React.FC = () => {
         <FinishedMode
           users={room?.users as RoomUser[]}
           roomId={roomId as string}
-          bett={room?.bett as string}
+          bet={room?.bet as string}
           scoreBoard={gameInfo?.scoreBoard as ScoreBoard[]}
           user={user as { _id: string }}
         />

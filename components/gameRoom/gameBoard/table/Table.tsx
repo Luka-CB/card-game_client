@@ -22,7 +22,7 @@ interface TableProps {
     users: RoomUser[];
     hisht: string;
     type: string;
-    bett: string | null;
+    bet: string | null;
   } | null;
   visibleCards: { [key: string]: PlayingCard[] };
   rotatedPlayers: RoomUser[];
@@ -118,7 +118,7 @@ const Table: React.FC<TableProps> = ({
           <BidModal data={bidModalData} />
         )}
       <span className={styles.hisht}>Hisht: {room?.hisht}</span>
-      {room?.bett && <span className={styles.bett}>Bett: {room?.bett}</span>}
+      {room?.bet && <span className={styles.bet}>Bet: {room?.bet}</span>}
       <div className={styles.table_surface}>
         <PlayedCards
           playedCards={gameInfo?.playedCards || []}

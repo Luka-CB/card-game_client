@@ -3,22 +3,21 @@
 import { useEffect, useState } from "react";
 import styles from "./CookieConsent.module.scss";
 import { motion } from "framer-motion";
+import Link from "next/link";
 
-type Consent = "accepted" | "rejected" | null;
-
-const STORAGE_KEY = "cookie_consent_v1";
+const STORAGE_KEY = "hasAcceptedCookies";
 
 const CookieConsent = () => {
-  const [consent, setConsent] = useState<Consent>(null);
+  const [consent, setConsent] = useState(false);
 
   useEffect(() => {
-    const saved = localStorage.getItem(STORAGE_KEY) as Consent;
-    if (saved === "accepted" || saved === "rejected") setConsent(saved);
+    const storedConsent = localStorage.getItem(STORAGE_KEY);
+    if (storedConsent) setConsent(JSON.parse(storedConsent));
   }, []);
 
-  const saveConsent = (value: Exclude<Consent, null>) => {
-    localStorage.setItem(STORAGE_KEY, value);
-    setConsent(value);
+  const saveConsent = () => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(true));
+    setConsent(true);
   };
 
   if (consent) return null;
@@ -36,7 +35,7 @@ const CookieConsent = () => {
       }}
       animate={{
         opacity: 1,
-        bottom: 50,
+        bottom: 10,
         left: "50%",
         transform: "translateX(-50%)",
       }}
@@ -54,22 +53,17 @@ const CookieConsent = () => {
     >
       <p>
         We use essential cookies for site functionality and optional cookies for
-        analytics. You can accept or reject optional cookies.
+        analytics. By continuing to use our site, you consent to our use of
+        cookies. You can manage your preferences at any time. For more details,
+        please see our{" "}
+        <Link href="/privacy" target="_blank" rel="noopener noreferrer">
+          Privacy Policy
+        </Link>
+        .
       </p>
-      <div className={styles.actions}>
-        <button
-          onClick={() => saveConsent("rejected")}
-          className={styles.reject}
-        >
-          Reject Non-essential
-        </button>
-        <button
-          onClick={() => saveConsent("accepted")}
-          className={styles.accept}
-        >
-          Accept All
-        </button>
-      </div>
+      <button className={styles.btn} onClick={saveConsent}>
+        Accept-all
+      </button>
     </motion.div>
   );
 };

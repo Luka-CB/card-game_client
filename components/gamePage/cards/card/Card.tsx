@@ -16,6 +16,7 @@ import useRoomStore from "@/store/gamePage/roomStore";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import useJCoinsStore from "@/store/user/stats/jCoinsStore";
+import useDisplayRoomStore from "@/store/displayRoomStore";
 
 interface CardProps {
   room: Room | null;
@@ -27,30 +28,58 @@ const Card: React.FC<CardProps> = ({ room }) => {
   const { setTogglePasswordPrompt } = useRoomStore();
   const { jCoins, toggleGetMoreModal } = useJCoinsStore();
   const { setMsg } = useFlashMsgStore();
+  const { setDisplayRoomType } = useDisplayRoomStore();
   const router = useRouter();
 
   const isLeavingRef = useRef(false);
+  const hasNavigatedRef = useRef(false);
+  const clickedRoomIdRef = useRef<string | null>(null);
 
-  const roomUser = room?.users.find((roomUser) => roomUser.id === user?._id);
+  const roomUser = room?.users.find(
+    (u) => u.id === user?._id && u.status !== "left",
+  );
+
+  const occupiedSeats = (() => {
+    if (!room?.users) return 0;
+    const activeUsers = new Set<string>();
+    for (const u of room.users) {
+      if (u?.id && u.status !== "left") {
+        activeUsers.add(u.id);
+      }
+    }
+    return activeUsers.size;
+  })();
 
   useEffect(() => {
     if (!room && !user) return;
-
     if (isLeavingRef.current) return;
+    if (hasNavigatedRef.current) return;
 
-    if (roomUser && roomUser.status === "active" && room?.users.length === 4) {
+    if (
+      room?.isActive &&
+      roomUser &&
+      roomUser.status === "active" &&
+      occupiedSeats >= 4
+    ) {
+      hasNavigatedRef.current = true;
       const timeout = setTimeout(() => {
         if (!isLeavingRef.current) {
-          router.push(`/rooms/${room.id}`);
+          router.push(`/rooms/${room?.id}`);
+        } else {
+          hasNavigatedRef.current = false;
         }
       }, 1000);
 
-      return () => clearTimeout(timeout);
+      return () => {
+        clearTimeout(timeout);
+        hasNavigatedRef.current = false;
+      };
     }
-  }, [room, router, user, roomUser]);
+  }, [room, router, user, roomUser, occupiedSeats]);
 
   useEffect(() => {
     if (!roomUser || roomUser.status === "left") {
+      hasNavigatedRef.current = false;
       const timeout = setTimeout(() => {
         isLeavingRef.current = false;
       }, 1000);
@@ -62,6 +91,7 @@ const Card: React.FC<CardProps> = ({ room }) => {
   const handleLeave = () => {
     if (room && user) {
       isLeavingRef.current = true;
+      hasNavigatedRef.current = false;
 
       if (roomUser?.status === "active") {
         socket?.emit("leaveRoom", room.id, user._id);
@@ -76,15 +106,24 @@ const Card: React.FC<CardProps> = ({ room }) => {
 
         socket?.emit("updateUserStatus", room.id, user._id, "left");
       }
+
+      const type = room?.bet ? "betting" : room?.type || "none";
+      setDisplayRoomType({ type, withUser: false });
     }
   };
 
-  const handleJoin = () => {
+  const handleJoin = (roomId: string) => {
     if (room && user) {
       isLeavingRef.current = false;
 
-      if (room.status === "private") {
+      if (occupiedSeats >= 4) {
+        setMsg("Room is full", "error");
+        return;
+      }
+
+      if (roomId === room?.id && room?.status === "private") {
         setTogglePasswordPrompt(true);
+        clickedRoomIdRef.current = roomId;
         return;
       }
 
@@ -94,7 +133,7 @@ const Card: React.FC<CardProps> = ({ room }) => {
         return;
       }
 
-      if (room.bett && jCoins && parseInt(room.bett) > jCoins.raw) {
+      if (room.bet && jCoins && parseInt(room.bet) > jCoins.raw) {
         toggleGetMoreModal(true);
         setMsg(
           "You don't have enough JCoins to join this room with the current bet",
@@ -111,6 +150,10 @@ const Card: React.FC<CardProps> = ({ room }) => {
         botAvatar: getRandomBotAvatar(),
         color: getRandomColor(),
       });
+
+      const type = room?.bet ? "betting" : room?.type;
+
+      setDisplayRoomType({ type, withUser: true });
     }
   };
 
@@ -142,11 +185,16 @@ const Card: React.FC<CardProps> = ({ room }) => {
   return (
     <div
       className={
-        room?.users?.length === 4 ? styles.room_card_active : styles.room_card
+        room?.users?.some((ru) => ru.id === user?._id && ru.status !== "left")
+          ? styles.room_card_joined
+          : room?.isActive
+            ? styles.room_card_active
+            : styles.room_card
       }
     >
       <PasswordPrompt
         room={room as Room}
+        clickedRoomId={clickedRoomIdRef.current}
         user={
           user
             ? { id: user._id, username: user.username, avatar: user.avatar }
@@ -160,16 +208,16 @@ const Card: React.FC<CardProps> = ({ room }) => {
         <div
           className={styles.game_type}
           title={
-            room?.bett
-              ? `Type: ${room?.type} - Bett: ${room?.bett}`
+            room?.bet
+              ? `Type: ${room?.type} - Bet: ${room?.bet}`
               : `Type: ${room?.type}`
           }
         >
           <span>{room?.type}</span>
-          {room?.bett && <span className={styles.dash}>--</span>}
-          {room?.bett && (
-            <div className={styles.bett}>
-              <span>Bett: {room?.bett}</span>
+          {room?.bet && <span className={styles.dash}>--</span>}
+          {room?.bet && (
+            <div className={styles.bet}>
+              <span>Bet: {room?.bet}</span>
               <Image
                 src="/coinIco.ico"
                 alt="coin"
@@ -207,23 +255,35 @@ const Card: React.FC<CardProps> = ({ room }) => {
             </small>
           </div>
         </div>
-        {(roomUser?.status === "active" ||
-          roomUser?.status === "inactive" ||
-          roomUser?.status === "busy") && (
-          <div className={styles.btns}>
-            {(roomUser.status === "inactive" || roomUser.status === "busy") && (
-              <button className={styles.rejoin_btn} onClick={handleRejoin}>
-                Continue Playing
+
+        {room?.isActive &&
+          (roomUser?.status === "active" ||
+            roomUser?.status === "inactive" ||
+            roomUser?.status === "busy") && (
+            <div className={styles.btns}>
+              {(roomUser.status === "inactive" ||
+                roomUser.status === "busy") && (
+                <button className={styles.rejoin_btn} onClick={handleRejoin}>
+                  Continue Playing
+                </button>
+              )}
+              <button className={styles.leave_btn} onClick={handleLeave}>
+                Leave
               </button>
-            )}
-            <button className={styles.leave_btn} onClick={handleLeave}>
-              Leave
-            </button>
-          </div>
+            </div>
+          )}
+
+        {!room?.isActive && roomUser?.status === "active" && (
+          <button className={styles.leave_btn} onClick={handleLeave}>
+            Leave
+          </button>
         )}
 
-        {!roomUser && (
-          <button className={styles.join_btn} onClick={handleJoin}>
+        {!roomUser && !room?.isActive && (
+          <button
+            className={styles.join_btn}
+            onClick={() => handleJoin(room?.id || "")}
+          >
             Join
           </button>
         )}
