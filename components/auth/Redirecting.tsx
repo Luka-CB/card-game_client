@@ -15,6 +15,8 @@ const Redirecting = () => {
     getUser();
   }, [getUser]);
 
+  console.log("Current user in Redirecting component:", user);
+
   useEffect(() => {
     if (user) {
       router.push("/");
