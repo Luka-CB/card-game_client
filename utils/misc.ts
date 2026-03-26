@@ -1,3 +1,24 @@
+import { formatDistanceToNow, formatDistanceToNowStrict } from "date-fns";
+
+const toDate = (d?: string | Date | null): Date | null => {
+  if (!d) return null;
+  const date = typeof d === "string" ? new Date(d) : d;
+  if (Number.isNaN(date?.getTime?.())) return null;
+  return date as Date;
+};
+
+export const timeAgo = (d: string | Date | null) => {
+  const date = toDate(d);
+  if (!date) return "unknown";
+  return formatDistanceToNow(date, { addSuffix: true });
+};
+
+export const timeAgoStrict = (d?: string | Date | null) => {
+  const date = toDate(d);
+  if (!date) return "unknown";
+  return formatDistanceToNowStrict(date, { addSuffix: true });
+};
+
 export const substringText = (text: string, length: number) => {
   if (text.length > length) {
     return text.substring(0, length) + "...";

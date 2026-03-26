@@ -17,7 +17,6 @@
       .link_active {
         display: flex;
         align-items: center;
-        gap: 5px;
         padding: 0.5rem 1rem;
         border-radius: 5px;
 
@@ -56,6 +55,109 @@
 
         .icon {
           color: var(--clr-primary-400);
+        }
+      }
+
+      .divider {
+        color: var(--clr-light);
+        margin: 0 10px;
+        width: 2px;
+        height: 40px;
+        background-color: rgba(216, 216, 216, 0.418);
+      }
+
+      .logout {
+        display: flex;
+        align-items: center;
+        padding: 0.5rem 1rem;
+        border-radius: 5px;
+        cursor: pointer;
+
+        .icon {
+          color: var(--clr-light);
+          font-size: 1.3rem;
+          transition: all 0.1s ease-in-out;
+          margin-right: 5px;
+        }
+
+        span {
+          color: var(--clr-light);
+          transition: all 0.1s ease-in-out;
+        }
+
+        &:hover {
+          span {
+            scale: 1.08;
+            color: var(--clr-warning-400);
+            text-shadow: 0 0 9px var(--clr-warning-200);
+          }
+
+          .icon {
+            color: var(--clr-warning-400);
+          }
+        }
+      }
+
+      @media (max-width: 1200px) {
+        .link,
+        .link_active {
+          padding: 0.5rem;
+
+          .icon {
+            font-size: 1rem;
+          }
+
+          a {
+            font-size: small;
+          }
+        }
+
+        .divider {
+          margin: 0 5px;
+          width: 1.5px;
+          height: 30px;
+        }
+
+        .logout {
+          padding: 0.5rem;
+
+          .icon {
+            font-size: 1rem;
+          }
+
+          span {
+            font-size: small;
+          }
+        }
+      }
+
+      @media (max-width: 1050px) {
+        margin-left: 0;
+
+        .link,
+        .link_active {
+          padding: 0.3rem;
+
+          .icon,
+          a {
+            font-size: 0.7rem;
+          }
+        }
+
+        .divider {
+          height: 20px;
+        }
+
+        .logout {
+          padding: 0.3rem;
+
+          .icon {
+            font-size: 0.7rem;
+          }
+
+          span {
+            font-size: 0.7rem;
+          }
         }
       }
     }
@@ -170,6 +272,54 @@
         color: var(--clr-light);
         font-size: 1rem;
         margin-right: 10px;
+      }
+    }
+    @media (max-width: 1000px) {
+      align-items: center;
+
+      .user_info {
+        width: 120px;
+
+        .stats {
+          margin-bottom: 10px;
+
+          .rating {
+            .stable_rating_icon {
+              font-size: 1rem;
+            }
+
+            .up_rating_icon {
+              font-size: 1rem;
+            }
+
+            .down_rating_icon {
+              font-size: 1rem;
+            }
+
+            .stable_rating_value,
+            .up_rating_value,
+            .down_rating_value {
+              font-size: 0.7rem;
+            }
+          }
+
+          .coins {
+            .coin_img {
+              width: 20px;
+              height: 20px;
+            }
+
+            .coins_value,
+            .negative_coins,
+            .warning_coins {
+              font-size: 0.7rem;
+            }
+          }
+        }
+
+        p {
+          font-size: 0.7rem;
+        }
       }
     }
   }

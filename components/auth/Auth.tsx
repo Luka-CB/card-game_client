@@ -90,6 +90,9 @@ const Auth = () => {
                 transition={{ duration: 0.6 }}
                 className={styles.info_signup}
               >
+                <div className={styles.info}>
+                  <p></p>
+                </div>
                 <motion.h1
                   initial={{ opacity: 0, scale: 0 }}
                   animate={{
@@ -98,7 +101,8 @@ const Auth = () => {
                     transition: { duration: 0.3, type: "spring", delay: 0.6 },
                   }}
                 >
-                  Authenticate! <span>It&apos;s Easy, Quick and Free</span>
+                  Deal&apos;s ready — are you?{" "}
+                  <span>Sign in or join to take your seat.</span>
                 </motion.h1>
                 <div className={styles.links}>
                   <Link href="/rules" className={styles.link}>
@@ -112,6 +116,9 @@ const Auth = () => {
                   </Link>
                   <Link href="/terms" className={styles.link}>
                     Terms of Service
+                  </Link>
+                  <Link href="/data-deletion" className={styles.link}>
+                    Data Deletion
                   </Link>
                 </div>
               </motion.div>
@@ -148,7 +155,8 @@ const Auth = () => {
                     transition: { duration: 0.3, type: "spring", delay: 0.6 },
                   }}
                 >
-                  Almost there! <span>Verify email to start playing!</span>
+                  You&apos;re almost at the table!{" "}
+                  <span>Verify your email to join the fun.</span>
                 </motion.h1>
               </motion.div>
               <div className={styles.verify_content}>

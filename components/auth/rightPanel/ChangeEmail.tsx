@@ -33,7 +33,7 @@ const ChangeEmail = () => {
     }
   }, [status, router, handleRoute]);
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     updateEmail(email);
   };

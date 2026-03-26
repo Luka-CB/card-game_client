@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import ClientLayout from "./clientLayout";
 import { Roboto } from "next/font/google";
+import "@/styles/globals.scss";
 
 const roboto = Roboto({
   subsets: ["latin"],
@@ -24,8 +25,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <div className={roboto.className}>
-      <ClientLayout>{children}</ClientLayout>
-    </div>
+    <html lang="en">
+      <body className={roboto.className}>
+        <ClientLayout>{children}</ClientLayout>
+      </body>
+    </html>
   );
 }

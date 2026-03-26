@@ -1,0 +1,265 @@
+@use "mixins" as *;
+
+:root {
+  --muted: rgba(84, 84, 84, 0.797);
+}
+
+.container {
+  @include bgColor(light);
+  padding: 2rem 1rem;
+  width: 100%;
+  max-width: 1500px;
+  min-height: 80vh;
+  margin: 0 auto;
+  color: #0f172a;
+  border-bottom-left-radius: 30px;
+  border-bottom-right-radius: 30px;
+  box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.7);
+
+  @media (max-width: 800px) {
+    border-radius: unset;
+  }
+}
+
+.header {
+  margin-bottom: 1.5rem;
+}
+
+.title {
+  font-size: 1.6rem;
+  margin: 0 0 0.25rem 0;
+}
+
+.subtitle {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.main {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 1.25rem;
+  align-items: start;
+}
+
+.form {
+  background: var(--card);
+  border-radius: 10px;
+  padding: 1rem;
+  box-shadow: 0 1px 5px rgba(2, 6, 23, 0.2);
+}
+
+.row {
+  display: flex;
+  gap: 2rem;
+  margin-bottom: 0.75rem;
+
+  @media (max-width: 1000px) {
+    flex-direction: column-reverse;
+  }
+}
+
+.inputs {
+  width: 50%;
+
+  .label {
+    display: flex;
+    flex-direction: column;
+    font-size: 0.9rem;
+    color: var(--muted);
+    margin-bottom: 20px;
+  }
+
+  @media (max-width: 1000px) {
+    width: 100%;
+  }
+}
+
+.feedback_image {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 50%;
+
+  .image {
+    width: 100%;
+    height: auto;
+    border-radius: 40px;
+    box-shadow: 0 1px 6px rgba(2, 6, 23, 0.6);
+  }
+
+  @media (max-width: 1000px) {
+    width: 100%;
+    .image {
+      width: 80%;
+    }
+  }
+
+  @media (max-width: 800px) {
+    .image {
+      width: 50%;
+    }
+  }
+
+  @media (max-width: 600px) {
+    .image {
+      width: 70%;
+      border-radius: 20px;
+    }
+  }
+
+  @media (max-width: 400px) {
+    .image {
+      width: 90%;
+      border-radius: 10px;
+    }
+  }
+}
+
+.labelSmall {
+  display: flex;
+  flex-direction: column;
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+.labelFull {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 0.75rem;
+  color: var(--muted);
+}
+
+.input,
+.select,
+.file,
+.textarea {
+  margin-top: 0.4rem;
+  padding: 0.6rem 0.75rem;
+  border-radius: 8px;
+  border: 1.5px solid #72727274;
+  background: transparent;
+  font-size: 0.95rem;
+  outline: none;
+  transition: all 0.2s ease-in-out;
+
+  &:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
+  }
+
+  @media (max-width: 1200px) {
+    font-size: 0.7rem;
+  }
+}
+
+.textarea {
+  resize: vertical;
+}
+
+.word_count {
+  margin-top: 0.25rem;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.optionsRow {
+  margin: 0.5rem 0 1rem 0;
+  display: flex;
+  align-items: center;
+
+  @include checkbox();
+
+  .option {
+    font-size: 0.9rem;
+    color: var(--muted);
+  }
+}
+
+.actions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.submit {
+  background: rgb(8, 79, 88);
+  color: white;
+  border: none;
+  width: 130px;
+  height: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+
+  &:hover {
+    background: rgba(6, 87, 98, 0.9);
+  }
+}
+
+.submit[disabled] {
+  opacity: 0.5;
+  background: rgb(5, 47, 53);
+  cursor: not-allowed;
+}
+
+.secondary {
+  background: transparent;
+  border: 1px solid var(--glass);
+  padding: 0.5rem 0.9rem;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.error {
+  color: var(--danger);
+  margin-top: 0.75rem;
+}
+
+.success {
+  color: #16a34a;
+  margin-top: 0.75rem;
+}
+
+.side {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.card {
+  background: var(--card);
+  padding: 0.9rem;
+  border-radius: 8px;
+  box-shadow: 0 1px 2px rgba(2, 6, 23, 0.4);
+  font-size: 0.95rem;
+}
+
+.card h3 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1rem;
+}
+
+.card ul {
+  margin: 0;
+  padding-left: 1.1rem;
+}
+
+@media (max-width: 800px) {
+  .main {
+    grid-template-columns: 1fr;
+  }
+
+  .row {
+    grid-template-columns: 1fr;
+  }
+
+  .side {
+    order: 2;
+  }
+}

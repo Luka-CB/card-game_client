@@ -9,7 +9,9 @@ import { MdOutlineDoneOutline } from "react-icons/md";
 import { useEffect, useRef, useState } from "react";
 import Loader from "@/components/loaders/Loader";
 import { AnimatePresence, motion } from "framer-motion";
-import useWindowSize from "@/hooks/useWindowSize";
+import useUserAccountStore from "@/store/user/userAccountStore";
+import useFlashMsgStore from "@/store/flashMsgStore";
+import useUserActivityStore from "@/store/user/userActivityStore";
 
 const LazyAvatar = ({
   av,
@@ -80,7 +82,10 @@ const AvatarGallery = () => {
     isAvatarGalleryOpen,
     toggleAvatarGallery,
   } = useAvatarStore();
-  const windowSize = useWindowSize();
+  const { updateUserAvatar, updateAvatarState, userAccount } =
+    useUserAccountStore();
+  const { setMsg } = useFlashMsgStore();
+  const { fetchUserActivities } = useUserActivityStore();
 
   useEffect(() => {
     if (!avatars.length) {
@@ -92,12 +97,40 @@ const AvatarGallery = () => {
     setNewAvatar(url);
   };
 
-  const handleDone = () => {
-    if (newAvatar) {
-      setAvatar(newAvatar);
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+
+    if (updateAvatarState === "success") {
+      setMsg("Avatar updated successfully!", "success");
+      fetchUserActivities();
+
+      timer = setTimeout(() => {
+        toggleAvatarGallery();
+        setNewAvatar("");
+      }, 2000);
+    } else if (updateAvatarState === "error") {
+      setMsg("Failed to update avatar. Please try again.", "error");
     }
-    toggleAvatarGallery();
-    setNewAvatar("");
+
+    return () => {
+      if (timer) clearTimeout(timer);
+    };
+  }, [
+    updateAvatarState,
+    setMsg,
+    fetchUserActivities,
+    toggleAvatarGallery,
+    setNewAvatar,
+  ]);
+
+  const handleDone = () => {
+    if (newAvatar && userAccount?._id) {
+      updateUserAvatar(newAvatar);
+    } else {
+      setAvatar(newAvatar || avatar || "");
+      toggleAvatarGallery();
+      setNewAvatar("");
+    }
   };
 
   const handleClose = () => {
@@ -125,21 +158,31 @@ const AvatarGallery = () => {
             <div className={styles.header}>
               {(avatar || newAvatar) && (
                 <div className={styles.preview}>
-                  <Image
-                    src={newAvatar ? newAvatar : avatar!}
-                    alt="Selected Avatar"
-                    width={100}
-                    height={100}
-                    className={styles.preview_image}
-                  />
+                  <div className={styles.image_wrapper}>
+                    <Image
+                      src={newAvatar ? newAvatar : avatar!}
+                      alt="Selected Avatar"
+                      width={100}
+                      height={100}
+                      className={styles.preview_image}
+                    />
 
-                  <button className={styles.done_btn} onClick={handleDone}>
+                    {updateAvatarState === "loading" && (
+                      <div className={styles.loading_overlay}></div>
+                    )}
+                  </div>
+
+                  <button
+                    className={styles.done_btn}
+                    disabled={updateAvatarState === "loading"}
+                    onClick={handleDone}
+                  >
                     <MdOutlineDoneOutline className={styles.icon} />
                   </button>
                   <button
                     className={styles.cancel_btn}
                     onClick={() => setNewAvatar("")}
-                    disabled={!newAvatar}
+                    disabled={!newAvatar || updateAvatarState === "loading"}
                   >
                     <ImCancelCircle className={styles.icon} />
                   </button>

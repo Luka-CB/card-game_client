@@ -48,6 +48,7 @@ const Header = () => {
               alt="Joker Clash Logo"
               width={120}
               height={70}
+              loading="eager"
               className={styles.logo_image}
             />
           </Link>

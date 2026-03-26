@@ -47,9 +47,17 @@
       color: var(--clr-primary-400);
       font-weight: 600;
     }
+
+    @media (max-width: 1000px) {
+      gap: 0.5rem;
+
+      a {
+        font-size: 0.7rem;
+      }
+    }
   }
 
-  @media (max-width: 700px) {
+  @media (max-width: 750px) {
     flex-direction: column;
 
     span {
@@ -71,7 +79,9 @@
         height: 30px;
       }
     }
+  }
 
+  @media (max-width: 400px) {
     .links {
       flex-direction: column;
     }

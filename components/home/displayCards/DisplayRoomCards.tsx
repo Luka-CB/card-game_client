@@ -3,10 +3,8 @@
 import Link from "next/link";
 import styles from "./DisplayRoomCard.module.scss";
 import { MdOpenInNew } from "react-icons/md";
-import Image from "next/image";
 import useSocket from "@/hooks/useSocket";
 import { useEffect, useRef, useState } from "react";
-import useRoomStore from "@/store/gamePage/roomStore";
 import DisplayCard from "./displayCard/DisplayCard";
 import { Room } from "@/utils/interfaces";
 import useDisplayRoomStore from "@/store/displayRoomStore";

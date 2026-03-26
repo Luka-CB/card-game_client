@@ -75,7 +75,9 @@ const Verify = () => {
         verify it.
       </p>
       <small>If you didn&apos;t recieve email</small>
-      <button onClick={sendEmail}>Send Again</button>
+      <button onClick={sendEmail} disabled={changeEmailStatus === "loading"}>
+        Send Again
+      </button>
       <div className={styles.notice}>
         <span className={styles.text_one}>
           <CiWarning className={styles.icon} /> Please make sure, that
