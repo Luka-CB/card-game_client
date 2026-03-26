@@ -17,7 +17,16 @@ const Redirecting = () => {
 
   useEffect(() => {
     if (user) {
-      router.push("/");
+      const url = new URL(window.location.href);
+      url.searchParams.delete("auth");
+      const newPath = `${url.pathname}${url.search}`;
+      router.replace(newPath);
+      router.refresh();
+
+      setTimeout(() => {
+        if (window.location.href.includes("auth=redirecting"))
+          window.location.href = newPath;
+      }, 300);
     }
   }, [user, router]);
 

@@ -5,10 +5,9 @@ import useSocket from "@/hooks/useSocket";
 
 interface Props {
   roomId: string;
-  onClose: () => void;
 }
 
-const TrumpModal = ({ onClose, roomId }: Props) => {
+const TrumpModal = ({ roomId }: Props) => {
   const socket = useSocket();
 
   const handleChooseTrump = (suit: string) => {
@@ -18,9 +17,8 @@ const TrumpModal = ({ onClose, roomId }: Props) => {
       id: "none",
       suit,
       rank: "none",
-      Strength: "none",
+      strength: "none",
     });
-    onClose();
   };
 
   return (

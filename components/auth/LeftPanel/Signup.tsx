@@ -2,14 +2,16 @@
 
 import styles from "./Sign.module.scss";
 import { useRouter, useSearchParams } from "next/navigation";
-import Avatar from "./Avatar";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import useSignupStore from "@/store/auth/signupStore";
 import useAvatarStore from "@/store/user/avatarStore";
 import BtnLoader from "../../loaders/BtnLoader";
+import { MdOutlineAddPhotoAlternate } from "react-icons/md";
 import Oauth from "./Oauth";
 import { IoMdEye, IoIosEyeOff } from "react-icons/io";
 import useUserStore from "@/store/user/userStore";
+import Image from "next/image";
+import Link from "next/link";
 
 const Signup = () => {
   const router = useRouter();
@@ -17,21 +19,28 @@ const Signup = () => {
 
   const { status, signup, error, setError, user } = useSignupStore();
   const { setUser } = useUserStore();
-  const { avatar, setAvatar } = useAvatarStore();
+  const { avatar, setAvatar, toggleAvatarGallery } = useAvatarStore();
 
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [gender, setGender] = useState<"male" | "female" | null>("male");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [avatarError, setAvatarError] = useState(false);
 
   const [visiblePassword, setVisiblePassword] = useState(false);
   const [visibleConfirmPassword, setVisibleConfirmPassword] = useState(false);
 
-  const handleRoute = (routeName: string) => {
-    const newParams = new URLSearchParams(searchParams.toString());
-    newParams.set("auth", routeName);
-    router.push(`?${newParams.toString()}`);
-  };
+  const handleRoute = useCallback(
+    (routeName: string) => {
+      const newParams = new URLSearchParams(searchParams.toString());
+      newParams.set("auth", routeName);
+      router.push(`?${newParams.toString()}`);
+    },
+    [router, searchParams],
+  );
 
   useEffect(() => {
     let timeOut: NodeJS.Timeout;
@@ -48,13 +57,16 @@ const Signup = () => {
     if (status === "success") {
       if (user) setUser(user);
       setAvatar("");
+      setAvatarError(false);
+      setFirstName("");
+      setLastName("");
       setUsername("");
       setEmail("");
       setPassword("");
       setConfirmPassword("");
       handleRoute("verify");
     }
-  }, [setAvatar, status, user]);
+  }, [setAvatar, status, user, setUser, handleRoute]);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -63,7 +75,13 @@ const Signup = () => {
       return;
     }
 
-    signup({ username, email, avatar: avatar || "", password });
+    if (!avatar) {
+      setError("Please select an avatar");
+      setAvatarError(true);
+      return;
+    }
+
+    signup({ firstName, lastName, username, email, gender, avatar, password });
   };
 
   return (
@@ -71,8 +89,42 @@ const Signup = () => {
       {error && <p className={styles.error}>{error}</p>}
       <h2>Sign up</h2>
       <div className={styles.local_auth}>
-        <Avatar />
+        <div
+          className={
+            avatarError
+              ? styles.choose_avatar_wrapper_error
+              : styles.choose_avatar_wrapper
+          }
+          onClick={() => toggleAvatarGallery()}
+        >
+          <div className={styles.choose_avatar}>
+            <button>
+              {!avatar ? (
+                <div className={styles.choose}>
+                  <MdOutlineAddPhotoAlternate className={styles.icon} />
+                  <span>Choose</span>
+                </div>
+              ) : (
+                <div className={styles.image} title="Change avatar">
+                  <Image src={avatar} width={100} height={100} alt="avatar" />
+                </div>
+              )}
+            </button>
+          </div>
+        </div>
         <form onSubmit={handleSubmit}>
+          <input
+            type="text"
+            placeholder="First Name (optional)"
+            value={firstName}
+            onChange={(e) => setFirstName(e.target.value)}
+          />
+          <input
+            type="text"
+            placeholder="Last Name (optional)"
+            value={lastName}
+            onChange={(e) => setLastName(e.target.value)}
+          />
           <input
             type="text"
             placeholder="Username"
@@ -141,6 +193,31 @@ const Signup = () => {
               </div>
             )}
           </div>
+          <div className={styles.radio_wrapper}>
+            <strong>Your Gender:</strong>
+            <div className={styles.male}>
+              <input
+                type="radio"
+                name="gender"
+                value="male"
+                id="male"
+                checked={gender === "male"}
+                onChange={() => setGender("male")}
+              />
+              <label htmlFor="male">Male</label>
+            </div>
+            <div className={styles.female}>
+              <input
+                type="radio"
+                name="gender"
+                value="female"
+                id="female"
+                checked={gender === "female"}
+                onChange={() => setGender("female")}
+              />
+              <label htmlFor="female">Female</label>
+            </div>
+          </div>
           <button type="submit" disabled={status === "loading"}>
             {status === "loading" ? <BtnLoader /> : "Sign Up"}
           </button>
@@ -155,6 +232,23 @@ const Signup = () => {
       <div className={styles.signup}>
         <p>Already have an account?</p>
         <span onClick={() => handleRoute("signin")}>Sign In</span>
+      </div>
+      <div className={styles.links}>
+        <Link href="/rules" className={styles.link}>
+          Game Rules
+        </Link>
+        <Link href="/about" className={styles.link}>
+          About Us
+        </Link>
+        <Link href="/privacy" className={styles.link}>
+          Privacy Policy
+        </Link>
+        <Link href="/terms" className={styles.link}>
+          Terms of Service
+        </Link>
+        <Link href="/data-deletion" className={styles.link}>
+          Data Deletion
+        </Link>
       </div>
     </div>
   );

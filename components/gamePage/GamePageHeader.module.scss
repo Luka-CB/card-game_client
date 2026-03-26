@@ -1,4 +1,4 @@
-@use "../../styles/mixins" as *;
+@use "mixins" as *;
 
 .header {
   display: flex;
@@ -49,35 +49,199 @@
         margin-left: 7px;
       }
     }
+
+    @media (max-width: 500px) {
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: flex-start;
+
+      .divider {
+        display: none;
+      }
+
+      .item {
+        margin: 5px 0;
+        position: relative;
+
+        .indicator {
+          position: absolute;
+          top: 0;
+          left: 35%;
+          width: 8px;
+          height: 8px;
+        }
+
+        b {
+          font-size: small;
+          margin-left: 5px;
+        }
+      }
+    }
   }
 
   .col2 {
-    .create_btn {
-      @include btn();
+    position: relative;
+    display: flex;
+    align-items: center;
+
+    .filter,
+    .disabled {
       display: flex;
       align-items: center;
-      background-color: transparent;
-      border: 2px solid var(--clr-primary-800);
-      padding: 0 10px;
-
-      .icon {
-        color: var(--clr-primary-800);
-      }
+      margin-right: 10px;
+      position: relative;
 
       span {
-        color: var(--clr-primary-800);
+        color: var(--clr-primary-200);
         font-size: small;
-        margin-left: 5px;
+        margin-right: 5px;
       }
 
-      &:hover {
-        background-color: var(--clr-primary-faded);
-        border-color: var(--clr-primary-600);
+      .filter_btn {
+        @include btn();
+        display: flex;
+        align-items: center;
+        background-color: transparent;
+        border: 2px solid var(--clr-primary-800);
+        padding: 0 10px;
 
-        .icon,
-        span {
-          color: var(--clr-primary-600);
+        .icon {
+          color: var(--clr-primary-800);
+          font-size: 1.2rem;
         }
+
+        &:hover {
+          background-color: var(--clr-primary-faded);
+          border-color: var(--clr-primary-600);
+
+          .icon {
+            color: var(--clr-primary-600);
+          }
+        }
+
+        &:disabled {
+          border-color: var(--clr-primary-faded);
+          background-color: var(--clr-primary-faded);
+          cursor: default;
+
+          .icon {
+            color: var(--clr-primary-faded);
+          }
+        }
+      }
+    }
+
+    .disabled {
+      span {
+        opacity: 0.2;
+      }
+    }
+
+    .col {
+      display: flex;
+      align-items: center;
+
+      .create_btn {
+        @include btn();
+        display: flex;
+        align-items: center;
+        background-color: transparent;
+        border: 2px solid var(--clr-primary-800);
+        padding: 0 10px;
+
+        .icon {
+          color: var(--clr-primary-800);
+        }
+
+        span {
+          color: var(--clr-primary-800);
+          font-size: small;
+          margin-left: 5px;
+        }
+
+        &:hover {
+          background-color: var(--clr-primary-faded);
+          border-color: var(--clr-primary-600);
+
+          .icon,
+          span {
+            color: var(--clr-primary-600);
+          }
+        }
+      }
+    }
+
+    @media (max-width: 800px) {
+      .filter {
+        span {
+          font-size: 0.6rem;
+
+          @media (max-width: 650px) {
+            display: none;
+          }
+        }
+
+        .filter_btn {
+          border-radius: 50%;
+          width: 30px;
+          height: 30px;
+          padding: 0;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+
+          .icon {
+            font-size: 0.8rem;
+          }
+        }
+      }
+
+      .col {
+        .create_btn {
+          border-radius: 50%;
+          border-width: 1px;
+          width: 40px;
+          height: 40px;
+
+          .icon {
+            font-size: 1.5rem;
+          }
+
+          span {
+            display: none;
+          }
+        }
+      }
+    }
+
+    @media (max-width: 600px) {
+      .col {
+        .create_btn {
+          border-radius: 50%;
+          border-width: 1px;
+          width: 30px;
+          height: 30px;
+          padding: 0;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+
+          .icon {
+            font-size: 1rem;
+          }
+        }
+      }
+    }
+
+    @media (max-width: 400px) {
+      flex-direction: column;
+      align-items: flex-end;
+      justify-content: space-between;
+      height: 100px;
+
+      .filter {
+        margin-right: 0;
+        margin-bottom: 10px;
       }
     }
   }

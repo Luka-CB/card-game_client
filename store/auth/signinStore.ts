@@ -27,15 +27,25 @@ const useSigninStore = create<SigninStore>((set) => ({
       const user = {
         _id: data._id,
         username: data.username,
+        originalUsername: data.originalUsername,
         avatar: data.avatar,
         email: data.email,
+        gender: data.gender,
         isVerified: data.isVerified,
+        isAdmin: data.isAdmin,
       };
 
       set({ user, status: "success" });
-    } catch (error: AxiosError | any) {
+    } catch (error: unknown) {
       console.log(error);
-      set({ error: error.response.data.error.message, status: "failed" });
+      if (error instanceof AxiosError) {
+        set({
+          error: error.response?.data?.error?.message || "An error occurred",
+          status: "failed",
+        });
+      } else {
+        set({ error: "An unexpected error occurred", status: "failed" });
+      }
     }
   },
 }));

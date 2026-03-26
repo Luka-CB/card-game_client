@@ -3,25 +3,28 @@
 import { createPortal } from "react-dom";
 import styles from "./CreateRoom.module.scss";
 import { FaLock, FaLockOpen, FaTimesCircle } from "react-icons/fa";
-import { FormEvent, useState } from "react";
+import { useEffect, useState } from "react";
 import useCreateRoomStore from "@/store/gamePage/createRoomStore";
 import { AnimatePresence, motion } from "framer-motion";
 import { v4 as uuidv4 } from "uuid";
 import useSocket from "@/hooks/useSocket";
 import useUserStore from "@/store/user/userStore";
 import useFlashMsgStore from "@/store/flashMsgStore";
-import { getRandomBotAvatar, getStoredRandomAvatar } from "@/utils/misc";
+import { getRandomBotAvatar, getRandomColor } from "@/utils/misc";
 import useRoomStore from "@/store/gamePage/roomStore";
+import Image from "next/image";
+import useJCoinsStore from "@/store/user/stats/jCoinsStore";
 
 const CreateRoom = () => {
   const [currentStatus, setCurrentStatus] = useState("public");
-  const [currentType, setCurrentType] = useState<
-    "classic" | "nines" | "betting"
-  >("classic");
+  const [currentTab, setCurrentTab] = useState<"classic" | "nines">("classic");
+  const [type, setType] = useState<"classic" | "nines">("classic");
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
-  const [bett, setBett] = useState("");
+  const [bet, setBet] = useState("");
+  const [betError, setBetError] = useState("");
   const [hisht, setHisht] = useState("200");
+  const [toggleChat, setToggleChat] = useState(false);
 
   const { toggleCreateRoomModal, setToggleCreateRoom } = useCreateRoomStore();
   const { setMsg } = useFlashMsgStore();
@@ -31,22 +34,25 @@ const CreateRoom = () => {
 
   const socket = useSocket();
   const { user } = useUserStore();
+  const { jCoins, toggleGetMoreModal } = useJCoinsStore();
 
   const resetModal = () => {
     setToggleCreateRoom(false, null);
     setName("");
     setPassword("");
-    setBett("");
+    setBet("");
     setHisht("200");
+    setToggleChat(false);
+    setBetError("");
   };
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (!user) return;
 
     const roomUser = rooms.find((room) =>
-      room?.users.some((u) => u.id === user._id)
+      room?.users.some((u) => u.id === user._id),
     );
     if (roomUser) {
       setMsg("You can't be in more than one room at the same time", "error");
@@ -54,22 +60,41 @@ const CreateRoom = () => {
       return;
     }
 
+    if (bet && parseInt(bet) < 50) {
+      setBetError("Bet must be at least 50");
+      return;
+    }
+
+    if (bet && jCoins && parseInt(bet) > jCoins.raw) {
+      setBetError("You don't have enough JCoins");
+      return;
+    }
+
+    if (jCoins && jCoins.raw < 100) {
+      toggleGetMoreModal(true);
+      setMsg("You need at least 100 JCoins to create a room", "error");
+      resetModal();
+      return;
+    }
+
     const room = {
       id: uuidv4(),
-      name,
+      name: name.trim() !== "" ? name : `Room ${rooms.length + 1}`,
       password: currentStatus === "private" ? password : null,
-      bett: currentType === "betting" ? bett : null,
-      type: currentType,
+      bet: bet ? bet : null,
+      type: type,
       status: currentStatus,
       hisht,
+      hasChat: toggleChat,
       createdAt: new Date(),
       users: [
         {
           id: user._id,
-          username: user.username,
+          username: user.originalUsername,
           status: "active",
-          avatar: user.avatar || getStoredRandomAvatar(),
+          avatar: user.avatar || "/default-avatar.jpeg",
           botAvatar: getRandomBotAvatar(),
+          color: getRandomColor(),
         },
       ],
     };
@@ -82,6 +107,14 @@ const CreateRoom = () => {
       resetModal();
     }
   };
+
+  useEffect(() => {
+    if (toggleCreateRoomModal.toggle) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "auto";
+    }
+  }, [toggleCreateRoomModal.toggle]);
 
   if (typeof document === "undefined") {
     return null;
@@ -122,27 +155,25 @@ const CreateRoom = () => {
             <div className={styles.game_type}>
               <div
                 className={
-                  currentType === "classic" ? styles.item_active : styles.item
+                  currentTab === "classic" ? styles.item_active : styles.item
                 }
-                onClick={() => setCurrentType("classic")}
+                onClick={() => {
+                  setCurrentTab("classic");
+                  setType("classic");
+                }}
               >
                 <span>Classic</span>
               </div>
               <div
                 className={
-                  currentType === "nines" ? styles.item_active : styles.item
+                  currentTab === "nines" ? styles.item_active : styles.item
                 }
-                onClick={() => setCurrentType("nines")}
+                onClick={() => {
+                  setCurrentTab("nines");
+                  setType("nines");
+                }}
               >
                 <span>Nines</span>
-              </div>
-              <div
-                className={
-                  currentType === "betting" ? styles.item_active : styles.item
-                }
-                onClick={() => setCurrentType("betting")}
-              >
-                <span>Betting</span>
               </div>
             </div>
             <div className={styles.visibility}>
@@ -172,8 +203,10 @@ const CreateRoom = () => {
                   type="text"
                   name="name"
                   id="name"
-                  required
                   value={name}
+                  placeholder={
+                    rooms.length > 0 ? `Room ${rooms.length + 1}` : "Room 1"
+                  }
                   onChange={(e) => setName(e.target.value)}
                 />
               </div>
@@ -190,19 +223,27 @@ const CreateRoom = () => {
                   />
                 </div>
               ) : null}
-              {currentType === "betting" ? (
-                <div className={styles.input_box}>
-                  <label htmlFor="bett">Amount of Bett</label>
-                  <input
-                    type="number"
-                    name="bett"
-                    id="bett"
-                    required
-                    value={bett}
-                    onChange={(e) => setBett(e.target.value)}
-                  />
+              <div className={betError ? styles.bet_box_error : styles.bet_box}>
+                <label htmlFor="bet">Bet (optional):</label>
+                <input
+                  type="number"
+                  name="bet"
+                  id="bet"
+                  value={bet}
+                  onChange={(e) => {
+                    setBet(e.target.value);
+                    setBetError("");
+                  }}
+                />
+                <div className={styles.info}>
+                  <small>Minimum bet:</small>
+                  <Image src="/coin1.png" alt="coin" width={20} height={20} />
+                  <b>50</b>
                 </div>
-              ) : null}
+                {betError && (
+                  <span className={styles.error_message}>{betError}</span>
+                )}
+              </div>
               <div className={styles.radio_box}>
                 <b>Hisht:</b>
                 <div className={styles.inputs}>
@@ -226,7 +267,31 @@ const CreateRoom = () => {
                     onChange={(e) => setHisht(e.target.value)}
                   />
                   <label htmlFor="hisht_500">500</label>
+                  <input
+                    type="radio"
+                    name="hisht"
+                    id="hisht_900"
+                    required
+                    value={900}
+                    checked={hisht === "900"}
+                    onChange={(e) => setHisht(e.target.value)}
+                  />
+                  <label htmlFor="hisht_900">900</label>
                 </div>
+              </div>
+              <div className={styles.toggle_box}>
+                <span>In Game Chat:</span>
+                <label htmlFor="toggleChat" className={styles.toggle_switch}>
+                  <input
+                    type="checkbox"
+                    name="toggleChat"
+                    id="toggleChat"
+                    checked={toggleChat}
+                    onChange={(e) => setToggleChat(e.target.checked)}
+                  />
+                  <span className={styles.slider}></span>
+                </label>
+                <small>{toggleChat ? "On" : "Off"}</small>
               </div>
               <button type="submit" className={styles.submit_btn}>
                 Create
@@ -236,7 +301,7 @@ const CreateRoom = () => {
         </motion.div>
       )}
     </AnimatePresence>,
-    document.body
+    document.body,
   );
 };
 

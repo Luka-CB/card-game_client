@@ -3,7 +3,6 @@
 import { create } from "zustand";
 import api from "../../utils/axios";
 import useUserStore from "../user/userStore";
-import { clearStoredRandomAvatar } from "../../utils/misc";
 
 interface LogoutStore {
   status: "idle" | "loading" | "success" | "failed";
@@ -20,8 +19,6 @@ const useLogoutStore = create<LogoutStore>((set) => ({
       if (data) {
         // Clear user state
         useUserStore.getState().setUser(null);
-        // Clear random avatar from localStorage
-        clearStoredRandomAvatar();
         set({ status: "success" });
       }
     } catch (error) {

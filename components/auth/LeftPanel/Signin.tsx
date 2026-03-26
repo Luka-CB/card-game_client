@@ -9,10 +9,14 @@ import useUserStore from "@/store/user/userStore";
 import BtnLoader from "../../loaders/BtnLoader";
 import Link from "next/link";
 import { IoMdEye, IoIosEyeOff } from "react-icons/io";
+import useJCoinsStore from "@/store/user/stats/jCoinsStore";
+import useRatingStore from "@/store/user/stats/ratingStore";
 
 const Signin = () => {
   const { user, status, error, setError, signin, reset } = useSigninStore();
   const { setUser } = useUserStore();
+  const { fetchJCoins } = useJCoinsStore();
+  const { fetchRating } = useRatingStore();
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -22,7 +26,7 @@ const Signin = () => {
   const searchParams = useSearchParams();
 
   useEffect(() => {
-    let timeout: any;
+    let timeout: NodeJS.Timeout;
 
     if (error) {
       timeout = setTimeout(() => {
@@ -31,17 +35,19 @@ const Signin = () => {
     }
 
     return () => clearTimeout(timeout);
-  }, [error]);
+  }, [error, setError]);
 
   useEffect(() => {
     if (status === "success") {
       router.push("/");
       if (user) setUser(user);
+      fetchJCoins();
+      fetchRating();
       reset();
       setUsername("");
       setPassword("");
     }
-  }, [status, router, user]);
+  }, [status, router, user, fetchJCoins, fetchRating, reset, setUser]);
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -110,8 +116,25 @@ const Signin = () => {
       </div>
       <Oauth />
       <div className={styles.signup}>
-        <p>Don't have an account?</p>
+        <p>Don&apos;t have an account?</p>
         <span onClick={handleRoute}>Sign Up</span>
+      </div>
+      <div className={styles.links}>
+        <Link href="/rules" className={styles.link}>
+          Game Rules
+        </Link>
+        <Link href="/about" className={styles.link}>
+          About Us
+        </Link>
+        <Link href="/privacy" className={styles.link}>
+          Privacy Policy
+        </Link>
+        <Link href="/terms" className={styles.link}>
+          Terms of Service
+        </Link>
+        <Link href="/data-deletion" className={styles.link}>
+          Data Deletion
+        </Link>
       </div>
     </div>
   );

@@ -6,35 +6,31 @@ import { create } from "zustand";
 export interface userIFace {
   _id: string;
   username: string;
+  originalUsername: string;
   avatar: string;
   email: string;
+  gender: "male" | "female" | null;
   isVerified: boolean;
-}
-
-interface Room {
-  id: string;
-  name: string;
-  password: string | null;
-  bett: string | null;
-  type: "classic" | "nines" | "betting";
-  status: "public" | "private";
-  hisht: string;
-  createdAt: Date;
+  isAdmin: boolean;
 }
 
 interface UserStore {
   user: userIFace | null;
+  usersOnline: string[];
   loading: boolean;
   setUser: (user: userIFace | null) => void;
+  setUsersOnline: (users: string[]) => void;
   getUser: () => Promise<void>;
   setIsVerified: (value: boolean) => void;
 }
 
 const useUserStore = create<UserStore>((set) => ({
   user: null,
+  usersOnline: [],
   loading: true,
   joinedRoom: null,
   setUser: (user: userIFace | null) => set({ user }),
+  setUsersOnline: (users: string[]) => set({ usersOnline: users }),
   getUser: async () => {
     try {
       const { data } = await api.get("/users/session-user");
