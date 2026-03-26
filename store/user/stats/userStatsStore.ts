@@ -38,12 +38,13 @@ const useUserStatsStore = create<userStatsStore>((set) => ({
     try {
       const { data } = await api.get("/stats");
       set({ stats: data.stats, status: "success" });
-    } catch (error: AxiosError | any) {
+    } catch (error: unknown) {
       console.log(error);
       set({
         error:
-          error.response?.data?.error?.message ||
-          "An unexpected error occurred",
+          error instanceof AxiosError
+            ? error.response?.data?.error?.message || "An error occurred"
+            : "An unexpected error occurred",
         status: "failed",
       });
     }

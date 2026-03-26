@@ -31,12 +31,20 @@ const useUpdateEmailStore = create<UpdateEmailStore>((set) => ({
       if (data.success) {
         set({ sendRequestState: "success" });
       }
-    } catch (error: AxiosError | any) {
+    } catch (error: unknown) {
       console.log(error);
-      set({
-        sendRequestState: "error",
-        sendRequestError: error.response.data.error.message,
-      });
+      if (error instanceof AxiosError) {
+        set({
+          sendRequestState: "error",
+          sendRequestError:
+            error.response?.data?.error?.message || "An error occurred",
+        });
+      } else {
+        set({
+          sendRequestState: "error",
+          sendRequestError: "An unexpected error occurred",
+        });
+      }
     }
   },
   confirmCodeStatus: "idle",
@@ -48,12 +56,20 @@ const useUpdateEmailStore = create<UpdateEmailStore>((set) => ({
       if (data.success) {
         set({ confirmCodeStatus: "success" });
       }
-    } catch (error: AxiosError | any) {
+    } catch (error: unknown) {
       console.log(error);
-      set({
-        confirmCodeStatus: "error",
-        confirmCodeError: error.response.data.error.message,
-      });
+      if (error instanceof AxiosError) {
+        set({
+          confirmCodeStatus: "error",
+          confirmCodeError:
+            error.response?.data?.error?.message || "An error occurred",
+        });
+      } else {
+        set({
+          confirmCodeStatus: "error",
+          confirmCodeError: "An unexpected error occurred",
+        });
+      }
     }
   },
   reset: () =>

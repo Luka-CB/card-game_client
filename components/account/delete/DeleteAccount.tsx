@@ -4,17 +4,6 @@ import styles from "./DeleteAccount.module.scss";
 const DeleteAccount = () => {
   const { toggleDelModal } = useDeleteUserStore();
 
-  function handleDelete() {
-    // Dummy delete flow — replace with API call when ready
-    if (
-      confirm(
-        "Are you sure you want to delete your account? This is a dummy action.",
-      )
-    ) {
-      console.log("Account delete (dummy)");
-    }
-  }
-
   return (
     <div className={styles.deleteWrap}>
       <h3>Danger zone</h3>

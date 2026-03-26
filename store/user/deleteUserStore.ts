@@ -34,12 +34,19 @@ const useDeleteUserStore = create<DeleteUserStore>((set) => ({
       if (data.success) {
         set({ state: "success" });
       }
-    } catch (error: AxiosError | any) {
+    } catch (error: unknown) {
       console.log(error);
-      set({
-        error: error.response?.data?.error?.message || "An error occurred",
-        state: "failed",
-      });
+      if (error instanceof AxiosError) {
+        set({
+          error: error.response?.data?.error?.message || "An error occurred",
+          state: "failed",
+        });
+      } else {
+        set({
+          error: "An unexpected error occurred",
+          state: "failed",
+        });
+      }
     }
   },
 }));

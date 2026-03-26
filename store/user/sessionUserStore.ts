@@ -3,7 +3,6 @@
 import { create } from "zustand";
 import api from "../../utils/axios";
 import Cookies from "js-cookie";
-import { AxiosError } from "axios";
 import { userIFace } from "./userStore";
 
 interface SessionUserStore {
@@ -37,7 +36,7 @@ const useSessionUserStore = create<SessionUserStore>((set) => ({
         expires: 365 * 10,
       });
       localStorage.setItem("user", JSON.stringify(user));
-    } catch (error: AxiosError | any) {
+    } catch (error: unknown) {
       console.log(error);
       set({ status: "failed" });
     }

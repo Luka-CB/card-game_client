@@ -13,7 +13,7 @@ const useSoundStore = create<SoundStore>((set) => ({
   isMuted: false,
   volume: 0.5,
   showSlider: false,
-  setVolume: (volume: number) => set((state) => ({ volume })),
+  setVolume: (volume: number) => set(() => ({ volume })),
   toggleMute: (value?: boolean) =>
     set((state) => ({ isMuted: value ?? !state.isMuted })),
   toggleSlider: (value?: boolean) =>

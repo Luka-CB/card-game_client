@@ -16,7 +16,7 @@ import {
 } from "@/utils/interfaces";
 import useUserStore from "@/store/user/userStore";
 import useSocket from "@/hooks/useSocket";
-import { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Loader from "@/components/loaders/Loader";
 import LeaveRoomModal from "@/components/gameRoom/gameControls/leaveRoomModal/LeaveRoomModal";
@@ -134,8 +134,6 @@ const GameRoom: React.FC = () => {
 
   const handleEmojiSelect = (emoji: string) => {
     if (!socket || !roomId) return;
-
-    console.log("Selected emoji:", emoji);
 
     socket.emit("sendEmoji", roomId, {
       playerId: user?._id,

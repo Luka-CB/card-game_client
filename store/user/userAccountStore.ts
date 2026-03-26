@@ -2,7 +2,6 @@
 
 import { create } from "zustand";
 import api from "../../utils/axios";
-import Cookies from "js-cookie";
 import { AxiosError } from "axios";
 
 export interface UserAccount {
@@ -51,7 +50,7 @@ const useUserAccountStore = create<UserAccountStore>((set) => ({
     try {
       const { data } = await api.get("/users/account");
       set({ userAccount: data, state: "success" });
-    } catch (error) {
+    } catch (error: unknown) {
       if (error instanceof AxiosError) {
         set({
           error: error.response?.data?.error?.message || error.message,
@@ -67,7 +66,7 @@ const useUserAccountStore = create<UserAccountStore>((set) => ({
     try {
       const { data } = await api.put("/users/account", userData);
       set({ userAccount: data, updateState: "success" });
-    } catch (error: AxiosError | any) {
+    } catch (error: unknown) {
       if (error instanceof AxiosError) {
         set({
           error: error.response?.data?.error?.message || error.message,
@@ -83,7 +82,7 @@ const useUserAccountStore = create<UserAccountStore>((set) => ({
     try {
       const { data } = await api.put("/users/avatar", { avatarUrl });
       set({ userAccount: data, updateAvatarState: "success" });
-    } catch (error: AxiosError | any) {
+    } catch (error: unknown) {
       if (error instanceof AxiosError) {
         set({
           error: error.response?.data?.error?.message || error.message,

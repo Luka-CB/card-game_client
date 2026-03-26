@@ -1,5 +1,4 @@
 import api from "@/utils/axios";
-import { AxiosError } from "axios";
 import { create } from "zustand";
 
 interface UserActivityStore {
@@ -21,7 +20,7 @@ const useUserActivityStore = create<UserActivityStore>((set) => ({
       const { data } = await api.get("/activities/get");
       set({ activities: data, state: "success" });
       console.log("Fetched user activities:", data);
-    } catch (error: AxiosError | any) {
+    } catch (error: unknown) {
       console.error("Error fetching user activities:", error);
       set({ state: "failed" });
     }

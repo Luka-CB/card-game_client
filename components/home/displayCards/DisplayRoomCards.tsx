@@ -59,10 +59,10 @@ const DisplayRoomCards = () => {
 
   useEffect(() => {
     if (!socket) return;
-    const listeners: [string, (data: any) => void][] = [
-      ["getDisplayRoomClassic", (d: Room) => setClassicRoom(d)],
-      ["getDisplayRoomNines", (d: Room) => setNinesRoom(d)],
-      ["getDisplayRoomBetting", (d: Room) => setBettingRoom(d)],
+    const listeners: [string, (data: Room | null) => void][] = [
+      ["getDisplayRoomClassic", (d: Room | null) => setClassicRoom(d)],
+      ["getDisplayRoomNines", (d: Room | null) => setNinesRoom(d)],
+      ["getDisplayRoomBetting", (d: Room | null) => setBettingRoom(d)],
       ["getRoomImIn", (d: Room | null) => setRoomImIn(d)],
     ];
     listeners.forEach(([ev, h]) => socket.on(ev, h));
