@@ -19,7 +19,15 @@ const Redirecting = () => {
 
   useEffect(() => {
     if (user) {
-      router.push("/");
+      console.log("Redirecting to root via router.replace");
+      router.replace("/");
+
+      // Fallback for environments where router.replace may be a no-op
+      setTimeout(() => {
+        if (typeof window !== "undefined" && window.location.pathname !== "/") {
+          window.location.href = "/";
+        }
+      }, 200);
     }
   }, [user, router]);
 
