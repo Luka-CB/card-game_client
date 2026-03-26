@@ -1,8 +1,6 @@
 @use "mixins" as *;
 
-:root {
-  --muted: rgba(84, 84, 84, 0.797);
-}
+$muted: rgba(84, 84, 84, 0.797);
 
 .container {
   @include bgColor(light);
@@ -32,7 +30,7 @@
 
 .subtitle {
   margin: 0;
-  color: var(--muted);
+  color: $muted;
   font-size: 0.95rem;
 }
 
@@ -67,7 +65,7 @@
     display: flex;
     flex-direction: column;
     font-size: 0.9rem;
-    color: var(--muted);
+    color: $muted;
     margin-bottom: 20px;
   }
 
@@ -121,14 +119,14 @@
   display: flex;
   flex-direction: column;
   font-size: 0.9rem;
-  color: var(--muted);
+  color: $muted;
 }
 
 .labelFull {
   display: flex;
   flex-direction: column;
   margin-bottom: 0.75rem;
-  color: var(--muted);
+  color: $muted;
 }
 
 .input,
@@ -161,7 +159,7 @@
 .word_count {
   margin-top: 0.25rem;
   font-size: 0.85rem;
-  color: var(--muted);
+  color: $muted;
 }
 
 .optionsRow {
@@ -173,7 +171,7 @@
 
   .option {
     font-size: 0.9rem;
-    color: var(--muted);
+    color: $muted;
   }
 }
 
