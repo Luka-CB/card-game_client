@@ -19,15 +19,17 @@ const Redirecting = () => {
 
   useEffect(() => {
     if (user) {
-      console.log("Redirecting to root via router.replace");
-      router.replace("/");
+      const url = new URL(window.location.href);
+      url.searchParams.delete("auth");
+      const newPath = `${url.pathname}${url.search}`;
+      router.replace(newPath);
+      router.refresh();
 
       // Fallback for environments where router.replace may be a no-op
       setTimeout(() => {
-        if (typeof window !== "undefined" && window.location.pathname !== "/") {
-          window.location.href = "/";
-        }
-      }, 200);
+        if (window.location.href.includes("auth=redirecting"))
+          window.location.href = newPath;
+      }, 300);
     }
   }, [user, router]);
 
