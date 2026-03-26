@@ -35,7 +35,6 @@ const useUserStore = create<UserStore>((set) => ({
     try {
       const { data } = await api.get("/users/session-user");
       if (data) {
-        console.log("User data:", data);
         set({ user: data, loading: false });
       }
     } catch (error) {

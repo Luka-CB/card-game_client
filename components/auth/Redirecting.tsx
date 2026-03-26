@@ -15,8 +15,6 @@ const Redirecting = () => {
     getUser();
   }, [getUser]);
 
-  console.log("Current user in Redirecting component:", user);
-
   useEffect(() => {
     if (user) {
       const url = new URL(window.location.href);
@@ -25,7 +23,6 @@ const Redirecting = () => {
       router.replace(newPath);
       router.refresh();
 
-      // Fallback for environments where router.replace may be a no-op
       setTimeout(() => {
         if (window.location.href.includes("auth=redirecting"))
           window.location.href = newPath;
