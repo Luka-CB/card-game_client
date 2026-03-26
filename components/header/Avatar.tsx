@@ -2,9 +2,8 @@ import useUserOptionStore from "@/store/user/userOptionStore";
 import styles from "./Avatar.module.scss";
 import useUserStore from "@/store/user/userStore";
 import Image from "next/image";
-import { FaCaretDown } from "react-icons/fa6";
+// import { FaCaretDown } from "react-icons/fa6";
 import useWindowSize from "@/hooks/useWindowSize";
-import UserOption from "../home/UserOption";
 
 const Avatar = () => {
   const { setIsOpen, isOpen } = useUserOptionStore();
@@ -24,11 +23,10 @@ const Avatar = () => {
           height={50}
           className={styles.avatar_img}
         />
-        <div className={styles.caret}>
+        {/* <div className={styles.caret}>
           <FaCaretDown className={styles.caret_icon} />
-        </div>
+        </div> */}
       </div>
-      <UserOption />
     </>
   );
 };

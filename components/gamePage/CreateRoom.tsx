@@ -3,7 +3,7 @@
 import { createPortal } from "react-dom";
 import styles from "./CreateRoom.module.scss";
 import { FaLock, FaLockOpen, FaTimesCircle } from "react-icons/fa";
-import { FormEvent, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import useCreateRoomStore from "@/store/gamePage/createRoomStore";
 import { AnimatePresence, motion } from "framer-motion";
 import { v4 as uuidv4 } from "uuid";
@@ -46,7 +46,7 @@ const CreateRoom = () => {
     setBetError("");
   };
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (!user) return;

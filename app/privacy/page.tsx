@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import styles from "./page.module.scss";
+import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Privacy Policy | Joker Clash",
@@ -71,7 +72,7 @@ export default function PrivacyPolicyPage() {
       </section>
 
       <section className={styles.section}>
-        <h2>4. Children’s Privacy</h2>
+        <h2>4. Children&apos;s Privacy</h2>
         <p>
           Our service is intended for players aged 13+. We do not knowingly
           collect personal data from children under this age. If such data is
@@ -102,6 +103,66 @@ export default function PrivacyPolicyPage() {
         <p>
           We use industry-standard safeguards to protect data. No method is
           fully secure, but reasonable measures are continuously applied.
+        </p>
+      </section>
+
+      <section className={styles.section}>
+        <h2>Data Retention &amp; Deletion</h2>
+        <p>
+          We retain account and gameplay data to provide the Service, prevent
+          abuse, and comply with legal requirements. You can remove third-party
+          access or request deletion using the instructions below.
+        </p>
+
+        <h3>Remove Joker Clash from Facebook</h3>
+        <ol>
+          <li>
+            Log in to Facebook and open{" "}
+            <em>Settings &amp; Privacy &gt; Settings</em>.
+          </li>
+          <li>
+            Open <em>Apps and Websites</em> to view connected apps.
+          </li>
+          <li>
+            Find <strong>Joker Clash</strong> and click <em>Remove</em> to
+            revoke access.
+          </li>
+        </ol>
+
+        <h3>Remove Joker Clash from Google</h3>
+        <ol>
+          <li>
+            Sign in to <em>Google Account</em> (myaccount.google.com).
+          </li>
+          <li>
+            Go to <em>Security</em> &gt;{" "}
+            <em>Third-party apps with account access</em>.
+          </li>
+          <li>
+            Choose <em>Manage third-party access</em>, find{" "}
+            <strong>Joker Clash</strong>, and remove access.
+          </li>
+        </ol>
+
+        <h3>Delete your Joker Clash account (local)</h3>
+        <ol>
+          <li>Log in to your Joker Clash account on the website.</li>
+          <li>
+            Open <em>Account</em> settings and use the{" "}
+            <strong>Delete Account</strong> option.
+          </li>
+          <li>
+            Follow the confirmation steps to permanently remove your account and
+            data.
+          </li>
+        </ol>
+
+        <p>
+          You may also visit our dedicated data deletion page at{" "}
+          <Link href="/data-deletion">Data Deletion</Link> for step-by-step
+          guidance, or contact us at{" "}
+          <a href="mailto:support@jokerclash.com">support@jokerclash.com</a> to
+          request manual deletion.
         </p>
       </section>
 

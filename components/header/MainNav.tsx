@@ -1,13 +1,17 @@
 import useUserStore from "@/store/user/userStore";
 import styles from "./MainNav.module.scss";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import { TfiStatsDown, TfiStatsUp } from "react-icons/tfi";
 import { PiChartLineLight } from "react-icons/pi";
 import { SiAirtable } from "react-icons/si";
 import { TbReport } from "react-icons/tb";
+import { MdManageAccounts } from "react-icons/md";
+import { IoLogOut } from "react-icons/io5";
 import Image from "next/image";
 import Avatar from "./Avatar";
+import { useEffect } from "react";
+import useLogoutStore from "@/store/auth/logoutStore";
 
 interface MainNavProps {
   jCoins: {
@@ -27,8 +31,20 @@ const MainNav: React.FC<MainNavProps> = ({
   onOpenGetMoreModal,
 }) => {
   const { user } = useUserStore();
+  const { status, logout } = useLogoutStore();
+  const router = useRouter();
 
   const pathname = usePathname();
+
+  useEffect(() => {
+    if (status === "success") {
+      router.push("/");
+    }
+  }, [status, router]);
+
+  const handleLogout = () => {
+    logout();
+  };
 
   return (
     <header className={styles.main_nav}>
@@ -45,11 +61,24 @@ const MainNav: React.FC<MainNavProps> = ({
             </div>
             <div
               className={
-                pathname === "/report" ? styles.link_active : styles.link
+                pathname === "/account" ? styles.link_active : styles.link
+              }
+            >
+              <MdManageAccounts className={styles.icon} />
+              <Link href="/account">Your Account</Link>
+            </div>
+            <div
+              className={
+                pathname === "/feedback" ? styles.link_active : styles.link
               }
             >
               <TbReport className={styles.icon} />
-              <Link href="/report">Report</Link>
+              <Link href="/feedback">Feedback</Link>
+            </div>
+            <div className={styles.divider}></div>
+            <div className={styles.logout} onClick={handleLogout}>
+              <IoLogOut className={styles.icon} />
+              <span>Logout</span>
             </div>
           </ul>
         ) : null}

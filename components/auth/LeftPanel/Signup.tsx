@@ -21,6 +21,8 @@ const Signup = () => {
   const { setUser } = useUserStore();
   const { avatar, setAvatar, toggleAvatarGallery } = useAvatarStore();
 
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -56,6 +58,8 @@ const Signup = () => {
       if (user) setUser(user);
       setAvatar("");
       setAvatarError(false);
+      setFirstName("");
+      setLastName("");
       setUsername("");
       setEmail("");
       setPassword("");
@@ -77,7 +81,7 @@ const Signup = () => {
       return;
     }
 
-    signup({ username, email, gender, avatar, password });
+    signup({ firstName, lastName, username, email, gender, avatar, password });
   };
 
   return (
@@ -109,6 +113,18 @@ const Signup = () => {
           </div>
         </div>
         <form onSubmit={handleSubmit}>
+          <input
+            type="text"
+            placeholder="First Name (optional)"
+            value={firstName}
+            onChange={(e) => setFirstName(e.target.value)}
+          />
+          <input
+            type="text"
+            placeholder="Last Name (optional)"
+            value={lastName}
+            onChange={(e) => setLastName(e.target.value)}
+          />
           <input
             type="text"
             placeholder="Username"
@@ -229,6 +245,9 @@ const Signup = () => {
         </Link>
         <Link href="/terms" className={styles.link}>
           Terms of Service
+        </Link>
+        <Link href="/data-deletion" className={styles.link}>
+          Data Deletion
         </Link>
       </div>
     </div>

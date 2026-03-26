@@ -1,6 +1,5 @@
 "use client";
 
-import "@/styles/globals.scss";
 import useUserOptionStore from "../store/user/userOptionStore";
 import useUserStore from "../store/user/userStore";
 import Loader from "../components/loaders/Loader";
@@ -15,6 +14,7 @@ import Footer from "@/components/footer/Footer";
 import CookieConsent from "@/components/CookieConsent";
 import useFilterStore from "@/store/gamePage/filterStore";
 import useSocket from "@/hooks/useSocket";
+import AvatarGallery from "@/components/auth/LeftPanel/AvatarGallery";
 
 export default function ClientLayout({
   children,
@@ -57,23 +57,22 @@ export default function ClientLayout({
   }, [socket]);
 
   return (
-    <html lang="en">
-      <body onClick={handleClosePopup}>
-        {loading ? (
-          <div className="page_loading">
-            <Loader />
-          </div>
-        ) : (
-          <>
-            {!isGameRoom && <Header />}
-            {msg ? <FlashMsg /> : null}
-            <main>{children}</main>
-          </>
-        )}
-        <GetMoreModal />
-        {!isGameRoom && <Footer />}
-        <CookieConsent />
-      </body>
-    </html>
+    <div className="app-root" onClick={handleClosePopup}>
+      {loading ? (
+        <div className="page_loading">
+          <Loader />
+        </div>
+      ) : (
+        <>
+          {!isGameRoom && <Header />}
+          {msg ? <FlashMsg /> : null}
+          <main>{children}</main>
+        </>
+      )}
+      <GetMoreModal />
+      {!isGameRoom && <Footer />}
+      <CookieConsent />
+      <AvatarGallery />
+    </div>
   );
 }

@@ -139,22 +139,61 @@ const SideNav: React.FC<SideNavProps> = ({
                 </Link>
 
                 <Link
-                  href="/about-us"
+                  href="/account"
                   className={
-                    pathname === "/about-us" ? styles.active : undefined
+                    pathname === "/account" ? styles.active : undefined
                   }
+                  onClick={() => toggleNav()}
+                >
+                  Your Account
+                </Link>
+                <Link
+                  href="/rules"
+                  className={pathname === "/rules" ? styles.active : undefined}
+                  onClick={() => toggleNav()}
+                >
+                  Game Rules
+                </Link>
+                <Link
+                  href="/about"
+                  className={pathname === "/about" ? styles.active : undefined}
                   onClick={() => toggleNav()}
                 >
                   About Us
                 </Link>
                 <Link
-                  href="/about-game"
+                  href="/terms"
+                  className={pathname === "/terms" ? styles.active : undefined}
+                  onClick={() => toggleNav()}
+                >
+                  Terms of Service
+                </Link>
+                <Link
+                  href="/privacy"
                   className={
-                    pathname === "/about-game" ? styles.active : undefined
+                    pathname === "/privacy" ? styles.active : undefined
                   }
                   onClick={() => toggleNav()}
                 >
-                  About Game
+                  Privacy Policy
+                </Link>
+                <Link
+                  href="/data-deletion"
+                  className={
+                    pathname === "/data-deletion" ? styles.active : undefined
+                  }
+                  onClick={() => toggleNav()}
+                >
+                  Data Deletion
+                </Link>
+                <Link
+                  href="/feedback"
+                  className={
+                    pathname === "/feedback" ? styles.active : undefined
+                  }
+                  onClick={() => toggleNav()}
+                >
+                  Feedback
                 </Link>
               </ul>
             </nav>

@@ -132,6 +132,9 @@ const Signin = () => {
         <Link href="/terms" className={styles.link}>
           Terms of Service
         </Link>
+        <Link href="/data-deletion" className={styles.link}>
+          Data Deletion
+        </Link>
       </div>
     </div>
   );

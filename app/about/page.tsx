@@ -79,6 +79,7 @@ export default function AboutPage() {
           <Link href="/rules">Game Rules</Link>
           <Link href="/privacy">Privacy Policy</Link>
           <Link href="/terms">Terms of Service</Link>
+          <Link href="/data-deletion">Data Deletion</Link>
         </div>
       </section>
 

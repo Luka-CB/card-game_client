@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FaLock, FaLockOpen, FaRocketchat } from "react-icons/fa";
 import styles from "../Cards.module.scss";
 import {
@@ -34,6 +34,8 @@ const Card: React.FC<CardProps> = ({ room }) => {
   const isLeavingRef = useRef(false);
   const hasNavigatedRef = useRef(false);
   const clickedRoomIdRef = useRef<string | null>(null);
+
+  const [isWarningVisible, setIsWarningVisible] = useState(false);
 
   const roomUser = room?.users.find(
     (u) => u.id === user?._id && u.status !== "left",
@@ -88,28 +90,44 @@ const Card: React.FC<CardProps> = ({ room }) => {
     }
   }, [roomUser]);
 
-  const handleLeave = () => {
+  const handleLeave = (isForGood: boolean) => {
     if (room && user) {
       isLeavingRef.current = true;
       hasNavigatedRef.current = false;
 
-      if (roomUser?.status === "active") {
+      if (!isForGood) {
         socket?.emit("leaveRoom", room.id, user._id);
+
+        const type = room?.bet ? "betting" : room?.type || "none";
+        setDisplayRoomType({ type, withUser: false });
       } else {
-        const usersWhoLeft = room?.users.filter(
-          (roomUser) => roomUser.status === "left",
-        );
-
-        if (usersWhoLeft?.length === 3) {
-          socket?.emit("destroyRoom", room.id);
-        }
-
-        socket?.emit("updateUserStatus", room.id, user._id, "left");
+        setIsWarningVisible(true);
+        return;
       }
+    }
+  };
+
+  const onConfirmWarning = () => {
+    if (room && user) {
+      const usersWhoLeft = room?.users.filter(
+        (roomUser) => roomUser.status === "left",
+      );
+
+      if (usersWhoLeft?.length === 3) {
+        socket?.emit("destroyRoom", room.id);
+      }
+
+      socket?.emit("updateUserStatus", room.id, user._id, "left");
 
       const type = room?.bet ? "betting" : room?.type || "none";
       setDisplayRoomType({ type, withUser: false });
+
+      setIsWarningVisible(false);
     }
+  };
+
+  const onCancelWarning = () => {
+    setIsWarningVisible(false);
   };
 
   const handleJoin = (roomId: string) => {
@@ -201,6 +219,9 @@ const Card: React.FC<CardProps> = ({ room }) => {
             : null
         }
       />
+      {isWarningVisible && (
+        <LeaveWarning onConfirm={onConfirmWarning} onCancel={onCancelWarning} />
+      )}
       <header>
         <h4 title={room?.name && room.name.length > 10 ? room.name : undefined}>
           {room?.name ? substringText(room.name, 10) : ""}
@@ -267,14 +288,20 @@ const Card: React.FC<CardProps> = ({ room }) => {
                   Continue Playing
                 </button>
               )}
-              <button className={styles.leave_btn} onClick={handleLeave}>
+              <button
+                className={styles.leave_btn}
+                onClick={() => handleLeave(true)}
+              >
                 Leave
               </button>
             </div>
           )}
 
         {!room?.isActive && roomUser?.status === "active" && (
-          <button className={styles.leave_btn} onClick={handleLeave}>
+          <button
+            className={styles.leave_btn}
+            onClick={() => handleLeave(false)}
+          >
             Leave
           </button>
         )}
@@ -293,3 +320,28 @@ const Card: React.FC<CardProps> = ({ room }) => {
 };
 
 export default Card;
+
+const LeaveWarning = ({
+  onConfirm,
+  onCancel,
+}: {
+  onConfirm: () => void;
+  onCancel: () => void;
+}) => {
+  return (
+    <div className={styles.leave_warning}>
+      <p>Are you sure you want to leave the room?</p>
+      <small>
+        This action cannot be undone. You won't be able to rejoin this room.
+      </small>
+      <div className={styles.leave_warning_btns}>
+        <button className={styles.confirm_btn} onClick={onConfirm}>
+          Yes, Leave
+        </button>
+        <button className={styles.cancel_btn} onClick={onCancel}>
+          No, Stay
+        </button>
+      </div>
+    </div>
+  );
+};

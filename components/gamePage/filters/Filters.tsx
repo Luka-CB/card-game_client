@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import styles from "./Filters.module.scss";
 import useFilterStore from "@/store/gamePage/filterStore";
 import { AnimatePresence, motion } from "framer-motion";

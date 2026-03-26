@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import useUserStore from "@/store/user/userStore";
 import styles from "./ChangeEmail.module.scss";
 import useChangeEmailStore from "@/store/email/changeEmailStore";
@@ -33,7 +33,7 @@ const ChangeEmail = () => {
     }
   }, [status, router, handleRoute]);
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     updateEmail(email);
   };

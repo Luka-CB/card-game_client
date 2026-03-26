@@ -14,6 +14,7 @@ const Footer = () => {
           alt="Joker Clash Logo"
           width={50}
           height={50}
+          loading="eager"
           className={styles.logo}
         />
         <p>© 2026 jokerclash.com. All rights reserved.</p>
@@ -43,6 +44,12 @@ const Footer = () => {
           className={pathname === "/privacy" ? styles.active : ""}
         >
           Privacy Policy
+        </Link>
+        <Link
+          href="/data-deletion"
+          className={pathname === "/data-deletion" ? styles.active : ""}
+        >
+          Data Deletion
         </Link>
       </div>
     </footer>
