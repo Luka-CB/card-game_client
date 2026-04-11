@@ -1,9 +1,11 @@
 import styles from "./Filters.module.scss";
 import useFilterStore from "@/store/gamePage/filterStore";
+import useUserStore from "@/store/user/userStore";
 import { AnimatePresence, motion } from "framer-motion";
 import { FaTimesCircle } from "react-icons/fa";
 
 const Filters = () => {
+  const { usersOnline } = useUserStore();
   const { showFilterOptions, checkedFilters, setCheckedFilters } =
     useFilterStore();
 
@@ -95,21 +97,23 @@ const Filters = () => {
             />
             <label htmlFor="private">Private</label>
           </div>
-          <div className={styles.checkbox}>
-            <input
-              type="checkbox"
-              name="chat"
-              id="chat"
-              checked={checkedFilters.chat}
-              onChange={() =>
-                setCheckedFilters({
-                  ...checkedFilters,
-                  chat: !checkedFilters.chat,
-                })
-              }
-            />
-            <label htmlFor="chat">With Chat</label>
-          </div>
+          {usersOnline?.length > 100 && (
+            <div className={styles.checkbox}>
+              <input
+                type="checkbox"
+                name="chat"
+                id="chat"
+                checked={checkedFilters.chat}
+                onChange={() =>
+                  setCheckedFilters({
+                    ...checkedFilters,
+                    chat: !checkedFilters.chat,
+                  })
+                }
+              />
+              <label htmlFor="chat">With Chat</label>
+            </div>
+          )}
           <div className={styles.penalties}>
             <p>Penalties:</p>
             <div className={styles.checkbox}>

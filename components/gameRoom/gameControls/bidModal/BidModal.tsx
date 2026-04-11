@@ -2,7 +2,7 @@ import useSocket from "@/hooks/useSocket";
 import styles from "./BidModal.module.scss";
 import { motion } from "framer-motion";
 import { HandBid, RoomUser } from "@/utils/interfaces";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 interface BidModalProps {
   data: {
@@ -31,12 +31,6 @@ const BidModal: React.FC<BidModalProps> = ({ data }) => {
 
   const bidSum = bids.reduce((acc: number, bid) => acc + (bid as number), 0);
 
-  const playerIndex = data.rotatedPlayers?.findIndex(
-    (p) => p.id === data.currentPlayerId,
-  );
-  const nextPlayerId =
-    data.rotatedPlayers[(playerIndex + 1) % data.rotatedPlayers.length].id;
-
   const handleBidClick = (bid: number) => {
     if (!socket) return;
 
@@ -47,15 +41,11 @@ const BidModal: React.FC<BidModalProps> = ({ data }) => {
       gameHand: data.currentHand,
       bid,
     });
-
-    setTimeout(() => {
-      socket.emit("updateGameInfo", data.roomId, {
-        currentPlayerId: nextPlayerId,
-        status: data.dealerId === data.currentPlayerId ? "playing" : "bid",
-      });
-      setChoosingBid(false);
-    }, 1000);
   };
+
+  useEffect(() => {
+    setChoosingBid(false);
+  }, [data.currentPlayerId]);
 
   return (
     <motion.div

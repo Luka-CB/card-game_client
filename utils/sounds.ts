@@ -6,7 +6,7 @@ class SoundManager {
     if (typeof window !== "undefined") {
       this.sounds = {
         dealerReveal: new Audio("/sounds/dealer-reveal.mp3"),
-        dealCard: new Audio("/sounds/deal-card2.mp3"),
+        dealCard: new Audio("/sounds/deal-card.mp3"),
         playCard: new Audio("/sounds/play-card.mp3"),
         winCards: new Audio("/sounds/win-cards.mp3"),
         revealCards: new Audio("/sounds/reveal-cards.mp3"),
@@ -15,8 +15,12 @@ class SoundManager {
         gameFinished: new Audio("/sounds/game-finished.mp3"),
       };
 
-      Object.values(this.sounds).forEach((sound) => {
+      Object.entries(this.sounds).forEach(([name, sound]) => {
         sound.volume = 0.5;
+
+        if (name === "dealCard") {
+          sound.playbackRate = 0.8;
+        }
       });
     }
   }

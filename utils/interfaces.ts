@@ -2,6 +2,7 @@ export interface RoomUser {
   id: string;
   username: string;
   status: string;
+  isBot?: boolean;
   avatar: string | null;
   botAvatar: string | null;
   color: {
@@ -19,6 +20,8 @@ export interface Room {
   status: "public" | "private";
   hasChat?: boolean;
   isActive?: boolean;
+  isDummyRoom?: boolean;
+  isDummyRoomActive?: boolean;
   hisht: string;
   createdAt: Date;
   users: RoomUser[];

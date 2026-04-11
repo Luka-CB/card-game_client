@@ -249,7 +249,6 @@
           margin-right: 10px;
           display: flex;
           align-items: center;
-          cursor: pointer;
 
           .coins_value,
           .negative_coins,
@@ -265,6 +264,10 @@
           .warning_value {
             color: var(--clr-warning-400);
           }
+        }
+
+        .clickable_coins {
+          cursor: pointer;
         }
       }
 

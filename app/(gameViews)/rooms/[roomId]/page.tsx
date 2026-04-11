@@ -34,6 +34,7 @@ import Chat from "@/components/chat/Chat";
 import { soundManager } from "@/utils/sounds";
 import SoundControl from "@/components/gameRoom/SoundControl";
 import useSoundStore from "@/store/soundStore";
+import useUserMetaStore from "@/store/user/userMetaStore";
 
 const GameRoom: React.FC = () => {
   const [room, setRoom] = useState<Room | null>(null);
@@ -75,6 +76,7 @@ const GameRoom: React.FC = () => {
 
   const windowSize = useWindowSize();
   const { toggleSlider } = useSoundStore();
+  const { toggleMetaVisibility } = useUserMetaStore();
 
   const stateChangeRef = useRef<{
     lastGameInfo: string | null;
@@ -201,8 +203,8 @@ const GameRoom: React.FC = () => {
       setGameInfo(data);
     };
 
-    socket.emit("getGameInfo", roomId);
     socket.on("getGameInfo", handleGameInfo);
+    socket.emit("getGameInfo", roomId);
 
     return () => {
       socket.off("getGameInfo", handleGameInfo);
@@ -276,7 +278,7 @@ const GameRoom: React.FC = () => {
 
   // Effect to handle dealer reveal socket events
   useEffect(() => {
-    if (!socket) return;
+    if (!socket || !roomId || !user?._id) return;
 
     const handlePrepare = () => {
       setVisibleCards({});
@@ -306,12 +308,14 @@ const GameRoom: React.FC = () => {
     socket.on("dealerRevealStep", handleStep);
     socket.on("dealerRevealDone", handleDone);
 
+    socket.emit("roomReady", roomId, user._id);
+
     return () => {
       socket.off("dealerRevealPrepare", handlePrepare);
       socket.off("dealerRevealStep", handleStep);
       socket.off("dealerRevealDone", handleDone);
     };
-  }, [socket]);
+  }, [socket, roomId, user?._id]);
 
   // Effect to handle timer start and expiration events
   useEffect(() => {
@@ -533,25 +537,6 @@ const GameRoom: React.FC = () => {
     });
   }, [gameInfo?.hands, user?._id]);
 
-  // Effect to handle scoreBoard creation and reset
-  const hasCreatedScoreBoard = useRef(false);
-  useEffect(() => {
-    if (!gameInfo?.status || !gameInfo?.scoreBoard || !socket) return;
-
-    if (
-      gameInfo.status === "bid" &&
-      !gameInfo.scoreBoard &&
-      !hasCreatedScoreBoard.current
-    ) {
-      hasCreatedScoreBoard.current = true;
-      socket.emit("createScoreBoard", roomId);
-    }
-
-    if (gameInfo.status === "waiting" || gameInfo.status === "finished") {
-      hasCreatedScoreBoard.current = false;
-    }
-  }, [gameInfo?.status, gameInfo?.scoreBoard, socket, roomId]);
-
   // Effect to handle leaving room if no room
   useEffect(() => {
     const timeout = setTimeout(() => {
@@ -642,6 +627,7 @@ const GameRoom: React.FC = () => {
       onClick={() => {
         setShowEmojiPicker(false);
         toggleSlider(false);
+        toggleMetaVisibility(false);
       }}
     >
       {!isScoreBoardOpen && (

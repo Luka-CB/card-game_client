@@ -109,7 +109,14 @@ const MainNav: React.FC<MainNavProps> = ({
                   {rating !== null ? rating.value : "0"}
                 </span>
               </div>
-              <div className={styles.coins} onClick={onOpenGetMoreModal}>
+              <div
+                className={`${styles.coins} ${jCoins?.raw !== undefined && jCoins.raw < 100 ? styles.clickable_coins : ""}`}
+                onClick={
+                  jCoins?.raw && jCoins.raw < 100
+                    ? onOpenGetMoreModal
+                    : undefined
+                }
+              >
                 <Image
                   src="/coin1.png"
                   alt="coin"

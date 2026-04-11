@@ -59,15 +59,38 @@ const DisplayRoomCards = () => {
 
   useEffect(() => {
     if (!socket) return;
-    const listeners: [string, (data: Room | null) => void][] = [
-      ["getDisplayRoomClassic", (d: Room | null) => setClassicRoom(d)],
-      ["getDisplayRoomNines", (d: Room | null) => setNinesRoom(d)],
-      ["getDisplayRoomBetting", (d: Room | null) => setBettingRoom(d)],
-      ["getRoomImIn", (d: Room | null) => setRoomImIn(d)],
-    ];
-    listeners.forEach(([ev, h]) => socket.on(ev, h));
-    return () => listeners.forEach(([ev, h]) => socket.off(ev, h));
-  }, [socket]);
+
+    const handleClassic = (d: Room | null) => setClassicRoom(d);
+    const handleNines = (d: Room | null) => setNinesRoom(d);
+    const handleBetting = (d: Room | null) => setBettingRoom(d);
+    const handleRoomImIn = (d: Room | null) => setRoomImIn(d);
+
+    const handleRoom = (roomData: Room) => {
+      if (!user?._id) return;
+
+      const isCurrentUsersRoom = roomData.users?.some(
+        (u) => u.id === user._id && u.status !== "left",
+      );
+
+      if (isCurrentUsersRoom) {
+        setRoomImIn(roomData);
+      }
+    };
+
+    socket.on("getDisplayRoomClassic", handleClassic);
+    socket.on("getDisplayRoomNines", handleNines);
+    socket.on("getDisplayRoomBetting", handleBetting);
+    socket.on("getRoomImIn", handleRoomImIn);
+    socket.on("getRoom", handleRoom);
+
+    return () => {
+      socket.off("getDisplayRoomClassic", handleClassic);
+      socket.off("getDisplayRoomNines", handleNines);
+      socket.off("getDisplayRoomBetting", handleBetting);
+      socket.off("getRoomImIn", handleRoomImIn);
+      socket.off("getRoom", handleRoom);
+    };
+  }, [socket, user?._id]);
 
   useEffect(() => {
     if (!socket) return;

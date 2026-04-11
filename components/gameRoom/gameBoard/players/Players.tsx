@@ -1,10 +1,12 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { HandBid, GameInfo, PlayingCard, RoomUser } from "@/utils/interfaces";
 import GameRounds from "../../gameControls/gameRounds/GameRounds";
 import styles from "./Players.module.scss";
 import Image from "next/image";
 import useWindowSize from "@/hooks/useWindowSize";
 import { substringText } from "@/utils/misc";
+import UserMetaPopup from "./UserMetaPopup";
+import useUserMetaStore from "@/store/user/userMetaStore";
 
 interface TimerData {
   duration: number;
@@ -73,6 +75,9 @@ const Players: React.FC<PlayersProps> = ({
   timerProgress,
 }) => {
   const windowSize = useWindowSize();
+  const { toggleMetaVisibility } = useUserMetaStore();
+
+  const [clickedPlayerId, setClickedPlayerId] = useState<string | null>(null);
 
   const radius = 32;
   const circumference = 2 * Math.PI * radius;
@@ -80,6 +85,26 @@ const Players: React.FC<PlayersProps> = ({
   const ringColor = interpolateColor(timerProgress);
 
   const choosingTrumpHand = useMemo(() => hand.slice(0, 3), [hand]);
+
+  const handleClickPlayer = (
+    e: React.MouseEvent,
+    playerId: string,
+    isBot: boolean,
+  ) => {
+    e.stopPropagation();
+
+    if (isBot) return;
+
+    if (clickedPlayerId === playerId) {
+      setClickedPlayerId(null);
+      toggleMetaVisibility(false);
+    } else {
+      setClickedPlayerId(playerId);
+      toggleMetaVisibility(true);
+    }
+  };
+
+  console.log(clickedPlayerId);
 
   return (
     <div className={styles.players}>
@@ -125,6 +150,12 @@ const Players: React.FC<PlayersProps> = ({
                 />
               )}
 
+            {player.id !== user?._id &&
+              !player.isBot &&
+              clickedPlayerId === player.id && (
+                <UserMetaPopup playerId={player.id} />
+              )}
+
             <div
               className={styles.player_info}
               title={
@@ -139,15 +170,18 @@ const Players: React.FC<PlayersProps> = ({
                 </div>
               )}
 
-              {emojiPopup && emojiPopup.playerId === player.id && (
-                <div className={styles.emoji_popup}>
-                  <span>{emojiPopup.emoji}</span>
-                </div>
-              )}
-
               <div
                 className={`${styles.avatar_container} ${isCurrentTurn ? styles.timer_active : ""}`}
+                onClick={(e) =>
+                  handleClickPlayer(e, player.id, player.isBot || false)
+                }
               >
+                {emojiPopup && emojiPopup.playerId === player.id && (
+                  <div className={styles.emoji_popup}>
+                    <span>{emojiPopup.emoji}</span>
+                  </div>
+                )}
+
                 {isCurrentTurn && (
                   <svg className={styles.timer_ring} viewBox="0 0 72 72">
                     <circle

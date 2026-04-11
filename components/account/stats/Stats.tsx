@@ -55,7 +55,7 @@ const Stats = () => {
               </div>
               <div className={styles.statCard}>
                 <div className={styles.statValue}>{stats?.gamesLeft}</div>
-                <div className={styles.statLabel}>left Games</div>
+                <div className={styles.statLabel}>Abandoned Games</div>
               </div>
               <div className={styles.statCard}>
                 <div className={styles.statValue}>{stats?.rating}</div>
