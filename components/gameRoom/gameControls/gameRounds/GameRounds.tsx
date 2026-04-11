@@ -4,30 +4,41 @@ import { GameInfo, PlayingCard, RoomUser } from "@/utils/interfaces";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import useWindowSize from "@/hooks/useWindowSize";
-import { useEffect, useState } from "react";
-import ActionBtn from "./ActionBtn";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import useSocket from "@/hooks/useSocket";
 import JokerPrompt from "./jokerPrompt/JokerPrompt";
+import { soundManager } from "@/utils/sounds";
+import useTouchDevice from "@/hooks/useTouchDevice";
 
 interface GameRoundsProps {
   rotatedPlayers: RoomUser[];
   hand: PlayingCard[];
   gameInfo: GameInfo;
   user: { _id: string };
+  roomUsers: RoomUser[];
 }
 
-const GameRounds = ({
-  hand,
-  gameInfo,
-  user,
-  rotatedPlayers,
-}: GameRoundsProps) => {
-  const [cardId, setCardId] = useState("");
-  const [draggedCardId, setDraggedCardId] = useState<string | null>(null);
-  const [isDragging, setIsDragging] = useState(false);
+const GameRounds = ({ hand, gameInfo, user }: GameRoundsProps) => {
   const [sortedCards, setSortedCards] = useState<PlayingCard[]>([]);
-  const [dragY, setDragY] = useState(0);
   const [jokerCard, setJokerCard] = useState<PlayingCard | null>(null);
+  const [selectedCardId, setSelectedCardId] = useState<string | null>(null);
+  const [legalCardIds, setLegalCardIds] = useState<string[]>([]);
+
+  const isTouch = useTouchDevice();
+
+  const hasPlayedRevealSound = useRef(false);
+  const isDragging = useRef(false);
+  const dragStartY = useRef(0);
+  const dragOffsetY = useRef(0);
+  const dragElement = useRef<HTMLDivElement | null>(null);
+  const dragCard = useRef<PlayingCard | null>(null);
+  const pointerId = useRef<number | null>(null);
 
   const windowSize = useWindowSize();
   const socket = useSocket();
@@ -35,7 +46,7 @@ const GameRounds = ({
   useEffect(() => {
     if (!hand) return;
 
-    const sorted = hand.sort((a, b) => {
+    const sorted = [...hand].sort((a, b) => {
       if (a.suit === b.suit) {
         if (a.rank === "A") return 1;
         if (b.rank === "A") return -1;
@@ -55,168 +66,247 @@ const GameRounds = ({
     setSortedCards(sorted);
   }, [hand]);
 
-  const playedCardHandler = (card: PlayingCard) => {
-    if (!socket || !gameInfo || gameInfo.currentPlayerId !== user._id) return;
+  useEffect(() => {
+    if (sortedCards.length > 0 && !hasPlayedRevealSound.current) {
+      soundManager.play("revealCards");
+      hasPlayedRevealSound.current = true;
+    }
 
-    const playerIndex = rotatedPlayers.findIndex(
-      (p) => p.id === gameInfo?.currentPlayerId
-    );
-    const nextPlayerId =
-      rotatedPlayers[(playerIndex + 1) % rotatedPlayers.length].id;
+    if (sortedCards.length === 0) {
+      hasPlayedRevealSound.current = false;
+    }
+  }, [sortedCards.length]);
 
-    socket.emit("removeCardFromHand", {
-      roomId: gameInfo?.roomId,
-      playerId: gameInfo?.currentPlayerId,
-      card: card,
+  const playedCardHandler = useCallback(
+    (card: PlayingCard) => {
+      if (!socket || !gameInfo?.roomId || !gameInfo?.currentPlayerId) return;
+      if (gameInfo.currentPlayerId !== user._id) return;
+
+      socket.emit("playCard", {
+        roomId: gameInfo.roomId,
+        playerId: gameInfo.currentPlayerId,
+        card,
+      });
+
+      setSortedCards((prev) => prev.filter((c) => c.id !== card.id));
+    },
+    [socket, gameInfo?.roomId, gameInfo?.currentPlayerId, user._id],
+  );
+
+  const handlePlayCard = useCallback(
+    (card: PlayingCard) => {
+      if (!socket || gameInfo?.currentPlayerId !== user._id) return;
+
+      if (gameInfo?.currentPlayerId === user?._id && card.joker) {
+        setJokerCard(card);
+        return;
+      }
+
+      playedCardHandler(card);
+    },
+    [socket, gameInfo?.currentPlayerId, user._id, playedCardHandler],
+  );
+
+  useEffect(() => {
+    if (
+      !socket ||
+      !gameInfo?.roomId ||
+      !gameInfo?.currentPlayerId ||
+      !gameInfo?.status
+    )
+      return;
+    if (gameInfo.status !== "playing") return;
+    if (gameInfo.currentPlayerId !== user._id) return;
+
+    socket.on("botPlayedCard", (card: PlayingCard) => {
+      if (card) {
+        setSortedCards((prev) => prev.filter((c) => c.id !== card.id));
+      }
     });
 
-    const newSortedCards = sortedCards?.filter((c) => c.id !== card.id);
-    setSortedCards(newSortedCards);
+    setSelectedCardId(null);
 
-    setTimeout(() => {
-      socket.emit("setPlayedCards", {
-        roomId: gameInfo?.roomId,
-        playerId: gameInfo?.currentPlayerId,
-        playedCard: card,
-      });
-    }, 500);
+    return () => {
+      socket.off("botPlayedCard");
+    };
+  }, [
+    socket,
+    gameInfo?.roomId,
+    gameInfo?.currentPlayerId,
+    gameInfo?.status,
+    user._id,
+  ]);
 
-    setTimeout(() => {
-      socket.emit("updateGameInfo", gameInfo?.roomId, {
-        currentPlayerId: nextPlayerId,
-      });
-    }, 1000);
-  };
+  const handlePlayCardRef = useRef(handlePlayCard);
+  useEffect(() => {
+    handlePlayCardRef.current = handlePlayCard;
+  }, [handlePlayCard]);
 
-  const handlePlayCard = (card: PlayingCard) => {
-    if (!socket || !gameInfo || gameInfo.currentPlayerId !== user._id) return;
+  useEffect(() => {
+    if (!isTouch) return;
 
-    if (gameInfo?.currentPlayerId === user?._id && card.joker) {
-      setJokerCard(card);
+    const onPointerMove = (e: PointerEvent) => {
+      if (!isDragging.current || !dragElement.current) return;
+
+      dragOffsetY.current = e.clientY - dragStartY.current;
+      const clampedY = Math.min(0, dragOffsetY.current);
+      dragElement.current.style.transform = `translateY(${clampedY}px)`;
+    };
+
+    const onPointerUp = () => {
+      if (!isDragging.current || !dragElement.current || !dragCard.current)
+        return;
+
+      const el = dragElement.current;
+      const card = dragCard.current;
+      const dragThreshold = -50;
+
+      if (dragOffsetY.current < dragThreshold) {
+        el.style.transform = "";
+        el.style.zIndex = "";
+        el.style.cursor = "";
+        handlePlayCardRef.current(card);
+      } else {
+        el.style.transition = "transform 0.12s ease-out";
+        el.style.transform = "translateY(0px)";
+
+        const cleanup = () => {
+          el.style.zIndex = "";
+          el.style.cursor = "";
+          el.style.transition = "";
+          el.removeEventListener("transitionend", cleanup);
+        };
+        el.addEventListener("transitionend", cleanup);
+      }
+
+      if (pointerId.current !== null) {
+        try {
+          el.releasePointerCapture(pointerId.current);
+        } catch (err) {
+          console.warn("Failed to release pointer capture:", err);
+        }
+      }
+
+      isDragging.current = false;
+      dragElement.current = null;
+      dragCard.current = null;
+      pointerId.current = null;
+      dragStartY.current = 0;
+      dragOffsetY.current = 0;
+    };
+
+    window.addEventListener("pointermove", onPointerMove);
+    window.addEventListener("pointerup", onPointerUp);
+    window.addEventListener("pointercancel", onPointerUp);
+
+    return () => {
+      window.removeEventListener("pointermove", onPointerMove);
+      window.removeEventListener("pointerup", onPointerUp);
+      window.removeEventListener("pointercancel", onPointerUp);
+    };
+  }, [isTouch]);
+
+  const handlePointerDown = useCallback(
+    (e: React.PointerEvent<HTMLDivElement>, card: PlayingCard) => {
+      if (isTouch !== true) return;
+      if (!gameInfo || gameInfo.currentPlayerId !== user._id) return;
+
+      e.preventDefault();
+      const el = e.currentTarget;
+
+      el.setPointerCapture(e.pointerId);
+      pointerId.current = e.pointerId;
+
+      isDragging.current = true;
+      dragStartY.current = e.clientY;
+      dragOffsetY.current = 0;
+      dragElement.current = el;
+      dragCard.current = card;
+
+      el.style.transition = "none";
+      el.style.zIndex = "100";
+      el.style.cursor = "grabbing";
+    },
+    [isTouch, gameInfo, user._id],
+  );
+
+  const handleCardClick = useCallback(
+    (card: PlayingCard) => {
+      if (isTouch !== false) return;
+      if (!gameInfo || gameInfo.currentPlayerId !== user._id) return;
+      setSelectedCardId((prev) => (prev === card.id ? null : card.id));
+    },
+    [isTouch, gameInfo, user._id],
+  );
+
+  const handleDesktopPlay = useCallback(() => {
+    if (!selectedCardId) return;
+    const card = sortedCards.find((c) => c.id === selectedCardId);
+    if (!card) return;
+    setSelectedCardId(null);
+    handlePlayCard(card);
+  }, [selectedCardId, sortedCards, handlePlayCard]);
+
+  const isPlayerTurn = gameInfo?.currentPlayerId === user._id;
+  const trumpCardSuit = gameInfo?.trumpCard?.suit;
+
+  useEffect(() => {
+    if (!socket || !gameInfo?.roomId || !user?._id) return;
+
+    const handleLegalMoves = (payload: {
+      roomId: string;
+      playerId: string;
+      cardIds: string[];
+    }) => {
+      if (payload.roomId !== gameInfo.roomId) return;
+      if (payload.playerId !== user._id) return;
+      setLegalCardIds(payload.cardIds || []);
+    };
+
+    socket.on("legalMoves", handleLegalMoves);
+
+    return () => {
+      socket.off("legalMoves", handleLegalMoves);
+    };
+  }, [socket, gameInfo?.roomId, user?._id]);
+
+  useEffect(() => {
+    if (!socket || !gameInfo?.roomId || !user?._id) return;
+
+    const isMyTurn =
+      gameInfo.status === "playing" && gameInfo.currentPlayerId === user._id;
+
+    if (!isMyTurn) {
+      setLegalCardIds([]);
       return;
     }
 
-    playedCardHandler(card);
-  };
+    socket.emit("requestLegalMoves", {
+      roomId: gameInfo.roomId,
+      playerId: user._id,
+    });
+  }, [
+    socket,
+    gameInfo?.roomId,
+    gameInfo?.status,
+    gameInfo?.currentPlayerId,
+    gameInfo?.playedCards,
+    hand,
+    user?._id,
+  ]);
 
-  const handleDragStart = (card: PlayingCard) => {
-    if (!gameInfo || gameInfo.currentPlayerId !== user._id) return;
-
-    setDraggedCardId(card.id);
-    setIsDragging(true);
-  };
-
-  const handleDrag = (
-    _: any,
-    info: { point: { x: number }; offset: { y: number } }
-  ) => {
-    if (!gameInfo || gameInfo.currentPlayerId !== user._id) return;
-
-    setDragY(info.offset.y < 0 ? info.offset.y : 0);
-  };
-
-  const handleDragEnd = (card: PlayingCard) => {
-    if (!gameInfo || gameInfo.currentPlayerId !== user._id) return;
-
-    const cardHeight =
-      windowSize.height <= 350
-        ? 60
-        : windowSize.height <= 600
-        ? 70
-        : windowSize.height <= 800 && windowSize.width > 600
-        ? 100
-        : windowSize.width <= 600
-        ? 55
-        : windowSize.width <= 990
-        ? 70
-        : windowSize.width <= 1150
-        ? 100
-        : windowSize.width < 1300
-        ? 130
-        : 150;
-
-    if (isDragging && Math.abs(dragY) >= cardHeight / 2) {
-      handlePlayCard(card);
-    }
-
-    setDraggedCardId(null);
-    setIsDragging(false);
-    setDragY(0);
-  };
-
-  const isPlayerTurn = gameInfo?.currentPlayerId === user._id;
-
-  const findPlayableCards = () => {
-    if (!sortedCards.length || !gameInfo) return;
-
-    const card = gameInfo?.playedCards?.map(
-      (playedCard) => playedCard.card
-    )[0] as PlayingCard;
-
-    const requestedSuit = card?.requestedSuit;
-    const currentPlayingCardExists = sortedCards?.some(
-      (sortedCard) => sortedCard?.suit === card?.suit
-    );
-    const trumpExists = sortedCards.some(
-      (sortedCard) => sortedCard?.suit === gameInfo?.trumpCard?.suit
-    );
-
-    let playableCards = [];
-
-    if (requestedSuit) {
-      const joker = sortedCards.find((sortedCard) => sortedCard?.joker);
-      const requestedCards = sortedCards.filter(
-        (sortedCard) => sortedCard?.suit === requestedSuit
-      );
-
-      if (requestedCards.length === 0) {
-        return (playableCards = sortedCards);
-      }
-
-      if (requestedCards.length > 1) {
-        const strongestCard = requestedCards.reduce((max, c) =>
-          c.strength > max.strength ? c : max
-        );
-        playableCards.push(strongestCard);
-        if (joker) playableCards.push(joker);
-      } else {
-        playableCards = requestedCards;
-        if (joker) playableCards.push(joker);
-      }
-    } else if (
-      currentPlayingCardExists &&
-      gameInfo?.playedCards &&
-      gameInfo?.playedCards?.length > 0
-    ) {
-      playableCards = sortedCards.filter(
-        (sortedCard) => sortedCard?.suit === card?.suit || sortedCard?.joker
-      );
-    } else if (
-      !currentPlayingCardExists &&
-      trumpExists &&
-      gameInfo?.playedCards &&
-      gameInfo?.playedCards?.length > 0
-    ) {
-      playableCards = sortedCards?.filter(
-        (sortedCard) =>
-          sortedCard?.suit === gameInfo?.trumpCard?.suit || sortedCard?.joker
-      );
-    } else {
-      playableCards = sortedCards;
-    }
-
-    return playableCards;
-  };
+  const playableCardIdSet = useMemo(() => {
+    return new Set(legalCardIds);
+  }, [legalCardIds]);
 
   return (
     <motion.div
       initial={{
         opacity: 0,
-        x: 0,
-        translateY: 100,
+        y: 100,
       }}
-      animate={{ opacity: 1, translateY: 0 }}
-      transition={{ duration: 0.4, damping: 15, type: "spring" }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
       className={styles.player_hand}
     >
       {jokerCard && (
@@ -229,111 +319,102 @@ const GameRounds = ({
           }
         />
       )}
+
       {sortedCards.map((card: PlayingCard) => {
         const cardImage = CardDeck.find(
           (c: { suit: string; rank: string; image: string; color?: string }) =>
-            c.suit === card.suit && c.rank === card.rank
+            c.suit === card.suit && c.rank === card.rank,
         )?.image;
 
         const jokerImageBlack = CardDeck.find(
           (c: { suit: string; rank: string; image: string; color?: string }) =>
-            c.rank === "JOKER" && c.color === "black"
+            c.rank === "JOKER" && c.color === "black",
         )?.image;
 
         const jokerImageRed = CardDeck.find(
           (c: { suit: string; rank: string; image: string; color?: string }) =>
-            c.rank === "JOKER" && c.color === "red"
+            c.rank === "JOKER" && c.color === "red",
         )?.image;
 
-        const isPlayable = findPlayableCards()?.some((c) => c.id === card.id);
+        const isPlayable = playableCardIdSet.has(card.id);
+        const isSelected = selectedCardId === card.id;
 
         return (
-          <motion.div
+          <div
             className={`${
               isPlayerTurn && gameInfo?.playedCards?.length
                 ? styles.card_faded
                 : styles.card
-            } ${isPlayerTurn && isPlayable ? styles.playable : ""} ${
-              isDragging && draggedCardId === card.id ? styles.dragging : ""
-            }`}
+            } ${isPlayerTurn && isPlayable ? styles.playable : ""} ${isSelected ? styles.selected : ""}`}
             key={card.id}
-            onMouseEnter={() =>
-              windowSize.width > 1200 &&
-              isPlayable &&
-              isPlayerTurn &&
-              setCardId(card.id)
+            onPointerDown={
+              isPlayerTurn && isPlayable
+                ? (e) => handlePointerDown(e, card as PlayingCard)
+                : undefined
             }
-            onMouseLeave={() => windowSize.width > 1200 && setCardId("")}
-            drag={
-              windowSize.width <= 1200 && isPlayerTurn && isPlayable
-                ? "y"
-                : false
+            onClick={
+              isTouch === false && isPlayerTurn && isPlayable
+                ? () => handleCardClick(card as PlayingCard)
+                : undefined
             }
-            dragConstraints={{ top: -200, bottom: 0 }}
-            dragElastic={0.2}
-            onDragStart={() =>
-              windowSize.width <= 1200 && handleDragStart(card as PlayingCard)
-            }
-            onDrag={(e, info) =>
-              windowSize.width <= 1200 && handleDrag(e, info)
-            }
-            onDragEnd={() =>
-              windowSize.width <= 1200 && handleDragEnd(card as PlayingCard)
-            }
-            animate={{
-              y: draggedCardId === card.id ? -20 : 0,
-              scale: draggedCardId === card.id ? 1.05 : 1,
-            }}
+            style={{ touchAction: isTouch ? "none" : "auto" }}
           >
-            {isPlayerTurn && !jokerCard && (
-              <ActionBtn
-                cardId={cardId}
-                card={card as PlayingCard}
-                onPlay={handlePlayCard}
-                isDragging={isDragging && draggedCardId === card.id}
-              />
+            {isTouch === false && isSelected && (
+              <button
+                className={styles.play_btn}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleDesktopPlay();
+                }}
+              >
+                Play
+              </button>
             )}
+
             {cardImage ? (
               <Image
                 src={cardImage}
-                alt={card.rank}
+                alt={card.rank || "card"}
+                draggable={false}
                 width={
                   windowSize.height <= 450
                     ? 30
                     : windowSize.height <= 600 && windowSize.height > 450
-                    ? 40
-                    : windowSize.height <= 900 &&
-                      windowSize.height > 600 &&
-                      windowSize.width > 600
-                    ? 50
-                    : windowSize.width <= 600
-                    ? 40
-                    : windowSize.width <= 990 && windowSize.width > 600
-                    ? 50
-                    : windowSize.width <= 1150 && windowSize.width > 990
-                    ? 70
-                    : windowSize.width < 1300 && windowSize.width > 1150
-                    ? 90
-                    : 100
+                      ? 40
+                      : windowSize.height <= 900 &&
+                          windowSize.height > 600 &&
+                          windowSize.width > 600
+                        ? 50
+                        : windowSize.width <= 600
+                          ? 40
+                          : windowSize.width <= 990 && windowSize.width > 600
+                            ? 50
+                            : windowSize.width <= 1150 && windowSize.width > 990
+                              ? 70
+                              : windowSize.width < 1300 &&
+                                  windowSize.width > 1150
+                                ? 90
+                                : 100
                 }
                 height={
                   windowSize.height <= 450
                     ? 45
                     : windowSize.height <= 600 && windowSize.height > 450
-                    ? 60
-                    : windowSize.height <= 900 &&
-                      windowSize.height > 600 &&
-                      windowSize.width > 600
-                    ? 80
-                    : windowSize.width <= 600
-                    ? 55
-                    : windowSize.width <= 990 && windowSize.width > 600
-                    ? 70
-                    : windowSize.width <= 1150 && windowSize.width > 990
-                    ? 100
-                    : windowSize.width < 1300 && windowSize.width > 1150
-                    ? 130
-                    : 150
+                      ? 60
+                      : windowSize.height <= 900 &&
+                          windowSize.height > 600 &&
+                          windowSize.width > 600
+                        ? 80
+                        : windowSize.width <= 600
+                          ? 55
+                          : windowSize.width <= 990 && windowSize.width > 600
+                            ? 70
+                            : windowSize.width <= 1150 && windowSize.width > 990
+                              ? 100
+                              : windowSize.width < 1300 &&
+                                  windowSize.width > 1150
+                                ? 130
+                                : 150
                 }
               />
             ) : (
@@ -344,55 +425,54 @@ const GameRounds = ({
                     : jokerImageRed || "/cards/joker-red.png"
                 }
                 alt="Joker"
+                draggable={false}
                 width={
                   windowSize.height <= 450
                     ? 30
-                    : windowSize.height <= 550 && windowSize.height > 450
-                    ? 40
-                    : windowSize.height <= 600 && windowSize.height > 350
-                    ? 50
-                    : windowSize.height <= 800 &&
-                      windowSize.height > 600 &&
-                      windowSize.width > 600
-                    ? 70
-                    : windowSize.width <= 600
-                    ? 40
-                    : windowSize.width <= 990 && windowSize.width > 600
-                    ? 50
-                    : windowSize.width <= 1150 && windowSize.width > 990
-                    ? 70
-                    : windowSize.width < 1300 && windowSize.width > 1150
-                    ? 90
-                    : 100
+                    : windowSize.height <= 600 && windowSize.height > 450
+                      ? 40
+                      : windowSize.height <= 900 &&
+                          windowSize.height > 600 &&
+                          windowSize.width > 600
+                        ? 50
+                        : windowSize.width <= 600
+                          ? 40
+                          : windowSize.width <= 990 && windowSize.width > 600
+                            ? 50
+                            : windowSize.width <= 1150 && windowSize.width > 990
+                              ? 70
+                              : windowSize.width < 1300 &&
+                                  windowSize.width > 1150
+                                ? 90
+                                : 100
                 }
                 height={
                   windowSize.height <= 450
                     ? 45
-                    : windowSize.height <= 550 && windowSize.height > 450
-                    ? 60
-                    : windowSize.height <= 600 && windowSize.height > 350
-                    ? 70
-                    : windowSize.height <= 800 &&
-                      windowSize.height > 600 &&
-                      windowSize.width > 600
-                    ? 100
-                    : windowSize.width <= 600
-                    ? 55
-                    : windowSize.width <= 990 && windowSize.width > 600
-                    ? 70
-                    : windowSize.width <= 1150 && windowSize.width > 990
-                    ? 100
-                    : windowSize.width < 1300 && windowSize.width > 1150
-                    ? 130
-                    : 150
+                    : windowSize.height <= 600 && windowSize.height > 450
+                      ? 60
+                      : windowSize.height <= 900 &&
+                          windowSize.height > 600 &&
+                          windowSize.width > 600
+                        ? 80
+                        : windowSize.width <= 600
+                          ? 55
+                          : windowSize.width <= 990 && windowSize.width > 600
+                            ? 70
+                            : windowSize.width <= 1150 && windowSize.width > 990
+                              ? 100
+                              : windowSize.width < 1300 &&
+                                  windowSize.width > 1150
+                                ? 130
+                                : 150
                 }
               />
             )}
-          </motion.div>
+          </div>
         );
       })}
     </motion.div>
   );
 };
 
-export default GameRounds;
+export default React.memo(GameRounds);

@@ -1,6 +1,6 @@
 "use client";
 
-import { Room, RoomUser } from "@/utils/interfaces";
+import { Room } from "@/utils/interfaces";
 import { create } from "zustand";
 
 interface RoomStore {
@@ -14,7 +14,6 @@ interface RoomStore {
 
 const useRoomStore = create<RoomStore>((set) => ({
   rooms: [],
-  roomUsers: [],
   isCreatingRoom: false,
   togglePasswordPrompt: false,
   setRooms: (rooms: Room[]) => set({ rooms }),

@@ -9,7 +9,7 @@ const FlashMsg = () => {
   const { msg, type, setMsg } = useFlashMsgStore();
 
   useEffect(() => {
-    let timeout: any;
+    let timeout: NodeJS.Timeout;
     if (msg) {
       timeout = setTimeout(() => {
         setMsg(null, null);
@@ -17,7 +17,7 @@ const FlashMsg = () => {
     }
 
     return () => clearTimeout(timeout);
-  }, [msg]);
+  }, [msg, setMsg]);
 
   return (
     <motion.div

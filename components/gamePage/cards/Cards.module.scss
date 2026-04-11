@@ -1,20 +1,53 @@
-@use "../../../styles/mixins" as *;
+@use "mixins" as *;
 
 .room_cards {
   margin-top: 20px;
   width: 100%;
-  min-height: 50vh;
+  height: 75vh;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(405px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(405px, 1fr));
   justify-items: center;
   gap: 2rem 0.2rem;
   padding-bottom: 100px;
+  overflow-y: auto;
+  padding: 20px 0;
 
-  .room_card,
-  .room_card_active {
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  .placeholder_card {
     @include bgColor();
     width: 400px;
-    height: 220px;
+    height: 225px;
+    border-radius: 10px;
+    box-shadow: 2px 3px 15px rgba(0, 0, 0, 0.302);
+    border: 1.5px solid var(--clr-light-faded);
+    opacity: 0.5;
+    animation: pulse 1.5s infinite;
+
+    @keyframes pulse {
+      0% {
+        opacity: 0.5;
+      }
+      50% {
+        opacity: 0.8;
+      }
+      100% {
+        opacity: 0.5;
+      }
+    }
+  }
+
+  .room_card,
+  .room_card_active,
+  .room_card_joined,
+  .room_card_classic,
+  .room_card_nines,
+  .room_card_betting {
+    @include bgColor();
+    width: 400px;
+    height: 225px;
     border-radius: 10px;
     box-shadow: 2px 3px 15px rgba(0, 0, 0, 0.302);
     transition: all 0.2s ease-in-out;
@@ -83,6 +116,81 @@
       }
     }
 
+    .leave_warning {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(8px);
+      border-radius: 10px;
+      z-index: 100;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+
+      p {
+        color: var(--clr-warning-600);
+        text-shadow: 1px 1px 2px black;
+        font-size: 1.3rem;
+        margin-bottom: 10px;
+        text-align: center;
+        padding: 0 20px;
+      }
+
+      small {
+        color: var(--clr-warning-400);
+        margin-bottom: 20px;
+        text-align: center;
+        padding: 10px;
+      }
+
+      .leave_warning_btns {
+        display: flex;
+        gap: 20px;
+
+        button {
+          @include btn();
+          padding: 5px 10px;
+          height: auto;
+          background-color: transparent;
+          border-color: var(--clr-primary-800);
+          color: var(--clr-primary-800);
+          font-size: small;
+
+          &:hover {
+            background-color: var(--clr-primary-faded);
+            color: var(--clr-primary-600);
+            border-color: var(--clr-primary-600);
+          }
+        }
+
+        .confirm_btn {
+          background-color: var(--clr-danger-faded);
+          border-color: var(--clr-danger-600);
+          color: var(--clr-danger-600);
+
+          &:hover {
+            color: var(--clr-danger-200);
+            border-color: var(--clr-danger-200);
+          }
+        }
+
+        .cancel_btn {
+          background-color: var(--clr-light-faded);
+          border-color: var(--clr-light);
+          color: var(--clr-light);
+
+          &:hover {
+            color: var(--clr-lighter);
+            border-color: var(--clr-lighter);
+          }
+        }
+      }
+    }
+
     header {
       display: flex;
       align-items: center;
@@ -92,6 +200,7 @@
 
       h4 {
         color: var(--clr-primary-200);
+        font-size: 0.7rem;
       }
 
       .game_type {
@@ -106,6 +215,24 @@
         font-size: 0.6rem;
         margin-top: 5px;
         margin-left: 5px;
+
+        .dash {
+          margin: 0 5px;
+        }
+
+        .bet {
+          display: flex;
+          align-items: center;
+
+          span {
+            font-size: 0.5rem;
+            margin-top: 1px;
+          }
+
+          .coin_img {
+            margin-left: 3px;
+          }
+        }
       }
 
       .status {
@@ -151,7 +278,7 @@
       padding: 10px;
       border-top: 1px solid rgba(128, 128, 128, 0.388);
       display: flex;
-      justify-content: flex-end;
+      justify-content: space-between;
       align-items: center;
       width: 100%;
       display: flex;
@@ -160,9 +287,38 @@
 
       .left {
         display: flex;
-        align-items: center;
+        flex-direction: column;
+        justify-content: space-between;
         color: var(--clr-primary-800);
-        font-size: 0.8rem;
+        font-size: 0.7rem;
+
+        .chat {
+          display: flex;
+          align-items: center;
+          margin-top: 5px;
+
+          .chat_icon {
+            color: var(--clr-primary-600);
+            margin-right: 5px;
+          }
+        }
+      }
+
+      .leave_btn {
+        @include btn();
+        padding: 5px 10px;
+        height: auto;
+        background-color: transparent;
+        border-color: var(--clr-danger-800);
+        color: var(--clr-danger-800);
+        font-size: small;
+        z-index: 1;
+
+        &:hover {
+          background-color: var(--clr-danger-faded);
+          color: var(--clr-danger-600);
+          border-color: var(--clr-danger-600);
+        }
       }
 
       .join_btn {
@@ -235,8 +391,19 @@
     }
   }
 
+  .room_card_classic {
+    background: linear-gradient(135deg, #022e22b8 0%, #31640181 100%);
+  }
+
+  .room_card_nines {
+    background: linear-gradient(135deg, #01153a 0%, #36023e 100%);
+  }
+
+  .room_card_betting {
+    background: linear-gradient(135deg, #050200d6 0%, #5b2505c5 100%);
+  }
+
   .room_card_active {
-    // filter: blur(4px);
     border: 6px solid var(--clr-primary-faded);
 
     &::after {
@@ -272,11 +439,312 @@
       }
     }
   }
+
+  .room_card_joined {
+    border: 2px solid var(--clr-success-800);
+  }
+
+  @media (max-width: 1020px) {
+    grid-template-columns: none;
+
+    .room_card,
+    .room_card_active,
+    .room_card_joined,
+    .room_card_classic,
+    .room_card_nines,
+    .room_card_betting {
+      width: 600px;
+      height: 300px;
+
+      header {
+        h4 {
+          font-size: 0.9rem;
+        }
+
+        .game_type {
+          font-size: 0.8rem;
+          margin-top: 0;
+          margin-left: 0;
+
+          .dash {
+            font-size: 1rem;
+          }
+
+          .bet {
+            span {
+              font-size: 0.6rem;
+            }
+          }
+        }
+
+        .status {
+          span {
+            font-size: 0.8rem;
+            margin-left: 5px;
+          }
+        }
+      }
+
+      .body {
+        height: 180px;
+        display: flex;
+        align-items: center;
+
+        .user {
+          width: 100px;
+          height: 100px;
+        }
+      }
+
+      footer {
+        flex: 1;
+        padding: 10px;
+        border-top: 1px solid rgba(128, 128, 128, 0.388);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        .left {
+          font-size: 0.8rem;
+        }
+      }
+    }
+  }
+
+  @media (max-width: 700px) {
+    .room_card,
+    .room_card_active,
+    .room_card_joined,
+    .room_card_classic,
+    .room_card_nines,
+    .room_card_betting {
+      width: 500px;
+    }
+  }
+
+  @media (max-width: 600px) {
+    .room_card,
+    .room_card_active,
+    .room_card_joined,
+    .room_card_classic,
+    .room_card_nines,
+    .room_card_betting {
+      width: 400px;
+      height: 200px;
+
+      header {
+        h4 {
+          font-size: 0.6rem;
+        }
+
+        .game_type {
+          font-size: 0.6rem;
+          padding: 3px 5px;
+
+          .dash {
+            font-size: 0.8rem;
+          }
+
+          .bet {
+            span {
+              font-size: 0.5rem;
+            }
+          }
+        }
+
+        .status {
+          .icon {
+            font-size: 0.8rem;
+          }
+
+          span {
+            font-size: 0.7rem;
+            margin-left: 5px;
+          }
+        }
+      }
+
+      .body {
+        height: 100px;
+        display: flex;
+        align-items: center;
+
+        .user {
+          width: 70px;
+          height: 70px;
+        }
+      }
+
+      footer {
+        .left {
+          font-size: 0.7rem;
+        }
+      }
+    }
+  }
+
+  @media (max-height: 800px) {
+    .room_card,
+    .room_card_active,
+    .room_card_joined,
+    .room_card_classic,
+    .room_card_nines,
+    .room_card_betting {
+      width: 400px;
+      height: 200px;
+
+      header {
+        h4 {
+          font-size: 0.6rem;
+        }
+
+        .game_type {
+          font-size: 0.6rem;
+          padding: 3px 5px;
+
+          .dash {
+            font-size: 0.8rem;
+          }
+
+          .bet {
+            span {
+              font-size: 0.5rem;
+            }
+          }
+        }
+
+        .status {
+          .icon {
+            font-size: 0.8rem;
+          }
+
+          span {
+            font-size: 0.7rem;
+            margin-left: 5px;
+          }
+        }
+      }
+
+      .body {
+        height: 100px;
+        display: flex;
+        align-items: center;
+
+        .user {
+          width: 70px;
+          height: 70px;
+        }
+      }
+
+      footer {
+        .left {
+          font-size: 0.7rem;
+        }
+      }
+    }
+  }
+
+  @media (max-width: 450px) {
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+
+    .room_card,
+    .room_card_active,
+    .room_card_joined,
+    .room_card_classic,
+    .room_card_nines,
+    .room_card_betting {
+      width: 90%;
+      height: 200px;
+
+      header {
+        h4 {
+          font-size: 0.5rem;
+        }
+
+        .game_type {
+          font-size: 0.5rem;
+          padding: 3px 5px;
+
+          .dash {
+            font-size: 0.6rem;
+          }
+
+          .bet {
+            span {
+              font-size: 0.5rem;
+            }
+          }
+        }
+
+        .status {
+          .icon {
+            font-size: 0.7rem;
+          }
+
+          span {
+            font-size: 0.6rem;
+            margin-left: 5px;
+          }
+        }
+      }
+
+      .body {
+        height: 100px;
+        display: flex;
+        align-items: center;
+
+        .user {
+          width: 60px;
+          height: 60px;
+        }
+      }
+
+      footer {
+        .left {
+          font-size: 0.6rem;
+        }
+
+        .join_btn {
+          padding: 5px;
+          border-width: 1px;
+          font-size: 0.6rem;
+        }
+
+        .btns {
+          display: flex;
+          align-items: center;
+          gap: 20px;
+
+          .rejoin_btn {
+            padding: 5px;
+            border-width: 1px;
+            font-size: 0.6rem;
+          }
+
+          .leave_btn {
+            padding: 5px;
+            border-width: 1px;
+            font-size: 0.6rem;
+          }
+        }
+      }
+    }
+  }
 }
 
 .empty_message {
+  position: absolute;
   text-align: center;
   color: var(--clr-warning-800);
   font-size: 1.1rem;
-  padding: 2rem;
+  padding-top: 2rem;
+
+  @media (max-width: 500px) {
+    font-size: 0.9rem;
+    width: 250px;
+  }
 }
