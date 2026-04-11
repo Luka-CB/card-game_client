@@ -94,7 +94,7 @@ export default function RulesPage() {
                 <b>Need (to win)</b>: request highest of a suit.
               </li>
               <li>
-                <b>Don’t need (to lose)</b>: request highest to take.
+                <b>Don&apos;t need (to lose)</b>: request highest to take.
               </li>
             </ul>
           </li>
@@ -149,10 +149,10 @@ export default function RulesPage() {
 
         <h3>Normal room (no bet)</h3>
         <ul>
-          <li>1st: +300</li>
-          <li>2nd: +150</li>
-          <li>3rd: -150</li>
-          <li>4th: -300</li>
+          <li>1st: +200</li>
+          <li>2nd: +100</li>
+          <li>3rd: -50</li>
+          <li>4th: -100</li>
         </ul>
         <p>
           If bot finishes 1st or 2nd, that slot becomes <b>-100 penalty</b>{" "}

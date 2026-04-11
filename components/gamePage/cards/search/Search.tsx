@@ -26,11 +26,13 @@ const Search = ({ roomsLength }: { roomsLength: number }) => {
     setSearchQ(newSearchQ);
   };
 
+  const isSearchDisabled = roomsLength <= 5 && searchQ.trim() === "";
+
   return (
     <div
-      className={roomsLength <= 5 ? styles.disabled : styles.search_bar}
+      className={isSearchDisabled ? styles.disabled : styles.search_bar}
       title={
-        roomsLength <= 5
+        isSearchDisabled
           ? "Search disabled when there are 5 or fewer rooms"
           : ""
       }
@@ -40,7 +42,7 @@ const Search = ({ roomsLength }: { roomsLength: number }) => {
         placeholder="Search rooms by name..."
         value={searchQ}
         onChange={handleSearchChange}
-        disabled={roomsLength <= 5}
+        disabled={isSearchDisabled}
       />
       <div className={styles.search_icon}>
         <IoSearch />

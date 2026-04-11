@@ -16,20 +16,28 @@ interface propsIFace {
 
 const GamePageHeader: React.FC<propsIFace> = ({ type }) => {
   const { setToggleCreateRoom } = useCreateRoomStore();
-  const { toggleFilterOptions } = useFilterStore();
+  const { toggleFilterOptions, checkedFilters } = useFilterStore();
   const { rooms } = useRoomStore();
   const { usersOnline } = useUserStore();
+  const { user } = useUserStore();
+
+  const isFilterDisabled = !rooms || (rooms.length <= 5 && !checkedFilters);
 
   return (
     <header className={styles.header}>
       <div className={styles.col1}>
-        <div className={styles.item}>
-          <div className={styles.indicator} />
-          <FaUsers className={styles.icon} />
-          <small>players</small>
-          <b>{usersOnline?.length || 0}</b>
-        </div>
-        <div className={styles.divider}></div>
+        {(usersOnline?.length > 500 || user?.isAdmin) && (
+          <>
+            <div className={styles.item}>
+              <div className={styles.indicator} />
+              <FaUsers className={styles.icon} />
+              <small>players</small>
+              <b>{usersOnline?.length || 0}</b>
+            </div>
+
+            <div className={styles.divider}></div>
+          </>
+        )}
         <div className={styles.item}>
           <SiAirtable className={styles.icon} />
           <small>rooms</small>
@@ -38,14 +46,12 @@ const GamePageHeader: React.FC<propsIFace> = ({ type }) => {
       </div>
       <div className={styles.col2}>
         <div
-          className={
-            !rooms || rooms.length <= 5 ? styles.disabled : styles.filter
-          }
+          className={isFilterDisabled ? styles.disabled : styles.filter}
           onClick={(e) => {
             e.stopPropagation();
           }}
           title={
-            !rooms || rooms.length <= 5
+            isFilterDisabled
               ? "Filters disabled when there are 5 or fewer rooms"
               : ""
           }
@@ -53,7 +59,7 @@ const GamePageHeader: React.FC<propsIFace> = ({ type }) => {
           <span>Filter Rooms:</span>
           <button
             className={styles.filter_btn}
-            disabled={!rooms || rooms.length <= 5}
+            disabled={isFilterDisabled}
             onClick={toggleFilterOptions}
           >
             <FaFilter className={styles.icon} />

@@ -41,7 +41,10 @@
 
   .room_card,
   .room_card_active,
-  .room_card_joined {
+  .room_card_joined,
+  .room_card_classic,
+  .room_card_nines,
+  .room_card_betting {
     @include bgColor();
     width: 400px;
     height: 225px;
@@ -141,6 +144,7 @@
         color: var(--clr-warning-400);
         margin-bottom: 20px;
         text-align: center;
+        padding: 10px;
       }
 
       .leave_warning_btns {
@@ -387,6 +391,18 @@
     }
   }
 
+  .room_card_classic {
+    background: linear-gradient(135deg, #022e22b8 0%, #31640181 100%);
+  }
+
+  .room_card_nines {
+    background: linear-gradient(135deg, #01153a 0%, #36023e 100%);
+  }
+
+  .room_card_betting {
+    background: linear-gradient(135deg, #050200d6 0%, #5b2505c5 100%);
+  }
+
   .room_card_active {
     border: 6px solid var(--clr-primary-faded);
 
@@ -433,7 +449,10 @@
 
     .room_card,
     .room_card_active,
-    .room_card_joined {
+    .room_card_joined,
+    .room_card_classic,
+    .room_card_nines,
+    .room_card_betting {
       width: 600px;
       height: 300px;
 
@@ -499,7 +518,10 @@
   @media (max-width: 700px) {
     .room_card,
     .room_card_active,
-    .room_card_joined {
+    .room_card_joined,
+    .room_card_classic,
+    .room_card_nines,
+    .room_card_betting {
       width: 500px;
     }
   }
@@ -507,7 +529,10 @@
   @media (max-width: 600px) {
     .room_card,
     .room_card_active,
-    .room_card_joined {
+    .room_card_joined,
+    .room_card_classic,
+    .room_card_nines,
+    .room_card_betting {
       width: 400px;
       height: 200px;
 
@@ -565,7 +590,10 @@
   @media (max-height: 800px) {
     .room_card,
     .room_card_active,
-    .room_card_joined {
+    .room_card_joined,
+    .room_card_classic,
+    .room_card_nines,
+    .room_card_betting {
       width: 400px;
       height: 200px;
 
@@ -625,7 +653,10 @@
 
     .room_card,
     .room_card_active,
-    .room_card_joined {
+    .room_card_joined,
+    .room_card_classic,
+    .room_card_nines,
+    .room_card_betting {
       width: 90%;
       height: 200px;
 

@@ -28,6 +28,7 @@ const GameRounds = ({ hand, gameInfo, user }: GameRoundsProps) => {
   const [sortedCards, setSortedCards] = useState<PlayingCard[]>([]);
   const [jokerCard, setJokerCard] = useState<PlayingCard | null>(null);
   const [selectedCardId, setSelectedCardId] = useState<string | null>(null);
+  const [legalCardIds, setLegalCardIds] = useState<string[]>([]);
 
   const isTouch = useTouchDevice();
 
@@ -249,73 +250,54 @@ const GameRounds = ({ hand, gameInfo, user }: GameRoundsProps) => {
   const isPlayerTurn = gameInfo?.currentPlayerId === user._id;
   const trumpCardSuit = gameInfo?.trumpCard?.suit;
 
-  const playableCards = useMemo(() => {
-    const playedCards = gameInfo?.playedCards || [];
+  useEffect(() => {
+    if (!socket || !gameInfo?.roomId || !user?._id) return;
 
-    if (!sortedCards.length || !gameInfo) return sortedCards;
+    const handleLegalMoves = (payload: {
+      roomId: string;
+      playerId: string;
+      cardIds: string[];
+    }) => {
+      if (payload.roomId !== gameInfo.roomId) return;
+      if (payload.playerId !== user._id) return;
+      setLegalCardIds(payload.cardIds || []);
+    };
 
-    if (!playedCards.length || playedCards.length === 0) return sortedCards;
+    socket.on("legalMoves", handleLegalMoves);
 
-    const leadCard = playedCards[0]?.card as PlayingCard;
-    if (!leadCard) return sortedCards;
+    return () => {
+      socket.off("legalMoves", handleLegalMoves);
+    };
+  }, [socket, gameInfo?.roomId, user?._id]);
 
-    const requestedSuit = leadCard.requestedSuit;
-    const leadSuit = leadCard.suit;
-    const trumpSuit = trumpCardSuit;
+  useEffect(() => {
+    if (!socket || !gameInfo?.roomId || !user?._id) return;
 
-    const jokers = sortedCards.filter((c) => c.joker);
+    const isMyTurn =
+      gameInfo.status === "playing" && gameInfo.currentPlayerId === user._id;
 
-    if (leadCard.joker && requestedSuit) {
-      const requestedCards = sortedCards.filter(
-        (c) => !c.joker && c.suit === requestedSuit,
-      );
-
-      if (requestedCards.length > 0) {
-        const type = leadCard.type;
-        if (type === "need" || type === "takes") {
-          const strongestCard = requestedCards.reduce((max, c) =>
-            c.strength > max.strength ? c : max,
-          );
-          return [...jokers, strongestCard];
-        }
-        return [...jokers, ...requestedCards];
-      }
-
-      if (trumpSuit) {
-        const trumpCards = sortedCards.filter(
-          (c) => !c.joker && c.suit === trumpSuit,
-        );
-        if (trumpCards.length > 0) {
-          return [...jokers, ...trumpCards];
-        }
-      }
-
-      return sortedCards;
+    if (!isMyTurn) {
+      setLegalCardIds([]);
+      return;
     }
 
-    if (leadCard.joker && !requestedSuit) {
-      return sortedCards;
-    }
+    socket.emit("requestLegalMoves", {
+      roomId: gameInfo.roomId,
+      playerId: user._id,
+    });
+  }, [
+    socket,
+    gameInfo?.roomId,
+    gameInfo?.status,
+    gameInfo?.currentPlayerId,
+    gameInfo?.playedCards,
+    hand,
+    user?._id,
+  ]);
 
-    const followSuitCards = sortedCards.filter(
-      (c) => !c.joker && c.suit === leadSuit,
-    );
-
-    if (followSuitCards.length > 0) {
-      return [...jokers, ...followSuitCards];
-    }
-
-    if (trumpSuit && leadSuit !== trumpSuit) {
-      const trumpCards = sortedCards.filter(
-        (c) => !c.joker && c.suit === trumpSuit,
-      );
-      if (trumpCards.length > 0) {
-        return [...jokers, ...trumpCards];
-      }
-    }
-
-    return sortedCards;
-  }, [sortedCards, , trumpCardSuit, gameInfo]);
+  const playableCardIdSet = useMemo(() => {
+    return new Set(legalCardIds);
+  }, [legalCardIds]);
 
   return (
     <motion.div
@@ -354,7 +336,7 @@ const GameRounds = ({ hand, gameInfo, user }: GameRoundsProps) => {
             c.rank === "JOKER" && c.color === "red",
         )?.image;
 
-        const isPlayable = playableCards?.some((c) => c.id === card.id);
+        const isPlayable = playableCardIdSet.has(card.id);
         const isSelected = selectedCardId === card.id;
 
         return (

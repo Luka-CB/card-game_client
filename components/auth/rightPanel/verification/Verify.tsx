@@ -13,7 +13,7 @@ import { IoMdArrowRoundBack } from "react-icons/io";
 import { useRouter, useSearchParams } from "next/navigation";
 
 const Verify = () => {
-  const { email, status, sendEmail } = useSendVerifyEmailStore();
+  const { email, status, sendEmail, error } = useSendVerifyEmailStore();
   const { status: signupStatus, reset: signupReset } = useSignupStore();
   const { status: changeEmailStatus, reset: changeEmailReset } =
     useChangeEmailStore();
@@ -58,6 +58,12 @@ const Verify = () => {
 
   return (
     <div className={styles.container}>
+      {status === "failed" && (
+        <div className={styles.error}>
+          <h4>{error}</h4>
+        </div>
+      )}
+
       <div className={styles.info_verify}>
         <h1>
           Almost there! <span>Verify email to start playing!</span>

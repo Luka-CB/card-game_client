@@ -19,6 +19,16 @@ export const timeAgoStrict = (d?: string | Date | null) => {
   return formatDistanceToNowStrict(date, { addSuffix: true });
 };
 
+// time formate like january 2020
+export const formatDate = (d?: string | Date | null) => {
+  const date = toDate(d);
+  if (!date) return "unknown";
+  return date.toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+  });
+};
+
 export const substringText = (text: string, length: number) => {
   if (text.length > length) {
     return text.substring(0, length) + "...";

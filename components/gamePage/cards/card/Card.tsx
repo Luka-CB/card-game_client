@@ -24,7 +24,7 @@ interface CardProps {
 
 const Card: React.FC<CardProps> = ({ room }) => {
   const socket = useSocket();
-  const { user } = useUserStore();
+  const { user, usersOnline } = useUserStore();
   const { setTogglePasswordPrompt } = useRoomStore();
   const { jCoins, toggleGetMoreModal } = useJCoinsStore();
   const { setMsg } = useFlashMsgStore();
@@ -56,6 +56,9 @@ const Card: React.FC<CardProps> = ({ room }) => {
     if (!room && !user) return;
     if (isLeavingRef.current) return;
     if (hasNavigatedRef.current) return;
+
+    const isEveryUserBot = room?.users.every((u) => !!u.isBot);
+    if (isEveryUserBot) return;
 
     if (
       room?.isActive &&
@@ -205,9 +208,15 @@ const Card: React.FC<CardProps> = ({ room }) => {
       className={
         room?.users?.some((ru) => ru.id === user?._id && ru.status !== "left")
           ? styles.room_card_joined
-          : room?.isActive
+          : room?.isActive || room?.isDummyRoomActive
             ? styles.room_card_active
-            : styles.room_card
+            : room?.bet
+              ? styles.room_card_betting
+              : room?.type === "classic"
+                ? styles.room_card_classic
+                : room?.type === "nines"
+                  ? styles.room_card_nines
+                  : styles.room_card
       }
     >
       <PasswordPrompt
@@ -269,12 +278,14 @@ const Card: React.FC<CardProps> = ({ room }) => {
           <span className={styles.hisht}>
             Hisht: <b>{room?.hisht}</b>
           </span>
-          <div className={styles.chat}>
-            <FaRocketchat className={styles.chat_icon} />
-            <small>
-              Chat: <b>{room?.hasChat ? "On" : "Off"}</b>
-            </small>
-          </div>
+          {usersOnline?.length > 100 && (
+            <div className={styles.chat}>
+              <FaRocketchat className={styles.chat_icon} />
+              <small>
+                Chat: <b>{room?.hasChat ? "On" : "Off"}</b>
+              </small>
+            </div>
+          )}
         </div>
 
         {room?.isActive &&
@@ -332,7 +343,10 @@ const LeaveWarning = ({
     <div className={styles.leave_warning}>
       <p>Are you sure you want to leave the room?</p>
       <small>
-        This action cannot be undone. You won't be able to rejoin this room.
+        This action cannot be undone. You won't be able to rejoin this room. And
+        Won't be able to join another room until the current game in this room
+        finishes. 100 JCoins will be deducted as a penalty for leaving an active
+        game.
       </small>
       <div className={styles.leave_warning_btns}>
         <button className={styles.confirm_btn} onClick={onConfirm}>

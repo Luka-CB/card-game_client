@@ -65,13 +65,13 @@ const FinishedMode: React.FC<FinishedModeProps> = ({
   const getAwardedPointsByRank = (rank: number) => {
     switch (rank) {
       case 1:
-        return 300;
+        return 200;
       case 2:
-        return 150;
+        return 100;
       case 3:
-        return -150;
+        return -50;
       case 4:
-        return -300;
+        return -100;
       default:
         return 0;
     }
@@ -79,14 +79,14 @@ const FinishedMode: React.FC<FinishedModeProps> = ({
 
   const getIndicatorHeight = (score: number) => {
     switch (score) {
-      case 300:
-        return "450px";
-      case 150:
-        return "350px";
-      case -150:
-        return "250px";
-      case -300:
-        return "150px";
+      case 200:
+        return "400px";
+      case 100:
+        return "300px";
+      case -50:
+        return "200px";
+      case -100:
+        return "100px";
       default:
         return "0px";
     }
@@ -110,11 +110,11 @@ const FinishedMode: React.FC<FinishedModeProps> = ({
     const betValue = parseInt(bet || "0");
     switch (points) {
       case betValue * 4:
-        return "400px";
+        return "300px";
       case -betValue:
       case -betValue:
       case -betValue:
-        return "150px";
+        return "100px";
       default:
         return "0px";
     }

@@ -3,22 +3,71 @@
 import Image from "next/image";
 import styles from "./GetMoreModal.module.scss";
 import { IoMdCloseCircle } from "react-icons/io";
-import { FaPlay, FaCircleInfo } from "react-icons/fa6";
+import { FaGift, FaCircleInfo } from "react-icons/fa6";
 import { AnimatePresence, motion } from "framer-motion";
 import useJCoinsStore from "@/store/user/stats/jCoinsStore";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
+import useFlashMsgStore from "@/store/flashMsgStore";
+import BtnLoader from "../loaders/BtnLoader";
+
+const formatTimeLeft = (nextClaimAt: string | null) => {
+  if (!nextClaimAt) return "Available now";
+
+  const diffMs = new Date(nextClaimAt).getTime() - Date.now();
+  if (diffMs <= 0) return "Available now";
+
+  const totalMinutes = Math.ceil(diffMs / (1000 * 60));
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
+
+  if (hours > 0) {
+    return `${hours}h:${minutes}m`;
+  }
+
+  return `${totalMinutes}m`;
+};
 
 const GetMoreModal = () => {
-  const { isGetMoreModalOpen, toggleGetMoreModal, hasWarning } =
-    useJCoinsStore();
+  const {
+    isGetMoreModalOpen,
+    toggleGetMoreModal,
+    hasWarning,
+    dailyClaim,
+    dailyClaimStatus,
+    fetchDailyClaimStatus,
+    claimDailyFreeJCoins,
+  } = useJCoinsStore();
+
+  const { setMsg } = useFlashMsgStore();
 
   useEffect(() => {
     if (isGetMoreModalOpen) {
       document.body.style.overflow = "hidden";
+      fetchDailyClaimStatus();
     } else {
       document.body.style.overflow = "auto";
     }
-  }, [isGetMoreModalOpen]);
+
+    return () => {
+      document.body.style.overflow = "auto";
+    };
+  }, [isGetMoreModalOpen, fetchDailyClaimStatus]);
+
+  const timeLeft = useMemo(
+    () => formatTimeLeft(dailyClaim?.nextClaimAt ?? null),
+    [dailyClaim?.nextClaimAt],
+  );
+
+  const handleClaim = async () => {
+    const rewardAmount = await claimDailyFreeJCoins();
+
+    if (!rewardAmount) {
+      setMsg("Daily free claim is not available yet.", "error");
+      return;
+    }
+
+    setMsg(`You received +${rewardAmount} JCoins`, "success");
+  };
 
   return (
     <AnimatePresence>
@@ -47,86 +96,52 @@ const GetMoreModal = () => {
                 <small>Insufficient JCoins</small>
               </div>
             )}
+
             <h2>Get More JCoins</h2>
-            <h4>To get more JCoins, you can watch ads below:</h4>
-            <div className={styles.ads}>
-              <div className={styles.ad}>
-                <div className={styles.info}>
-                  <h5>Watch 15 seconds of Ad</h5>
-                  <div className={styles.ad_reward}>
-                    <p>get +50</p>
-                    <Image
-                      src="/coin1.png"
-                      alt="coin"
-                      width={25}
-                      height={25}
-                      className={styles.coin_image}
-                    />
-                  </div>
+            <h4>Claim your daily free JCoins below.</h4>
+
+            <div className={styles.reward}>
+              <div className={styles.info}>
+                <h5>Daily Free Claim</h5>
+
+                <div className={styles.amount}>
+                  <p>get {dailyClaim?.amount ?? 250}</p>
+                  <Image
+                    src="/coin1.png"
+                    alt="coin"
+                    width={25}
+                    height={25}
+                    className={styles.coin_image}
+                  />
                 </div>
-                <button className={styles.play_btn}>
-                  <span>Play Now</span>
-                  <FaPlay className={styles.play_icon} />
-                </button>
+
+                {dailyClaim?.canClaim ? (
+                  <small>Ready to claim now</small>
+                ) : (
+                  <small>
+                    Next claim in <b>{timeLeft}</b>
+                  </small>
+                )}
               </div>
-              <div className={styles.ad}>
-                <div className={styles.info}>
-                  <h5>Watch 30 seconds of Ad</h5>
-                  <div className={styles.ad_reward}>
-                    <p>get +100</p>
-                    <Image
-                      src="/coin1.png"
-                      alt="coin"
-                      width={25}
-                      height={25}
-                      className={styles.coin_image}
-                    />
-                  </div>
-                </div>
-                <button className={styles.play_btn}>
-                  <span>Play Now</span>
-                  <FaPlay className={styles.play_icon} />
-                </button>
-              </div>
-              <div className={styles.ad}>
-                <div className={styles.info}>
-                  <h5>Watch 45 seconds of Ad</h5>
-                  <div className={styles.ad_reward}>
-                    <p>get +150</p>
-                    <Image
-                      src="/coin1.png"
-                      alt="coin"
-                      width={25}
-                      height={25}
-                      className={styles.coin_image}
-                    />
-                  </div>
-                </div>
-                <button className={styles.play_btn}>
-                  <span>Play Now</span>
-                  <FaPlay className={styles.play_icon} />
-                </button>
-              </div>
-              <div className={styles.ad}>
-                <div className={styles.info}>
-                  <h5>Watch 60 seconds of Ad</h5>
-                  <div className={styles.ad_reward}>
-                    <p>get +200</p>
-                    <Image
-                      src="/coin1.png"
-                      alt="coin"
-                      width={25}
-                      height={25}
-                      className={styles.coin_image}
-                    />
-                  </div>
-                </div>
-                <button className={styles.play_btn}>
-                  <span>Play Now</span>
-                  <FaPlay className={styles.play_icon} />
-                </button>
-              </div>
+
+              <button
+                className={styles.claim_btn}
+                onClick={handleClaim}
+                disabled={
+                  dailyClaimStatus === "loading" || !dailyClaim?.canClaim
+                }
+              >
+                {dailyClaimStatus === "loading" ? (
+                  <BtnLoader />
+                ) : (
+                  <>
+                    <span>Claim Now</span>
+                    <FaGift className={styles.gift_icon} />
+                  </>
+                )}
+              </button>
             </div>
+
             <button
               className={styles.close_btn}
               onClick={() => toggleGetMoreModal()}

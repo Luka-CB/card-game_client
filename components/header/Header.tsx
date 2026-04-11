@@ -13,6 +13,7 @@ import { useEffect } from "react";
 import useUserStore from "@/store/user/userStore";
 import SideNav from "./SideNav";
 import Image from "next/image";
+import useSocket from "@/hooks/useSocket";
 
 const Header = () => {
   const { toggleNav } = useNavStore();
@@ -21,11 +22,29 @@ const Header = () => {
   const { fetchJCoins, jCoins, toggleGetMoreModal } = useJCoinsStore();
   const { fetchRating, rating } = useRatingStore();
 
+  const socket = useSocket();
+
   useEffect(() => {
     if (user && !jCoins) {
       fetchJCoins();
     }
   }, [user, jCoins, fetchJCoins]);
+
+  useEffect(() => {
+    if (!socket || !user?._id) return;
+
+    const handleJCoinsChanged = (data?: { userIds?: string[] }) => {
+      if (!data?.userIds || data.userIds.includes(user._id)) {
+        fetchJCoins();
+      }
+    };
+
+    socket.on("jCoinsChanged", handleJCoinsChanged);
+
+    return () => {
+      socket.off("jCoinsChanged", handleJCoinsChanged);
+    };
+  }, [socket, user?._id, fetchJCoins]);
 
   useEffect(() => {
     if (user && !rating) {

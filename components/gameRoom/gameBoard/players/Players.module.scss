@@ -7,6 +7,34 @@
     gap: 0.5rem;
     transition: transform 0.3s ease;
 
+    .user_meta {
+      position: absolute;
+      background-color: rgba(0, 0, 0, 0.85);
+      color: white;
+      border-radius: 8px;
+      font-size: 0.65rem;
+      z-index: 102;
+      box-shadow: 2px 4px 12px rgba(0, 0, 0, 0.5);
+      width: 180px;
+      padding: 10px;
+
+      .name {
+        font-size: medium;
+        text-align: center;
+      }
+
+      .bio {
+        font-size: 0.7rem;
+        margin-top: 5px;
+      }
+
+      h6 {
+        margin-top: 8px;
+        font-size: 0.75rem;
+        color: var(--clr-primary-200);
+      }
+    }
+
     .player_info {
       position: relative;
       display: flex;
@@ -17,23 +45,6 @@
       padding: 1rem;
       border-radius: 10px;
       backdrop-filter: blur(5px);
-
-      .emoji_popup {
-        position: absolute;
-        background-color: rgba(0, 0, 0, 0.85);
-        color: white;
-        padding: 0.75rem;
-        border-radius: 50%;
-        font-size: 2.5rem;
-        z-index: 10;
-        animation: fadeIn 0.3s ease-in-out;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 60px;
-        height: 60px;
-      }
 
       .message_popup {
         position: absolute;
@@ -60,6 +71,27 @@
         border: 3px solid var(--clr-primary);
         box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
         overflow: visible;
+        cursor: pointer;
+
+        .emoji_popup {
+          position: absolute;
+          top: 50%;
+          left: 0;
+          transform: translateY(-50%);
+          background-color: rgba(0, 0, 0);
+          color: white;
+          padding: 0.75rem;
+          border-radius: 50%;
+          font-size: 2.5rem;
+          z-index: 10001;
+          animation: fadeIn 0.3s ease-in-out;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 65px;
+          height: 65px;
+        }
 
         .timer_ring {
           position: absolute;
@@ -199,9 +231,15 @@
   }
 
   .left {
-    left: 20;
+    left: 1%;
     top: 50%;
     transform: translateY(-50%);
+
+    .user_meta {
+      left: 110%;
+      top: 50%;
+      transform: translateY(-50%);
+    }
 
     .message_popup {
       left: 110%;
@@ -242,6 +280,12 @@
     left: 50%;
     transform: translateX(-50%);
 
+    .user_meta {
+      top: 110%;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
     .message_popup {
       top: 110%;
       left: 50%;
@@ -280,6 +324,12 @@
     right: 1%;
     top: 50%;
     transform: translateY(-50%);
+
+    .user_meta {
+      right: 110%;
+      top: 50%;
+      transform: translateY(-50%);
+    }
 
     .message_popup {
       right: 110%;

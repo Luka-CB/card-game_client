@@ -25,11 +25,13 @@ const Banner = () => {
       />
       <div className={styles.border}></div>
       <div className={styles.user_count}>
-        <div className={styles.online}>
-          <div className={styles.dot}></div>
-          <small>online</small>
-          <span>{usersOnline?.length || 0}</span>
-        </div>
+        {usersOnline.length > 500 && user?.isAdmin && (
+          <div className={styles.online}>
+            <div className={styles.dot}></div>
+            <small>online</small>
+            <span>{usersOnline?.length || 0}</span>
+          </div>
+        )}
         {user && user?.isAdmin && (
           <div className={styles.total}>
             <div className={styles.dot}></div>

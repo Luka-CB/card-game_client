@@ -14,6 +14,7 @@ import { getRandomBotAvatar, getRandomColor } from "@/utils/misc";
 import useRoomStore from "@/store/gamePage/roomStore";
 import Image from "next/image";
 import useJCoinsStore from "@/store/user/stats/jCoinsStore";
+import api from "@/utils/axios";
 
 const CreateRoom = () => {
   const [currentStatus, setCurrentStatus] = useState("public");
@@ -33,7 +34,7 @@ const CreateRoom = () => {
   const handleCloseModal = () => setToggleCreateRoom(false, null);
 
   const socket = useSocket();
-  const { user } = useUserStore();
+  const { user, usersOnline } = useUserStore();
   const { jCoins, toggleGetMoreModal } = useJCoinsStore();
 
   const resetModal = () => {
@@ -46,7 +47,7 @@ const CreateRoom = () => {
     setBetError("");
   };
 
-  const handleSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (!user) return;
@@ -100,6 +101,12 @@ const CreateRoom = () => {
     };
 
     setIsCreatingRoom(true);
+
+    try {
+      await api.post("/metrics/room-creation-attempt");
+    } catch (error) {
+      console.error("Failed to track room creation attempt:", error);
+    }
 
     if (socket) {
       socket.emit("addRoom", room, user._id);
@@ -279,20 +286,22 @@ const CreateRoom = () => {
                   <label htmlFor="hisht_900">900</label>
                 </div>
               </div>
-              <div className={styles.toggle_box}>
-                <span>In Game Chat:</span>
-                <label htmlFor="toggleChat" className={styles.toggle_switch}>
-                  <input
-                    type="checkbox"
-                    name="toggleChat"
-                    id="toggleChat"
-                    checked={toggleChat}
-                    onChange={(e) => setToggleChat(e.target.checked)}
-                  />
-                  <span className={styles.slider}></span>
-                </label>
-                <small>{toggleChat ? "On" : "Off"}</small>
-              </div>
+              {usersOnline?.length > 100 && (
+                <div className={styles.toggle_box}>
+                  <span>In Game Chat:</span>
+                  <label htmlFor="toggleChat" className={styles.toggle_switch}>
+                    <input
+                      type="checkbox"
+                      name="toggleChat"
+                      id="toggleChat"
+                      checked={toggleChat}
+                      onChange={(e) => setToggleChat(e.target.checked)}
+                    />
+                    <span className={styles.slider}></span>
+                  </label>
+                  <small>{toggleChat ? "On" : "Off"}</small>
+                </div>
+              )}
               <button type="submit" className={styles.submit_btn}>
                 Create
               </button>

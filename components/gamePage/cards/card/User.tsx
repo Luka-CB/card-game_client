@@ -19,6 +19,7 @@ const User: React.FC<UserProps> = ({ user }) => {
           alt={user.username || "User"}
           width={200}
           height={200}
+          loading="eager"
         />
       ) : (
         <div className={styles.user_placeholder}></div>
