@@ -160,25 +160,23 @@ const DisplayRoomCards = () => {
           </Link>
         </div>
 
-        {!user?.isGuest && (
-          <div className={styles.card_wrapper}>
-            {bettingRoom ? (
-              <DisplayCard
-                room={bettingRoom}
-                type="betting"
-                roomImIn={roomImIn}
-              />
-            ) : (
-              <Info type="betting" />
-            )}
-            <h3>{t("cards.bet")}</h3>
-            <Link href="/rooms">
-              <button className={styles.info_btn} title={t("linkTitle")}>
-                <MdOpenInNew />
-              </button>
-            </Link>
-          </div>
-        )}
+        <div className={styles.card_wrapper}>
+          {bettingRoom ? (
+            <DisplayCard
+              room={bettingRoom}
+              type="betting"
+              roomImIn={roomImIn}
+            />
+          ) : (
+            <Info type="betting" />
+          )}
+          <h3>{t("cards.bet")}</h3>
+          <Link href="/rooms">
+            <button className={styles.info_btn} title={t("linkTitle")}>
+              <MdOpenInNew />
+            </button>
+          </Link>
+        </div>
       </div>
     </div>
   );

@@ -3,7 +3,7 @@ import { PlayedCard, RoomUser } from "@/utils/interfaces";
 import styles from "./PlayedCards.module.scss";
 import Image from "next/image";
 import useWindowSize from "@/hooks/useWindowSize";
-import { motion } from "framer-motion";
+import { motion, useAnimation } from "framer-motion";
 import usePlayedCardsStore from "@/store/gamePage/playedCardsStore";
 import { soundManager } from "@/utils/sounds";
 import { useDeckContext } from "@/context/DeckContext";
@@ -35,12 +35,10 @@ const PlayedCards: React.FC<PlayedCardsProps> = ({
   const cardHeight = Math.round(cardWidth * 1.5);
 
   const { roundWinnerId, setRoundWinnerId } = usePlayedCardsStore();
-  const [animationWinnerIndex, setAnimationWinnerIndex] = useState<
-    number | null
-  >(null);
   const [cardsToAnimate, setCardsToAnimate] = useState<PlayedCard[] | null>(
     null,
   );
+  const controls = useAnimation();
 
   const winnerIndex = useMemo(() => {
     if (!roundWinnerId) return null;
@@ -48,33 +46,31 @@ const PlayedCards: React.FC<PlayedCardsProps> = ({
     return index === -1 ? null : index;
   }, [roundWinnerId, rotatedPlayers]);
 
-  const animateProps = useMemo(
-    () => ({
-      opacity: 1,
-      y:
-        animationWinnerIndex === 0
-          ? "30vh"
-          : animationWinnerIndex === 2
-            ? "-30vh"
-            : 0,
-      x:
-        animationWinnerIndex === 1
-          ? "-50vh"
-          : animationWinnerIndex === 3
-            ? "50vh"
-            : 0,
-    }),
-    [animationWinnerIndex],
-  );
-
   useEffect(() => {
     if (winnerIndex !== null && playedCards.length === 4) {
       setCardsToAnimate(playedCards);
-      setAnimationWinnerIndex(winnerIndex);
-
       soundManager.play("winCards");
+
+      const targetY =
+        winnerIndex === 0 ? "30vh" : winnerIndex === 2 ? "-30vh" : 0;
+      const targetX =
+        winnerIndex === 1 ? "-50vh" : winnerIndex === 3 ? "50vh" : 0;
+
+      controls
+        .start({
+          x: targetX,
+          y: targetY,
+          opacity: 0,
+          transition: { duration: 0.8, ease: "easeInOut" },
+        })
+        .then(() => {
+          // Instantly reset position without animation, then clean up state
+          controls.set({ x: 0, y: 0, opacity: 1 });
+          setRoundWinnerId(null);
+          setCardsToAnimate(null);
+        });
     }
-  }, [winnerIndex, playedCards]);
+  }, [winnerIndex, playedCards]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (playedCards.length > 0) {
@@ -92,19 +88,11 @@ const PlayedCards: React.FC<PlayedCardsProps> = ({
     }
   }, [playedCards]);
 
-  const handleAnimationComplete = () => {
-    setAnimationWinnerIndex(null);
-    setRoundWinnerId(null);
-    setCardsToAnimate(null);
-  };
-
   const cardsForRender = cardsToAnimate || playedCards;
 
   return (
     <motion.div
-      animate={animateProps}
-      transition={{ duration: 0.8, ease: "easeInOut" }}
-      onAnimationComplete={handleAnimationComplete}
+      animate={controls}
       className={styles.played_cards}
       style={{ width: cardHeight * 2, height: cardHeight * 2 }}
     >
