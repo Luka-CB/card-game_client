@@ -86,9 +86,45 @@
   }
 }
 
-.handle {
-  margin: 0;
-  color: #64748b;
+.edit_btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  border: 1px solid var(--clr-warning-600);
+  background-color: var(--clr-warning-faded);
+  border-radius: 50%;
+
+  .edit_icon {
+    color: var(--clr-warning-800);
+    font-size: 18px;
+    transition: all 0.2s ease;
+  }
+
+  &:hover {
+    border-color: var(--clr-warning-400);
+
+    .edit_icon {
+      transform: scale(1.2);
+    }
+  }
+}
+
+.username {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  .handle {
+    margin: 0;
+    color: #64748b;
+  }
 }
 
 .sub {
@@ -105,36 +141,6 @@
   .email {
     color: #475569;
     font-size: 14px;
-  }
-
-  .edit_btn {
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    padding: 4px;
-    width: 24px;
-    height: 24px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s ease;
-    border: 1px solid var(--clr-warning-600);
-    background-color: var(--clr-warning-faded);
-    border-radius: 50%;
-
-    .edit_icon {
-      color: var(--clr-warning-800);
-      font-size: 18px;
-      transition: all 0.2s ease;
-    }
-
-    &:hover {
-      border-color: var(--clr-warning-400);
-
-      .edit_icon {
-        transform: scale(1.2);
-      }
-    }
   }
 }
 

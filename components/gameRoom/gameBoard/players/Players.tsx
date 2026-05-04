@@ -7,6 +7,7 @@ import useWindowSize from "@/hooks/useWindowSize";
 import { substringText } from "@/utils/misc";
 import UserMetaPopup from "./UserMetaPopup";
 import useUserMetaStore from "@/store/user/userMetaStore";
+import { useTranslations } from "next-intl";
 
 interface TimerData {
   duration: number;
@@ -74,6 +75,8 @@ const Players: React.FC<PlayersProps> = ({
   timerData,
   timerProgress,
 }) => {
+  const t = useTranslations("GameRoom.gameBoard.players");
+
   const windowSize = useWindowSize();
   const { toggleMetaVisibility } = useUserMetaStore();
 
@@ -103,8 +106,6 @@ const Players: React.FC<PlayersProps> = ({
       toggleMetaVisibility(true);
     }
   };
-
-  console.log(clickedPlayerId);
 
   return (
     <div className={styles.players}>
@@ -243,7 +244,7 @@ const Players: React.FC<PlayersProps> = ({
                 )}
                 {player.status !== "active" && (
                   <div className={styles.bot_label}>
-                    <small>bot</small>
+                    <small>{t("bot")}</small>
                   </div>
                 )}
               </div>
@@ -256,7 +257,7 @@ const Players: React.FC<PlayersProps> = ({
                       {substringText(player.username || "", 8)}
                     </span>
                     {player.id === user?._id && (
-                      <span className={styles.you}>You</span>
+                      <span className={styles.you}>{t("you")}</span>
                     )}
                   </div>
                   <div className={styles.bid}>

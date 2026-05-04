@@ -3,7 +3,7 @@
 import styles from "./Auth.module.scss";
 import { AnimatePresence, motion } from "framer-motion";
 import Signin from "./LeftPanel/Signin";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import Signup from "./LeftPanel/Signup";
 import { useEffect } from "react";
 import Verify from "./rightPanel/verification/Verify";
@@ -14,33 +14,73 @@ import Redirecting from "./Redirecting";
 import Error from "./Error";
 import ChangePassword from "./LeftPanel/forgotPassword/ChangePassword";
 import ConfirmEmail from "./LeftPanel/forgotPassword/ConfirmEmail";
-import Link from "next/link";
+import ForgotUsername from "./LeftPanel/forgotUsername/ForgotUsername";
+import { usePathname, useRouter } from "@/i18n/navigation";
+import LanguageSwitcher from "../LanguageSwitcher";
+import { useLocale, useTranslations } from "next-intl";
+import Links from "./Links";
+import useWindowSize from "@/hooks/useWindowSize";
 
-const leftSlideParams = ["signin", "signup", "confirm-email"];
+const leftSlideParams = [
+  "signin",
+  "signup",
+  "confirm-email",
+  "recover-username",
+];
 const rightSlideParams = ["verify", "change-email"];
 
 const Auth = () => {
+  const t = useTranslations("Auth.info");
+  const locale = useLocale();
+
+  const pathname = usePathname();
   const router = useRouter();
   const searchParams = useSearchParams();
   const auth = searchParams.get("auth");
   const { loading, user } = useUserStore();
+  const windowWidth = useWindowSize().width;
+
+  const buildUrlWithAuth = (value: string) => {
+    const nextParams = new URLSearchParams(searchParams.toString());
+    nextParams.set("auth", value);
+
+    return `${pathname}?${nextParams.toString()}`;
+  };
 
   useEffect(() => {
     if (!loading && !user && !auth) {
-      const newParams = new URLSearchParams(searchParams.toString());
-      newParams.set("auth", "signin");
-      router.push(`?${newParams.toString()}`);
+      router.replace(buildUrlWithAuth("signin"), { scroll: false });
     }
 
-    if (!loading && user && !user?.isVerified && !auth) {
-      const newParams = new URLSearchParams(searchParams.toString());
-      newParams.set("auth", "verify");
-      router.push(`?${newParams.toString()}`);
+    if (!loading && user && !user?.isGuest && !user?.isVerified && !auth) {
+      router.replace(buildUrlWithAuth("verify"), { scroll: false });
     }
-  }, [user, router, auth, loading, searchParams]);
+  }, [auth, loading, router, searchParams, user, pathname]);
 
   useEffect(() => {
-    if (!user || !user.isVerified || auth === "redirecting") {
+    if (
+      auth === "redirecting" &&
+      user &&
+      (user.isGuest || user.isVerified) &&
+      pathname
+    ) {
+      const nextParams = new URLSearchParams(searchParams.toString());
+      nextParams.delete("auth");
+
+      const nextQuery = nextParams.toString();
+      const nextUrl = nextQuery ? `${pathname}?${nextQuery}` : pathname;
+
+      window.history.replaceState(window.history.state, "", nextUrl);
+      router.replace(nextUrl, { scroll: false });
+    }
+  }, [auth, pathname, router, searchParams, user]);
+
+  useEffect(() => {
+    if (
+      !user ||
+      (!user.isGuest && !user.isVerified) ||
+      auth === "redirecting"
+    ) {
       document.body.style.overflow = "hidden";
     } else {
       document.body.style.overflow = "auto";
@@ -51,12 +91,13 @@ const Auth = () => {
     };
   }, [user, auth]);
 
-  if (!user || !user.isVerified || auth === "redirecting") {
+  if (!user || (!user.isGuest && !user.isVerified) || auth === "redirecting") {
     return (
       <motion.main
         initial={{ backdropFilter: "blur(0)" }}
         animate={{ backdropFilter: "blur(18px)", transition: { duration: 5 } }}
         className={styles.container}
+        data-locale={locale}
       >
         <AnimatePresence>
           {auth && leftSlideParams.includes(auth) ? (
@@ -76,7 +117,9 @@ const Auth = () => {
               className={styles.auth_wrapper}
             >
               <div className={styles.auth}>
-                {auth === "confirm-email" ? (
+                {auth === "recover-username" ? (
+                  <ForgotUsername />
+                ) : auth === "confirm-email" ? (
                   <ConfirmEmail />
                 ) : auth === "signup" ? (
                   <Signup />
@@ -90,9 +133,6 @@ const Auth = () => {
                 transition={{ duration: 0.6 }}
                 className={styles.info_signup}
               >
-                <div className={styles.info}>
-                  <p></p>
-                </div>
                 <motion.h1
                   initial={{ opacity: 0, scale: 0 }}
                   animate={{
@@ -101,26 +141,9 @@ const Auth = () => {
                     transition: { duration: 0.3, type: "spring", delay: 0.6 },
                   }}
                 >
-                  Deal&apos;s ready — are you?{" "}
-                  <span>Sign in or join to take your seat.</span>
+                  {t("right.title")} <span>{t("right.span")}</span>
                 </motion.h1>
-                <div className={styles.links}>
-                  <Link href="/rules" className={styles.link}>
-                    Game Rules
-                  </Link>
-                  <Link href="/about" className={styles.link}>
-                    About Us
-                  </Link>
-                  <Link href="/privacy" className={styles.link}>
-                    Privacy Policy
-                  </Link>
-                  <Link href="/terms" className={styles.link}>
-                    Terms of Service
-                  </Link>
-                  <Link href="/data-deletion" className={styles.link}>
-                    Data Deletion
-                  </Link>
-                </div>
+                {windowWidth > 900 && <Links isRight />}
               </motion.div>
             </motion.div>
           ) : null}
@@ -155,9 +178,9 @@ const Auth = () => {
                     transition: { duration: 0.3, type: "spring", delay: 0.6 },
                   }}
                 >
-                  You&apos;re almost at the table!{" "}
-                  <span>Verify your email to join the fun.</span>
+                  {t("left.title")} <span>{t("left.span")}</span>
                 </motion.h1>
+                {windowWidth > 900 && <Links />}
               </motion.div>
               <div className={styles.verify_content}>
                 {auth === "verify" ? <Verify /> : <ChangeEmail />}
@@ -184,6 +207,18 @@ const Auth = () => {
             </motion.div>
           ) : null}
         </AnimatePresence>
+
+        {windowWidth > 900 && (
+          <div
+            className={
+              auth && leftSlideParams.includes(auth)
+                ? styles.language_switcher_right
+                : styles.language_switcher_left
+            }
+          >
+            <LanguageSwitcher />
+          </div>
+        )}
 
         {auth === "redirecting" ? <Redirecting /> : null}
         {auth === "error" ? <Error /> : null}

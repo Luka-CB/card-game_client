@@ -15,8 +15,57 @@ import useRoomStore from "@/store/gamePage/roomStore";
 import Image from "next/image";
 import useJCoinsStore from "@/store/user/stats/jCoinsStore";
 import api from "@/utils/axios";
+import { useLocale, useTranslations } from "next-intl";
+import useUserStatsStore from "@/store/user/stats/userStatsStore";
+
+const PROGRESSION_LEVELS = [
+  "novice",
+  "amateur",
+  "competent",
+  "promising",
+  "professional",
+  "diabolical",
+  "legend",
+  "joker",
+] as const;
+
+interface DeckOption {
+  _id: string;
+  name: string;
+  description?: string;
+  cardBack: { url: string };
+  requiredLevel: string;
+  isDefault: boolean;
+  previewImages?: string[];
+}
+
+// [back, numbered, picture, joker] - ordered back-to-front in the fan
+const DEFAULT_PREVIEW_CARDS = [
+  "/cards/card-back.png",
+  "/cards/hearts-9.png",
+  "/cards/hearts-k.png",
+  "/cards/joker-red.png",
+];
+
+const DeckFan = ({ cards }: { cards: string[] }) => (
+  <div className={styles.deck_fan}>
+    {cards.map((src, i) => (
+      <Image
+        key={i}
+        src={src}
+        alt=""
+        width={36}
+        height={50}
+        className={`${styles.deck_card} ${styles[`deck_c${i + 1}` as keyof typeof styles]}`}
+      />
+    ))}
+  </div>
+);
 
 const CreateRoom = () => {
+  const t = useTranslations("GamePage.createRoom");
+  const locale = useLocale();
+
   const [currentStatus, setCurrentStatus] = useState("public");
   const [currentTab, setCurrentTab] = useState<"classic" | "nines">("classic");
   const [type, setType] = useState<"classic" | "nines">("classic");
@@ -26,6 +75,9 @@ const CreateRoom = () => {
   const [betError, setBetError] = useState("");
   const [hisht, setHisht] = useState("200");
   const [toggleChat, setToggleChat] = useState(false);
+  const [selectedDeckId, setSelectedDeckId] = useState("default");
+  const [decks, setDecks] = useState<DeckOption[]>([]);
+  const [decksLoading, setDecksLoading] = useState(false);
 
   const { toggleCreateRoomModal, setToggleCreateRoom } = useCreateRoomStore();
   const { setMsg } = useFlashMsgStore();
@@ -36,6 +88,7 @@ const CreateRoom = () => {
   const socket = useSocket();
   const { user, usersOnline } = useUserStore();
   const { jCoins, toggleGetMoreModal } = useJCoinsStore();
+  const { stats, fetchStats } = useUserStatsStore();
 
   const resetModal = () => {
     setToggleCreateRoom(false, null);
@@ -45,6 +98,8 @@ const CreateRoom = () => {
     setHisht("200");
     setToggleChat(false);
     setBetError("");
+    setSelectedDeckId("default");
+    setDecks([]);
   };
 
   const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
@@ -52,28 +107,34 @@ const CreateRoom = () => {
 
     if (!user) return;
 
+    if (user.isGuest) {
+      setMsg("Guests cannot create rooms", "error");
+      resetModal();
+      return;
+    }
+
     const roomUser = rooms.find((room) =>
       room?.users.some((u) => u.id === user._id),
     );
     if (roomUser) {
-      setMsg("You can't be in more than one room at the same time", "error");
+      setMsg(t("msgs.roomUser"), "error");
       resetModal();
       return;
     }
 
     if (bet && parseInt(bet) < 50) {
-      setBetError("Bet must be at least 50");
+      setBetError(t("msgs.betAmount"));
       return;
     }
 
     if (bet && jCoins && parseInt(bet) > jCoins.raw) {
-      setBetError("You don't have enough JCoins");
+      setBetError(t("msgs.noEnoughCoins"));
       return;
     }
 
     if (jCoins && jCoins.raw < 100) {
       toggleGetMoreModal(true);
-      setMsg("You need at least 100 JCoins to create a room", "error");
+      setMsg(t("msgs.coinsNeeded"), "error");
       resetModal();
       return;
     }
@@ -81,6 +142,8 @@ const CreateRoom = () => {
     const room = {
       id: uuidv4(),
       name: name.trim() !== "" ? name : `Room ${rooms.length + 1}`,
+      creatorId: user._id,
+      selectedDeckId,
       password: currentStatus === "private" ? password : null,
       bet: bet ? bet : null,
       type: type,
@@ -93,6 +156,7 @@ const CreateRoom = () => {
           id: user._id,
           username: user.originalUsername,
           status: "active",
+          isGuest: user.isGuest,
           avatar: user.avatar || "/default-avatar.jpeg",
           botAvatar: getRandomBotAvatar(),
           color: getRandomColor(),
@@ -118,10 +182,19 @@ const CreateRoom = () => {
   useEffect(() => {
     if (toggleCreateRoomModal.toggle) {
       document.body.style.overflow = "hidden";
+
+      if (!stats) fetchStats();
+
+      setDecksLoading(true);
+      fetch("/api/game/card-decks")
+        .then((r) => (r.ok ? r.json() : { decks: [] }))
+        .then((data) => setDecks(data.decks ?? []))
+        .catch(() => setDecks([]))
+        .finally(() => setDecksLoading(false));
     } else {
       document.body.style.overflow = "auto";
     }
-  }, [toggleCreateRoomModal.toggle]);
+  }, [toggleCreateRoomModal.toggle, stats, fetchStats]);
 
   if (typeof document === "undefined") {
     return null;
@@ -153,6 +226,7 @@ const CreateRoom = () => {
             }}
             transition={{ duration: 0.3, type: "spring" }}
             className={styles.modal}
+            data-locale={locale}
             onClick={(e) => e.stopPropagation()}
           >
             <FaTimesCircle
@@ -169,7 +243,7 @@ const CreateRoom = () => {
                   setType("classic");
                 }}
               >
-                <span>Classic</span>
+                <span>{t("types.classic")}</span>
               </div>
               <div
                 className={
@@ -180,7 +254,7 @@ const CreateRoom = () => {
                   setType("nines");
                 }}
               >
-                <span>Nines</span>
+                <span>{t("types.nines")}</span>
               </div>
             </div>
             <div className={styles.visibility}>
@@ -189,23 +263,25 @@ const CreateRoom = () => {
                   currentStatus === "public" ? styles.item_active : styles.item
                 }
                 onClick={() => setCurrentStatus("public")}
+                title={t("visibility.publicTitle")}
               >
                 <FaLockOpen className={styles.icon} />
-                <span>Public</span>
+                <span>{t("visibility.public")}</span>
               </div>
               <div
                 className={
                   currentStatus === "private" ? styles.item_active : styles.item
                 }
                 onClick={() => setCurrentStatus("private")}
+                title={t("visibility.privateTitle")}
               >
                 <FaLock className={styles.icon} />
-                <span>Private</span>
+                <span>{t("visibility.private")}</span>
               </div>
             </div>
             <form onSubmit={handleSubmit}>
               <div className={styles.input_box}>
-                <label htmlFor="name">Room Name</label>
+                <label htmlFor="name">{t("form.name")}</label>
                 <input
                   type="text"
                   name="name"
@@ -219,7 +295,7 @@ const CreateRoom = () => {
               </div>
               {currentStatus === "private" ? (
                 <div className={styles.input_box}>
-                  <label htmlFor="password">Create Password</label>
+                  <label htmlFor="password">{t("form.password")}</label>
                   <input
                     type="password"
                     name="password"
@@ -231,7 +307,7 @@ const CreateRoom = () => {
                 </div>
               ) : null}
               <div className={betError ? styles.bet_box_error : styles.bet_box}>
-                <label htmlFor="bet">Bet (optional):</label>
+                <label htmlFor="bet">{t("form.bet.label")}</label>
                 <input
                   type="number"
                   name="bet"
@@ -243,7 +319,7 @@ const CreateRoom = () => {
                   }}
                 />
                 <div className={styles.info}>
-                  <small>Minimum bet:</small>
+                  <small>{t("form.bet.min")}</small>
                   <Image src="/coin1.png" alt="coin" width={20} height={20} />
                   <b>50</b>
                 </div>
@@ -252,7 +328,7 @@ const CreateRoom = () => {
                 )}
               </div>
               <div className={styles.radio_box}>
-                <b>Hisht:</b>
+                <b>{t("form.hisht")}</b>
                 <div className={styles.inputs}>
                   <input
                     type="radio"
@@ -286,9 +362,90 @@ const CreateRoom = () => {
                   <label htmlFor="hisht_900">900</label>
                 </div>
               </div>
+              {/* Deck Picker */}
+              {(() => {
+                const userLevel = stats?.level ?? "novice";
+                const userLevelIdx = PROGRESSION_LEVELS.indexOf(
+                  userLevel as (typeof PROGRESSION_LEVELS)[number],
+                );
+                const nextLevel =
+                  userLevelIdx < PROGRESSION_LEVELS.length - 1
+                    ? PROGRESSION_LEVELS[userLevelIdx + 1]
+                    : null;
+
+                const availableDecks = decks.filter(
+                  (d) =>
+                    PROGRESSION_LEVELS.indexOf(
+                      d.requiredLevel as (typeof PROGRESSION_LEVELS)[number],
+                    ) <= userLevelIdx,
+                );
+                const previewDecks = nextLevel
+                  ? decks.filter((d) => d.requiredLevel === nextLevel)
+                  : [];
+
+                if (decksLoading || decks.length > 0) {
+                  return (
+                    <div className={styles.deck_picker}>
+                      <b>{t("form.deck.label")}</b>
+                      <div className={styles.deck_list}>
+                        {/* Built-in default deck */}
+                        <button
+                          type="button"
+                          className={`${styles.deck_item} ${selectedDeckId === "default" ? styles.deck_item_active : ""}`}
+                          onClick={() => setSelectedDeckId("default")}
+                        >
+                          <DeckFan cards={DEFAULT_PREVIEW_CARDS} />
+                          <span className={styles.deck_name}>
+                            {t("form.deck.default")}
+                          </span>
+                        </button>
+
+                        {availableDecks.map((deck) => (
+                          <button
+                            key={deck._id}
+                            type="button"
+                            className={`${styles.deck_item} ${selectedDeckId === deck._id ? styles.deck_item_active : ""}`}
+                            onClick={() => setSelectedDeckId(deck._id)}
+                          >
+                            <DeckFan cards={[
+                              deck.cardBack.url,
+                              ...(deck.previewImages ?? []),
+                            ]} />
+                            <span className={styles.deck_name}>{deck.name}</span>
+                          </button>
+                        ))}
+
+                        {previewDecks.map((deck) => (
+                          <div
+                            key={deck._id}
+                            className={`${styles.deck_item} ${styles.deck_item_locked}`}
+                            title={t("form.deck.lockedInfo", {
+                              level: nextLevel ?? "",
+                            })}
+                          >
+                            <div className={styles.deck_lock_overlay}>
+                            <FaLock className={styles.deck_lock_icon} />
+                            </div>
+                            <DeckFan cards={[
+                              deck.cardBack.url,
+                              ...(deck.previewImages ?? []),
+                            ]} />
+                            <span className={styles.deck_name}>{deck.name}</span>
+                            <span className={styles.deck_level_hint}>
+                              {nextLevel}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                }
+                return null;
+              })()}
+
               {usersOnline?.length > 100 && (
                 <div className={styles.toggle_box}>
-                  <span>In Game Chat:</span>
+                  <span>{t("form.chat.label")}</span>
                   <label htmlFor="toggleChat" className={styles.toggle_switch}>
                     <input
                       type="checkbox"
@@ -299,11 +456,13 @@ const CreateRoom = () => {
                     />
                     <span className={styles.slider}></span>
                   </label>
-                  <small>{toggleChat ? "On" : "Off"}</small>
+                  <small>
+                    {toggleChat ? t("form.chat.on") : t("form.chat.off")}
+                  </small>
                 </div>
               )}
               <button type="submit" className={styles.submit_btn}>
-                Create
+                {t("form.btn")}
               </button>
             </form>
           </motion.div>

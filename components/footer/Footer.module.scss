@@ -6,7 +6,7 @@
   display: flex;
   align-items: center;
   padding: 1rem 0;
-  padding-top: 100px;
+  padding-top: 40px;
   margin-top: auto;
 
   @media (max-width: 900px) {
@@ -83,6 +83,43 @@
   }
 
   @media (max-width: 400px) {
+    .links {
+      flex-direction: column;
+    }
+  }
+}
+
+.footer[data-locale="ka"],
+.footer[data-locale="ru"] {
+  .copyright {
+    font-size: 0.6rem;
+  }
+
+  span {
+    font-size: 1rem;
+  }
+
+  .links {
+    gap: 0.5rem;
+
+    a {
+      font-size: 0.6rem;
+    }
+  }
+
+  @media (max-width: 850px) {
+    flex-direction: column;
+
+    span {
+      display: none;
+    }
+
+    .links {
+      margin-top: 0.5rem;
+    }
+  }
+
+  @media (max-width: 550px) {
     .links {
       flex-direction: column;
     }

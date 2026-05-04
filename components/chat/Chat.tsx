@@ -8,6 +8,7 @@ import useSocket from "@/hooks/useSocket";
 import { ChatMessage, RoomUser } from "@/utils/interfaces";
 import { v4 as uuidv4 } from "uuid";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 
 interface ChatProps {
   roomId: string;
@@ -17,6 +18,8 @@ interface ChatProps {
 }
 
 const Chat: React.FC<ChatProps> = ({ roomId, closeChat, player, messages }) => {
+  const t = useTranslations("Chat");
+
   const [showPicker, setShowPicker] = useState(false);
   const [message, setMessage] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
@@ -102,16 +105,14 @@ const Chat: React.FC<ChatProps> = ({ roomId, closeChat, player, messages }) => {
   return (
     <div className={styles.chat} onClick={() => setShowPicker(false)}>
       <div className={styles.header}>
-        <h3>Chat</h3>
+        <h3>{t("title")}</h3>
         <button className={styles.close_btn} onClick={closeChat}>
           <FaTimesCircle />
         </button>
       </div>
       <div className={styles.messages} ref={messagesContainerRef}>
         {!messages || messages.length === 0 ? (
-          <div className={styles.no_messages}>
-            No messages yet. Start the conversation!
-          </div>
+          <div className={styles.no_messages}>{t("noMessages")}</div>
         ) : null}
         {messages?.map((msg) => (
           <div
@@ -158,7 +159,7 @@ const Chat: React.FC<ChatProps> = ({ roomId, closeChat, player, messages }) => {
         <input
           ref={inputRef}
           type="text"
-          placeholder="Type your message..."
+          placeholder={t("placeholder")}
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           onKeyDown={handleKeyPress}
@@ -173,7 +174,7 @@ const Chat: React.FC<ChatProps> = ({ roomId, closeChat, player, messages }) => {
           <FaSmile />
         </button>
         <button className={styles.send_button} onClick={handleSend}>
-          <span>Send</span>
+          <span>{t("btn")}</span>
           <BsFillSendFill className={styles.send_icon} />
         </button>
       </div>

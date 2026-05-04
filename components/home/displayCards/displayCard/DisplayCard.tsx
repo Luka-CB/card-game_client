@@ -14,6 +14,7 @@ import {
 import Image from "next/image";
 import useSocket from "@/hooks/useSocket";
 import useDisplayRoomStore from "@/store/displayRoomStore";
+import { useTranslations } from "next-intl";
 
 interface DisplayCardProps {
   room: Room;
@@ -22,6 +23,8 @@ interface DisplayCardProps {
 }
 
 const DisplayCard: React.FC<DisplayCardProps> = ({ room, type, roomImIn }) => {
+  const t = useTranslations("GamePage.cards.card");
+
   const { setTogglePasswordPrompt } = useRoomStore();
   const { user } = useUserStore();
   const { jCoins, toggleGetMoreModal } = useJCoinsStore();
@@ -74,12 +77,17 @@ const DisplayCard: React.FC<DisplayCardProps> = ({ room, type, roomImIn }) => {
       isLeavingRef.current = false;
 
       if (occupiedSeats >= 4) {
-        setMsg("Room is full", "error");
+        setMsg(t("msgs.fullRoom"), "error");
+        return;
+      }
+
+      if (user.isGuest && room.bet) {
+        setMsg(t("msgs.guestNoBet"), "error");
         return;
       }
 
       if (roomImIn) {
-        setMsg("You can't be more than one room at the same time!", "error");
+        setMsg(t("msgs.alreadyInRoom"), "error");
         return;
       }
 
@@ -90,16 +98,13 @@ const DisplayCard: React.FC<DisplayCardProps> = ({ room, type, roomImIn }) => {
 
       if (jCoins && jCoins.raw < 100) {
         toggleGetMoreModal(true);
-        setMsg("You need at least 100 JCoins to join a room", "error");
+        setMsg(t("msgs.coinsNeeded"), "error");
         return;
       }
 
       if (room.bet && jCoins && parseInt(room.bet) > jCoins.raw) {
         toggleGetMoreModal(true);
-        setMsg(
-          "You don't have enough JCoins to join this room with the current bet",
-          "error",
-        );
+        setMsg(t("msgs.notEnoughCoins"), "error");
         return;
       }
 
@@ -107,6 +112,7 @@ const DisplayCard: React.FC<DisplayCardProps> = ({ room, type, roomImIn }) => {
         id: user._id,
         username: user.username,
         status: "active",
+        isGuest: user.isGuest,
         avatar: user.avatar || "/default-avatar.jpeg",
         botAvatar: getRandomBotAvatar(),
         color: getRandomColor(),
@@ -132,11 +138,15 @@ const DisplayCard: React.FC<DisplayCardProps> = ({ room, type, roomImIn }) => {
               : `Type: ${room?.type}`
           }
         >
-          <span>{room?.type}</span>
+          <span>
+            {room?.type === "classic" ? t("types.classic") : t("types.nines")}
+          </span>
           {room?.bet && <span className={styles.dash}>--</span>}
           {room?.bet && (
             <div className={styles.bet}>
-              <span>Bet: {room?.bet}</span>
+              <span>
+                {t("bet")}: {room?.bet}
+              </span>
               <Image
                 src="/coinIco.ico"
                 alt="coin"
@@ -153,7 +163,11 @@ const DisplayCard: React.FC<DisplayCardProps> = ({ room, type, roomImIn }) => {
           ) : (
             <FaLockOpen className={styles.icon} />
           )}
-          <span>{room?.status}</span>
+          <span>
+            {room?.status === "private"
+              ? t("status.private")
+              : t("status.public")}
+          </span>
         </div>
       </div>
       <div className={styles.card_body}>
@@ -165,25 +179,26 @@ const DisplayCard: React.FC<DisplayCardProps> = ({ room, type, roomImIn }) => {
       <div className={styles.card_footer}>
         <div className={styles.left}>
           <span className={styles.hisht}>
-            Hisht: <b>{room?.hisht}</b>
+            {t("hisht")} <b>{room?.hisht}</b>
           </span>
           <div className={styles.chat}>
             <FaRocketchat className={styles.chat_icon} />
             <small>
-              Chat: <b>{room?.hasChat ? "On" : "Off"}</b>
+              {t("chat.label")}{" "}
+              <b>{room?.hasChat ? t("chat.on") : t("chat.off")}</b>
             </small>
           </div>
         </div>
 
         {!room?.isActive && roomUser?.status === "active" && (
           <button className={styles.leave_btn} onClick={handleLeave}>
-            Leave
+            {t("btns.leave")}
           </button>
         )}
 
         {!roomUser && !room?.isActive && (
           <button className={styles.join_btn} onClick={() => handleJoin()}>
-            Join
+            {t("btns.join")}
           </button>
         )}
       </div>

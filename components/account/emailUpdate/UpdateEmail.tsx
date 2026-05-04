@@ -10,6 +10,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import BtnLoader from "@/components/loaders/BtnLoader";
 import useFlashMsgStore from "@/store/flashMsgStore";
 import useUserAccountStore from "@/store/user/userAccountStore";
+import { useTranslations } from "next-intl";
 
 interface UpdateEmailProps {
   changeEmail?: {
@@ -21,6 +22,8 @@ interface UpdateEmailProps {
 }
 
 const UpdateEmail = ({ changeEmail }: UpdateEmailProps) => {
+  const t = useTranslations("AccountPage.emailUpdate");
+
   const [isEnterCode, setIsEnterCode] = useState(false);
   const [email, setEmail] = useState("");
   const [confirmationCode, setConfirmationCode] = useState("");
@@ -32,7 +35,7 @@ const UpdateEmail = ({ changeEmail }: UpdateEmailProps) => {
     isChangeEmailModalOpen,
     toggleChangeEmailModal,
     sendChangeEmailRequest,
-    sendRequestState,
+    sendRequestStatus,
     sendRequestError,
     confirmChangeEmail,
     confirmCodeStatus,
@@ -43,9 +46,9 @@ const UpdateEmail = ({ changeEmail }: UpdateEmailProps) => {
   useEffect(() => {
     let timeout: NodeJS.Timeout;
 
-    if (sendRequestState === "success") {
+    if (sendRequestStatus === "success") {
       setIsEnterCode(true);
-      setSuccessMessage("Confirmation code sent to your email!");
+      setSuccessMessage(t("msgs.localSuccess"));
       if (!changeEmail?.pendingEmail) fetchUserAccount();
 
       timeout = setTimeout(() => {
@@ -56,11 +59,11 @@ const UpdateEmail = ({ changeEmail }: UpdateEmailProps) => {
     return () => {
       if (timeout) clearTimeout(timeout);
     };
-  }, [sendRequestState]);
+  }, [sendRequestStatus, changeEmail, fetchUserAccount]);
 
   useEffect(() => {
     if (confirmCodeStatus === "success") {
-      setMsg("Email updated successfully!", "success");
+      setMsg(t("msgs.flashSuccess"), "success");
       fetchUserAccount();
       setTimeout(() => {
         reset();
@@ -95,10 +98,7 @@ const UpdateEmail = ({ changeEmail }: UpdateEmailProps) => {
 
     if (changeEmail?.pendingEmail) {
       if (email === changeEmail.pendingEmail) {
-        setMsg(
-          "You have already requested to change to this email. Please check your inbox for the confirmation code.",
-          "error",
-        );
+        setMsg(t("msgs.flashError"), "error");
         return;
       }
     }
@@ -158,13 +158,13 @@ const UpdateEmail = ({ changeEmail }: UpdateEmailProps) => {
             />
             {!isEnterCode && (
               <div className={styles.confirmation}>
-                <h2>Change Email</h2>
+                <h2>{t("sendRequest.title")}</h2>
                 <input
                   type="email"
                   placeholder={
                     changeEmail?.pendingEmail
-                      ? "Enter other valid email"
-                      : "Enter new valid email"
+                      ? t("sendRequest.inputPlaceholders.other")
+                      : t("sendRequest.inputPlaceholders.new")
                   }
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
@@ -172,14 +172,14 @@ const UpdateEmail = ({ changeEmail }: UpdateEmailProps) => {
                 />
                 <button
                   disabled={
-                    !isEmailRegex.test(email) || sendRequestState === "loading"
+                    !isEmailRegex.test(email) || sendRequestStatus === "loading"
                   }
                   onClick={handleSendRequest}
                 >
-                  {sendRequestState === "loading" ? (
+                  {sendRequestStatus === "loading" ? (
                     <BtnLoader />
                   ) : (
-                    "Send Confirmation"
+                    t("sendRequest.btn")
                   )}
                 </button>
                 {changeEmail?.pendingEmail && (
@@ -192,7 +192,7 @@ const UpdateEmail = ({ changeEmail }: UpdateEmailProps) => {
                       setEmail("");
                     }}
                   >
-                    <p>Enter Confirmation Code</p>
+                    <p>{t("sendRequest.link")}</p>
                     <FaLongArrowAltRight className={styles.arrow_icon} />
                   </div>
                 )}
@@ -200,10 +200,10 @@ const UpdateEmail = ({ changeEmail }: UpdateEmailProps) => {
             )}
             {isEnterCode && (
               <div className={styles.confirmation}>
-                <h2>Enter Code Sent to Your Email</h2>
+                <h2>{t("confirmRequest.title")}</h2>
                 <input
                   type="number"
-                  placeholder="Confirmation Code"
+                  placeholder={t("confirmRequest.inputPlaceholder")}
                   value={confirmationCode}
                   onChange={(e) => setConfirmationCode(e.target.value)}
                   className={confirmCodeError ? styles.error_input : ""}
@@ -215,16 +215,24 @@ const UpdateEmail = ({ changeEmail }: UpdateEmailProps) => {
                   }
                   onClick={handleConfirmCode}
                 >
-                  {confirmCodeStatus === "loading" ? <BtnLoader /> : "Confirm"}
+                  {confirmCodeStatus === "loading" ? (
+                    <BtnLoader />
+                  ) : (
+                    t("confirmRequest.btn")
+                  )}
                 </button>
                 <div className={styles.retry}>
-                  <p>Didn&apos;t receive the code?</p>
+                  <p>{t("confirmRequest.retry.text")}</p>
                   <button
                     onClick={handleRetry}
-                    disabled={sendRequestState === "loading"}
+                    disabled={sendRequestStatus === "loading"}
                     className={styles.resend_btn}
                   >
-                    {sendRequestState === "loading" ? <BtnLoader /> : "Retry"}
+                    {sendRequestStatus === "loading" ? (
+                      <BtnLoader />
+                    ) : (
+                      t("confirmRequest.retry.btn")
+                    )}
                   </button>
                 </div>
                 <div
@@ -237,7 +245,7 @@ const UpdateEmail = ({ changeEmail }: UpdateEmailProps) => {
                   }}
                 >
                   <FaLongArrowAltLeft className={styles.arrow_icon} />
-                  <p>Send New Request Email</p>
+                  <p>{t("confirmRequest.link")}</p>
                 </div>
               </div>
             )}

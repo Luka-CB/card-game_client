@@ -6,6 +6,8 @@ import { MdEdit } from "react-icons/md";
 import useUpdateEmailStore from "@/store/email/updateEmailStore";
 import { timeAgoStrict } from "@/utils/misc";
 import useAvatarStore from "@/store/user/avatarStore";
+import useChangeUsernameStore from "@/store/user/changeUsernameStore";
+import { useLocale, useTranslations } from "next-intl";
 
 interface HeaderInfoProps {
   avatar: string;
@@ -30,8 +32,12 @@ const HeaderInfo: React.FC<HeaderInfoProps> = ({
   createdAt,
   provider,
 }) => {
+  const t = useTranslations("AccountPage.header");
+  const locale = useLocale();
+
   const { toggleChangeEmailModal } = useUpdateEmailStore();
   const { toggleAvatarGallery } = useAvatarStore();
+  const { toggleChangeUsername } = useChangeUsernameStore();
 
   return (
     <header className={styles.header}>
@@ -46,9 +52,9 @@ const HeaderInfo: React.FC<HeaderInfoProps> = ({
         <div
           className={styles.edit}
           onClick={toggleAvatarGallery}
-          title="Change Avatar"
+          title={t("editAvatarTitle")}
         >
-          <MdEdit className={styles.edit_icon} title="Change Avatar" />
+          <MdEdit className={styles.edit_icon} />
         </div>
       </div>
       <div className={styles.headerInfo}>
@@ -60,20 +66,31 @@ const HeaderInfo: React.FC<HeaderInfoProps> = ({
             {isVerified && (
               <RiVerifiedBadgeFill
                 className={styles.verified_icon}
-                title="Verified"
+                title={t("verifiedTitle")}
               />
             )}
             {!isVerified && (
               <GoUnverified
                 className={styles.not_verified_icon}
-                title="Not Verified"
+                title={t("notVerifiedTitle")}
               />
             )}
           </h1>
         </div>
-        <p className={styles.handle}>@{username}</p>
-        <p className={styles.sub}>Joined {timeAgoStrict(createdAt)}</p>
-        <div className={styles.user_email} title="Change Email">
+        <div className={styles.username}>
+          <p className={styles.handle}>@{username}</p>
+          <button
+            className={styles.edit_btn}
+            title={t("editUsernameTitle")}
+            onClick={() => toggleChangeUsername(true)}
+          >
+            <MdEdit className={styles.edit_icon} />
+          </button>
+        </div>
+        <p className={styles.sub}>
+          {t("date")} {timeAgoStrict(createdAt, locale)}
+        </p>
+        <div className={styles.user_email} title={t("editEmailTitle")}>
           <p className={styles.email}>{email}</p>
           {provider === "local" && (
             <button

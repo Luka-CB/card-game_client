@@ -1,56 +1,72 @@
 import RouteLink from "@/components/RouteLink";
 import styles from "./ConfirmEmail.module.scss";
-import { FormEvent, useEffect, useState } from "react";
+import { SubmitEvent, useEffect, useState } from "react";
 import useSendChangePasswordEmailStore from "@/store/email/sendChangePasswordEmailStore";
 import BtnLoader from "@/components/loaders/BtnLoader";
+import { useTranslations } from "next-intl";
 
 const ConfirmEmail = () => {
-  const { status, sendChangePasswordEmail } = useSendChangePasswordEmailStore();
+  const t = useTranslations("Auth.leftPanel.confirmEmail");
+
+  const { status, sendChangePasswordEmail, error, reset } =
+    useSendChangePasswordEmailStore();
 
   const [email, setEmail] = useState("");
 
   useEffect(() => {
     if (status === "success") {
       setEmail("");
-    }
-  }, [status]);
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+      const timeout = setTimeout(() => {
+        reset();
+      }, 2000);
+
+      return () => clearTimeout(timeout);
+    }
+  }, [status, reset]);
+
+  const handleSubmit = (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
-    sendChangePasswordEmail(email);
+
+    if (email.trim() === "") return;
+
+    sendChangePasswordEmail(email.trim());
   };
 
   return (
     <div className={styles.container}>
       {status === "success" ? (
         <div className={styles.success}>
-          <p>Email Sent Successfully!</p>
-          <small>
-            Please go to your email and follow the link we sent to change your
-            password!
-          </small>
+          <p>{t("success.paragraph")}</p>
+          <small>{t("success.small")}</small>
         </div>
       ) : null}
-      <h2>Confirm Email</h2>
+      {status === "failed" && error ? (
+        <div className={styles.error}>
+          <p>{error}</p>
+        </div>
+      ) : null}
+      <h2>{t("title")}</h2>
       <form onSubmit={handleSubmit}>
-        <label htmlFor="email">
-          Enter Email that you&apos;ve used for registration
-        </label>
+        <label htmlFor="email">{t("form.label")}</label>
         <input
           type="email"
           name="email"
           id="email"
-          placeholder="Input email"
+          placeholder={t("form.placeholder")}
           disabled={status === "loading"}
           required
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
-        <button type="submit">
-          {status === "loading" ? <BtnLoader /> : "Submit"}
+        <button
+          type="submit"
+          disabled={status === "loading" || email.trim() === ""}
+        >
+          {status === "loading" ? <BtnLoader /> : t("form.btn")}
         </button>
       </form>
-      <RouteLink route="/?auth=signin" text="go back" />
+      <RouteLink route="/?auth=signin" text={t("link")} />
     </div>
   );
 };

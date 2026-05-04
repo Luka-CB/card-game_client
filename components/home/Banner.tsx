@@ -4,6 +4,7 @@ import Image from "next/image";
 import styles from "./Banner.module.scss";
 import useUserStore from "@/store/user/userStore";
 import localFont from "next/font/local";
+import { useTranslations } from "next-intl";
 
 const bytesized = localFont({
   src: "../../public/fonts/Bytesized-Regular.ttf",
@@ -12,6 +13,8 @@ const bytesized = localFont({
 });
 
 const Banner = () => {
+  const t = useTranslations("HomePage.banner");
+
   const { user, usersOnline } = useUserStore();
 
   return (
@@ -28,14 +31,14 @@ const Banner = () => {
         {usersOnline.length > 500 && user?.isAdmin && (
           <div className={styles.online}>
             <div className={styles.dot}></div>
-            <small>online</small>
+            <small>{t("online")}</small>
             <span>{usersOnline?.length || 0}</span>
           </div>
         )}
         {user && user?.isAdmin && (
           <div className={styles.total}>
             <div className={styles.dot}></div>
-            <small>total</small>
+            <small>{t("total")}</small>
             <span>15079</span>
           </div>
         )}

@@ -66,3 +66,14 @@
     }
   }
 }
+
+.social_auth[data-locale="ka"],
+.social_auth[data-locale="ru"] {
+  button {
+    font-size: 0.9rem;
+
+    .icon {
+      font-size: 1.2rem;
+    }
+  }
+}

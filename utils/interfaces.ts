@@ -3,6 +3,7 @@ export interface RoomUser {
   username: string;
   status: string;
   isBot?: boolean;
+  isGuest?: boolean;
   avatar: string | null;
   botAvatar: string | null;
   color: {
@@ -14,6 +15,8 @@ export interface RoomUser {
 export interface Room {
   id: string;
   name: string;
+  creatorId?: string | null;
+  selectedDeckId?: string;
   password: string | null;
   bet: string | null;
   type: "classic" | "nines";

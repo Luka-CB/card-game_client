@@ -11,9 +11,10 @@ import CardDeck from "./cardDeck/CardDeck";
 import DrawnCards from "./drawnCards/DrawnCards";
 import PlayedCards from "./playedCards/PlayedCards";
 import LastPlayedCards from "./lastPlayedCards/LastPlayedCards";
-import { useCallback, useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo, type ReactNode } from "react";
 import usePlayedCardsStore from "@/store/gamePage/playedCardsStore";
 import { Socket } from "socket.io-client";
+import { useTranslations } from "next-intl";
 
 interface TableProps {
   gameInfo: GameInfo | null;
@@ -28,6 +29,7 @@ interface TableProps {
   rotatedPlayers: RoomUser[];
   dealingCards?: Record<string, number>;
   socket?: Socket | null;
+  children?: ReactNode;
 }
 
 const Table: React.FC<TableProps> = ({
@@ -38,7 +40,10 @@ const Table: React.FC<TableProps> = ({
   rotatedPlayers,
   dealingCards,
   socket,
+  children,
 }) => {
+  const t = useTranslations("GameRoom.gameBoard.table");
+
   const { setRoundWinnerId } = usePlayedCardsStore();
 
   const { stuffing, tearing } = useMemo(() => {
@@ -108,17 +113,33 @@ const Table: React.FC<TableProps> = ({
   return (
     <div className={styles.table}>
       <div className={styles.hand_info}>
-        <span>Distributed By: {gameInfo?.currentHand}</span>
-        {stuffing && <span>Stuffing: {stuffing}</span>}
-        {tearing && <span>Tearing: {tearing}</span>}
+        <span>
+          {t("handInfo.distribution")} {gameInfo?.currentHand}
+        </span>
+        {stuffing && (
+          <span>
+            {t("handInfo.stuffing")} {stuffing}
+          </span>
+        )}
+        {tearing && (
+          <span>
+            {t("handInfo.tearing")} {tearing}
+          </span>
+        )}
       </div>
       {gameInfo &&
         gameInfo?.status === "bid" &&
         gameInfo?.currentPlayerId === user?._id && (
           <BidModal data={bidModalData} />
         )}
-      <span className={styles.hisht}>Hisht: {room?.hisht}</span>
-      {room?.bet && <span className={styles.bet}>Bet: {room?.bet}</span>}
+      <span className={styles.hisht}>
+        {t("hisht")} {room?.hisht}
+      </span>
+      {room?.bet && (
+        <span className={styles.bet}>
+          {t("bet")} {room?.bet}
+        </span>
+      )}
       <div className={styles.table_surface}>
         <PlayedCards
           playedCards={gameInfo?.playedCards || []}
@@ -150,6 +171,7 @@ const Table: React.FC<TableProps> = ({
           <span className={styles.game_type}>{room?.type}</span>
         </div>
       </div>
+      {children}
     </div>
   );
 };

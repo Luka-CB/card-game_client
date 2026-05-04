@@ -1,5 +1,4 @@
 import styles from "./GameRounds.module.scss";
-import { CardDeck } from "@/components/gameRoom/cardDeck";
 import { GameInfo, PlayingCard, RoomUser } from "@/utils/interfaces";
 import Image from "next/image";
 import { motion } from "framer-motion";
@@ -15,6 +14,8 @@ import useSocket from "@/hooks/useSocket";
 import JokerPrompt from "./jokerPrompt/JokerPrompt";
 import { soundManager } from "@/utils/sounds";
 import useTouchDevice from "@/hooks/useTouchDevice";
+import { useTranslations } from "next-intl";
+import { useDeckContext } from "@/context/DeckContext";
 
 interface GameRoundsProps {
   rotatedPlayers: RoomUser[];
@@ -25,6 +26,9 @@ interface GameRoundsProps {
 }
 
 const GameRounds = ({ hand, gameInfo, user }: GameRoundsProps) => {
+  const t = useTranslations("GameRoom.GameControls.gameRounds");
+  const { getCardUrl } = useDeckContext();
+
   const [sortedCards, setSortedCards] = useState<PlayingCard[]>([]);
   const [jokerCard, setJokerCard] = useState<PlayingCard | null>(null);
   const [selectedCardId, setSelectedCardId] = useState<string | null>(null);
@@ -248,7 +252,14 @@ const GameRounds = ({ hand, gameInfo, user }: GameRoundsProps) => {
   }, [selectedCardId, sortedCards, handlePlayCard]);
 
   const isPlayerTurn = gameInfo?.currentPlayerId === user._id;
-  const trumpCardSuit = gameInfo?.trumpCard?.suit;
+
+  // Dynamically size cards so they look good at any viewport size.
+  // Use the smaller of (7.5% of width) and (10% of height), clamped to [30, 100]px.
+  const cardWidth = Math.max(
+    30,
+    Math.min(100, Math.min(windowSize.width * 0.075, windowSize.height * 0.1)),
+  );
+  const cardHeight = Math.round(cardWidth * 1.5);
 
   useEffect(() => {
     if (!socket || !gameInfo?.roomId || !user?._id) return;
@@ -321,21 +332,7 @@ const GameRounds = ({ hand, gameInfo, user }: GameRoundsProps) => {
       )}
 
       {sortedCards.map((card: PlayingCard) => {
-        const cardImage = CardDeck.find(
-          (c: { suit: string; rank: string; image: string; color?: string }) =>
-            c.suit === card.suit && c.rank === card.rank,
-        )?.image;
-
-        const jokerImageBlack = CardDeck.find(
-          (c: { suit: string; rank: string; image: string; color?: string }) =>
-            c.rank === "JOKER" && c.color === "black",
-        )?.image;
-
-        const jokerImageRed = CardDeck.find(
-          (c: { suit: string; rank: string; image: string; color?: string }) =>
-            c.rank === "JOKER" && c.color === "red",
-        )?.image;
-
+        const cardUrl = getCardUrl(card);
         const isPlayable = playableCardIdSet.has(card.id);
         const isSelected = selectedCardId === card.id;
 
@@ -367,107 +364,17 @@ const GameRounds = ({ hand, gameInfo, user }: GameRoundsProps) => {
                   handleDesktopPlay();
                 }}
               >
-                Play
+                {t("playBtn")}
               </button>
             )}
 
-            {cardImage ? (
-              <Image
-                src={cardImage}
-                alt={card.rank || "card"}
-                draggable={false}
-                width={
-                  windowSize.height <= 450
-                    ? 30
-                    : windowSize.height <= 600 && windowSize.height > 450
-                      ? 40
-                      : windowSize.height <= 900 &&
-                          windowSize.height > 600 &&
-                          windowSize.width > 600
-                        ? 50
-                        : windowSize.width <= 600
-                          ? 40
-                          : windowSize.width <= 990 && windowSize.width > 600
-                            ? 50
-                            : windowSize.width <= 1150 && windowSize.width > 990
-                              ? 70
-                              : windowSize.width < 1300 &&
-                                  windowSize.width > 1150
-                                ? 90
-                                : 100
-                }
-                height={
-                  windowSize.height <= 450
-                    ? 45
-                    : windowSize.height <= 600 && windowSize.height > 450
-                      ? 60
-                      : windowSize.height <= 900 &&
-                          windowSize.height > 600 &&
-                          windowSize.width > 600
-                        ? 80
-                        : windowSize.width <= 600
-                          ? 55
-                          : windowSize.width <= 990 && windowSize.width > 600
-                            ? 70
-                            : windowSize.width <= 1150 && windowSize.width > 990
-                              ? 100
-                              : windowSize.width < 1300 &&
-                                  windowSize.width > 1150
-                                ? 130
-                                : 150
-                }
-              />
-            ) : (
-              <Image
-                src={
-                  card.color === "black"
-                    ? jokerImageBlack || "/cards/joker-black.png"
-                    : jokerImageRed || "/cards/joker-red.png"
-                }
-                alt="Joker"
-                draggable={false}
-                width={
-                  windowSize.height <= 450
-                    ? 30
-                    : windowSize.height <= 600 && windowSize.height > 450
-                      ? 40
-                      : windowSize.height <= 900 &&
-                          windowSize.height > 600 &&
-                          windowSize.width > 600
-                        ? 50
-                        : windowSize.width <= 600
-                          ? 40
-                          : windowSize.width <= 990 && windowSize.width > 600
-                            ? 50
-                            : windowSize.width <= 1150 && windowSize.width > 990
-                              ? 70
-                              : windowSize.width < 1300 &&
-                                  windowSize.width > 1150
-                                ? 90
-                                : 100
-                }
-                height={
-                  windowSize.height <= 450
-                    ? 45
-                    : windowSize.height <= 600 && windowSize.height > 450
-                      ? 60
-                      : windowSize.height <= 900 &&
-                          windowSize.height > 600 &&
-                          windowSize.width > 600
-                        ? 80
-                        : windowSize.width <= 600
-                          ? 55
-                          : windowSize.width <= 990 && windowSize.width > 600
-                            ? 70
-                            : windowSize.width <= 1150 && windowSize.width > 990
-                              ? 100
-                              : windowSize.width < 1300 &&
-                                  windowSize.width > 1150
-                                ? 130
-                                : 150
-                }
-              />
-            )}
+            <Image
+              src={cardUrl}
+              alt={card.rank || "card"}
+              draggable={false}
+              width={cardWidth}
+              height={cardHeight}
+            />
           </div>
         );
       })}

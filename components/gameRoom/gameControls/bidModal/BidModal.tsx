@@ -3,6 +3,7 @@ import styles from "./BidModal.module.scss";
 import { motion } from "framer-motion";
 import { HandBid, RoomUser } from "@/utils/interfaces";
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 
 interface BidModalProps {
   data: {
@@ -17,6 +18,8 @@ interface BidModalProps {
 }
 
 const BidModal: React.FC<BidModalProps> = ({ data }) => {
+  const t = useTranslations("GameRoom.GameControls.bidModal");
+
   const [choosingBid, setChoosingBid] = useState(false);
 
   const socket = useSocket();
@@ -67,7 +70,7 @@ const BidModal: React.FC<BidModalProps> = ({ data }) => {
         exit={{ opacity: 0, y: 100, transition: { duration: 0.4 } }}
         className={styles.modal}
       >
-        <h4>Choose a Bid</h4>
+        <h4>{t("title")}</h4>
         <div className={styles.bids}>
           {Array.from({ length: data.currentHand + 1 }).map((_, index) => (
             <button

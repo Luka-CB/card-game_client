@@ -45,18 +45,28 @@ const useSignupStore = create<SignupStore>((set) => ({
         gender: data.data.gender,
         isVerified: data.data.isVerified,
         isAdmin: data.data.isAdmin,
+        isGuest: data.data.isGuest,
       };
 
       set({ user, status: "success" });
     } catch (error: unknown) {
-      console.log(error);
       if (error instanceof AxiosError) {
+        const status = error.response?.status;
+        const message =
+          error.response?.data?.error?.message || "An error occurred";
+        if (status && status >= 500) {
+          console.error("Error signing up:", error);
+        }
         set({
-          error: error.response?.data?.error?.message || "An error occurred",
           status: "failed",
+          error: message,
         });
       } else {
-        set({ error: "An unexpected error occurred", status: "failed" });
+        console.error("Unexpected error signing up:", error);
+        set({
+          status: "failed",
+          error: "An unexpected error occurred",
+        });
       }
     }
   },

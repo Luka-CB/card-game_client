@@ -6,6 +6,12 @@
   padding: 20px;
   position: relative;
 
+  .language_switcher {
+    position: absolute;
+    top: 10px;
+    right: 20px;
+  }
+
   .error {
     position: absolute;
     top: 20px;
@@ -27,12 +33,25 @@
     color: var(--clr-light);
     font-size: 2.5rem;
     font-weight: 700;
+    margin-top: 30px;
     margin-bottom: 20px;
     text-shadow: 2px 2px 5px black;
     text-transform: capitalize;
 
     @media (max-width: 600px) {
       font-size: 1.5rem;
+    }
+  }
+
+  small {
+    color: var(--clr-light);
+    font-size: 1rem;
+    margin-bottom: 40px;
+    text-shadow: 1px 1px 3px black;
+
+    @media (max-width: 600px) {
+      font-size: 0.8rem;
+      margin-bottom: 20px;
     }
   }
 
@@ -51,6 +70,7 @@
       width: 150px;
       height: 150px;
       border-radius: 50%;
+      margin-top: 30px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -207,6 +227,28 @@
         }
       }
 
+      .forgot {
+        text-align: right;
+        font-size: small;
+        margin-bottom: 20px;
+
+        a {
+          width: flex;
+          text-decoration: none;
+          color: var(--clr-light);
+          align-self: flex-end;
+          width: fit-content;
+          text-align: right;
+          cursor: pointer;
+          transition: all 0.1s ease-in-out;
+
+          &:hover {
+            color: var(--clr-primary-600);
+            text-decoration: underline;
+          }
+        }
+      }
+
       .input_wrapper {
         width: 100%;
         position: relative;
@@ -268,29 +310,105 @@
         }
       }
 
-      button {
-        @include btn();
-        margin-top: 20px;
-        text-transform: uppercase;
+      .btns {
         display: flex;
-        align-items: center;
-        justify-content: center;
-      }
+        flex-direction: column;
 
-      a {
-        width: flex;
-        text-decoration: none;
-        color: var(--clr-light);
-        align-self: flex-end;
-        width: fit-content;
-        margin-top: 30px;
-        text-align: right;
-        cursor: pointer;
-        transition: all 0.1s ease-in-out;
+        @media (max-width: 600px) {
+          width: 250px;
+          align-self: center;
+        }
 
-        &:hover {
-          color: var(--clr-primary-600);
-          text-decoration: underline;
+        .submit_btn {
+          @include btn();
+          height: 40px;
+          width: 100%;
+          margin-top: 20px;
+          text-transform: uppercase;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .guest_signin {
+          width: 100%;
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          margin-top: 15px;
+          position: relative;
+
+          .guest_btn {
+            border-radius: 10px;
+            width: 95%;
+            height: 40px;
+            margin-top: 0;
+            text-transform: uppercase;
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.65);
+            color: var(--clr-light);
+
+            &:hover {
+              background-color: var(--clr-light-faded);
+              color: var(--clr-lighter);
+            }
+          }
+
+          .info_icon {
+            font-size: 1.8rem;
+            transition: all 0.1s ease-in-out;
+            cursor: pointer;
+
+            &:hover {
+              transform: scale(1.1);
+            }
+          }
+
+          .guest_info {
+            position: absolute;
+            top: 50%;
+            right: 40px;
+            transform: translateY(-50%);
+            width: 200px;
+            background-color: var(--clr-darker);
+            color: var(--clr-light);
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+            font-size: 0.8rem;
+            text-align: center;
+            z-index: 10;
+
+            &::after {
+              content: "";
+              position: absolute;
+              top: 46%;
+              right: -10px;
+              border-width: 5px;
+              border-style: solid;
+              border-color: transparent transparent transparent
+                var(--clr-darker);
+            }
+
+            small {
+              font-size: 0.7rem;
+            }
+
+            ul {
+              list-style: disc;
+              text-align: left;
+              font-size: 0.65rem;
+              margin: 15px 0 15px 20px;
+
+              li {
+                margin-bottom: 10px;
+
+                &:not(:last-child) {
+                  margin-top: 10px;
+                }
+              }
+            }
+          }
         }
       }
 
@@ -408,47 +526,54 @@
   }
 
   .links {
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-    padding: 20px 0;
-
-    a {
-      color: var(--clr-light);
-      font-size: 1rem;
-      transition: all 0.1s ease-in-out;
-
-      &:hover {
-        color: var(--clr-primary-600);
-        text-decoration: underline;
-      }
-    }
-
-    @media (max-width: 600px) {
-      gap: 10px;
-
-      a {
-        font-size: 0.8rem;
-      }
-    }
-
-    @media (max-width: 450px) {
-      gap: 10px;
-
-      a {
-        font-size: 0.6rem;
-      }
-    }
-
-    @media (max-width: 350px) {
-      flex-direction: column;
-      align-items: center;
-    }
+    margin-top: 100px;
+    width: 100%;
+    padding-bottom: 15px;
   }
 
   @media (min-width: 900px) {
     .links {
       display: none;
+    }
+  }
+}
+
+.container[data-locale="ka"],
+.container[data-locale="ru"] {
+  h2 {
+    font-size: 1.8rem;
+  }
+
+  .local_auth {
+    .choose_avatar_wrapper,
+    .choose_avatar_wrapper_error {
+      .choose_avatar {
+        button {
+          .choose {
+            span {
+              font-size: 0.9rem;
+            }
+          }
+        }
+      }
+
+      @media (max-width: 600px) {
+        .choose_avatar {
+          button {
+            .choose {
+              span {
+                font-size: 0.6rem;
+              }
+            }
+          }
+        }
+      }
+    }
+
+    form {
+      button {
+        font-size: 0.9rem;
+      }
     }
   }
 }

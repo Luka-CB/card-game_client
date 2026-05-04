@@ -191,6 +191,28 @@
       }
     }
 
+    .leave_warning[data-locale="ka"],
+    .leave_warning[data-locale="ru"] {
+      p {
+        font-size: small;
+      }
+
+      small {
+        font-size: 0.7rem;
+      }
+
+      .leave_warning_btns {
+        button {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          height: 25px;
+          width: 100px;
+          font-size: 0.6rem;
+        }
+      }
+    }
+
     header {
       display: flex;
       align-items: center;

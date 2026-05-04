@@ -27,6 +27,7 @@ const useSessionUserStore = create<SessionUserStore>((set) => ({
         gender: data.gender,
         isVerified: data.isVerified,
         isAdmin: data.isAdmin,
+        isGuest: data.isGuest,
       };
 
       set((state) => ({ ...state, data: user, status: "success" }));

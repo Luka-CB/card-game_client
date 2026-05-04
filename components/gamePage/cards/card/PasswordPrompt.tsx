@@ -5,10 +5,16 @@ import useSocket from "@/hooks/useSocket";
 import useFlashMsgStore from "@/store/flashMsgStore";
 import { Room } from "@/utils/interfaces";
 import useRoomStore from "@/store/gamePage/roomStore";
+import { useTranslations } from "next-intl";
 interface PasswordPromptProps {
   room: Room;
   clickedRoomId: string | null;
-  user: { id: string; username: string; avatar: string | null } | null;
+  user: {
+    id: string;
+    username: string;
+    avatar: string | null;
+    isGuest?: boolean;
+  } | null;
 }
 
 const PasswordPrompt: React.FC<PasswordPromptProps> = ({
@@ -16,6 +22,8 @@ const PasswordPrompt: React.FC<PasswordPromptProps> = ({
   clickedRoomId,
   user,
 }) => {
+  const t = useTranslations("GamePage.cards.card.passwordPrompt");
+
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const socket = useSocket();
@@ -26,20 +34,21 @@ const PasswordPrompt: React.FC<PasswordPromptProps> = ({
     if (!room || !socket || !user) return;
 
     if (!password.trim()) {
-      setError("Password is required");
-      setMsg("Please enter a password", "error");
+      setError(t("msgs.localErrors.passwordRequired"));
+      setMsg(t("msgs.flashErrors.passwordRequired"), "error");
       return;
     }
 
     if (password !== room.password) {
-      setError("Incorrect password");
-      setMsg("Incorrect password", "error");
+      setError(t("msgs.localErrors.incorrectPassword"));
+      setMsg(t("msgs.flashErrors.incorrectPassword"), "error");
       return;
     }
 
     socket.emit("joinRoom", room.id, user.id, {
       id: user.id,
       username: user.username,
+      isGuest: user.isGuest,
       avatar: user.avatar,
     });
 
@@ -61,13 +70,13 @@ const PasswordPrompt: React.FC<PasswordPromptProps> = ({
     <div className={styles.password_prompt}>
       <input
         type="password"
-        placeholder="Enter password"
+        placeholder={t("placeholder")}
         value={password}
         onChange={handlePasswordChange}
         className={error ? styles.error : ""}
       />
       {error && <span className={styles.error_message}>{error}</span>}
-      <button onClick={handleJoin}>Join</button>
+      <button onClick={handleJoin}>{t("btn")}</button>
       <FaTimesCircle
         className={styles.close_btn}
         onClick={() => setTogglePasswordPrompt(false)}

@@ -2,13 +2,14 @@ import api from "@/utils/axios";
 import { create } from "zustand";
 
 interface UserMetaStore {
-  state: "idle" | "loading" | "failed" | "success";
+  status: "idle" | "loading" | "failed" | "success";
   userMeta: {
     firstName: string;
     lastName: string;
     bio: string;
     memberSince: string;
     rating: number;
+    level: string;
   } | null;
   fetchUserMeta: (userId: string) => Promise<void>;
   isMetaVisible: boolean;
@@ -16,16 +17,16 @@ interface UserMetaStore {
 }
 
 const useUserMetaStore = create<UserMetaStore>((set) => ({
-  state: "idle",
+  status: "idle",
   userMeta: null,
   fetchUserMeta: async (userId: string) => {
-    set({ state: "loading" });
+    set({ status: "loading" });
     try {
       const { data } = await api.get(`/users/meta/${userId}`);
-      set({ userMeta: data, state: "success" });
+      set({ userMeta: data, status: "success" });
     } catch (error) {
       console.error("Failed to fetch user meta:", error);
-      set({ state: "failed" });
+      set({ status: "failed" });
     }
   },
   isMetaVisible: false,

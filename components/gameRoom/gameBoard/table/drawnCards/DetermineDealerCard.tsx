@@ -1,9 +1,9 @@
 import { PlayingCard } from "@/utils/interfaces";
-import { CardDeck } from "../../../cardDeck";
 import styles from "./DrawnCards.module.scss";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import useWindowSize from "@/hooks/useWindowSize";
+import { useDeckContext } from "@/context/DeckContext";
 
 interface Props {
   card: PlayingCard;
@@ -13,22 +13,9 @@ interface Props {
 
 const DetermineDealerCard = ({ card, index, playerPositionIndex }: Props) => {
   const windowSize = useWindowSize();
+  const { getCardUrl } = useDeckContext();
 
-  const cardImage = CardDeck.find(
-    (c: { suit: string; rank: string; image: string; color?: string }) =>
-      c.suit === card.suit && c.rank === card.rank,
-  )?.image;
-
-  const jokerImageBlack = CardDeck.find(
-    (c: { suit: string; rank: string; image: string; color?: string }) =>
-      c.rank === "JOKER" && c.color === "black",
-  )?.image;
-
-  const jokerImageRed = CardDeck.find(
-    (c: { suit: string; rank: string; image: string; color?: string }) =>
-      c.rank === "JOKER" && c.color === "red",
-  )?.image;
-
+  const cardUrl = getCardUrl(card);
   const offset = index * 3;
 
   const getInitial = () => {
@@ -116,9 +103,8 @@ const DetermineDealerCard = ({ card, index, playerPositionIndex }: Props) => {
         zIndex: index,
       }}
     >
-      {cardImage ? (
-        <Image
-          src={cardImage}
+      <Image
+          src={cardUrl}
           alt={card.rank || "card"}
           width={
             windowSize.height <= 350
@@ -151,46 +137,6 @@ const DetermineDealerCard = ({ card, index, playerPositionIndex }: Props) => {
                         : 150
           }
         />
-      ) : (
-        <Image
-          src={
-            card.color === "black"
-              ? jokerImageBlack || "/cards/joker-black.png"
-              : jokerImageRed || "/cards/joker-red.png"
-          }
-          alt="Joker"
-          width={
-            windowSize.height <= 350
-              ? 40
-              : windowSize.height <= 600 && windowSize.height > 350
-                ? 50
-                : windowSize.height <= 800 && windowSize.height > 600
-                  ? 70
-                  : windowSize.width <= 600
-                    ? 50
-                    : windowSize.width <= 900 && windowSize.width > 600
-                      ? 70
-                      : windowSize.width < 1300 && windowSize.width > 900
-                        ? 90
-                        : 100
-          }
-          height={
-            windowSize.height <= 350
-              ? 60
-              : windowSize.height <= 600 && windowSize.height > 350
-                ? 70
-                : windowSize.height <= 800 && windowSize.height > 600
-                  ? 100
-                  : windowSize.width <= 600
-                    ? 70
-                    : windowSize.width <= 900 && windowSize.width > 600
-                      ? 100
-                      : windowSize.width < 1300 && windowSize.width > 900
-                        ? 130
-                        : 150
-          }
-        />
-      )}
     </motion.div>
   );
 };

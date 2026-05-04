@@ -9,19 +9,31 @@ import useFilterStore from "@/store/gamePage/filterStore";
 import useRoomStore from "@/store/gamePage/roomStore";
 import Search from "./cards/search/Search";
 import useUserStore from "@/store/user/userStore";
+import { useTranslations } from "next-intl";
 
 interface propsIFace {
   type: "classic" | "nines" | "betting";
 }
 
 const GamePageHeader: React.FC<propsIFace> = ({ type }) => {
+  const t = useTranslations("GamePage.header");
+
   const { setToggleCreateRoom } = useCreateRoomStore();
   const { toggleFilterOptions, checkedFilters } = useFilterStore();
-  const { rooms } = useRoomStore();
+  const { rooms, totalRoomsCount } = useRoomStore();
   const { usersOnline } = useUserStore();
   const { user } = useUserStore();
 
-  const isFilterDisabled = !rooms || (rooms.length <= 5 && !checkedFilters);
+  const hasActiveFilters =
+    checkedFilters.classic ||
+    checkedFilters.nines ||
+    (!user?.isGuest && checkedFilters.betting) ||
+    checkedFilters.public ||
+    checkedFilters.private ||
+    checkedFilters.chat ||
+    Object.values(checkedFilters.penalties).some(Boolean);
+
+  const isFilterDisabled = totalRoomsCount <= 5 && !hasActiveFilters;
 
   return (
     <header className={styles.header}>
@@ -31,7 +43,7 @@ const GamePageHeader: React.FC<propsIFace> = ({ type }) => {
             <div className={styles.item}>
               <div className={styles.indicator} />
               <FaUsers className={styles.icon} />
-              <small>players</small>
+              <small>{t("players")}</small>
               <b>{usersOnline?.length || 0}</b>
             </div>
 
@@ -40,7 +52,7 @@ const GamePageHeader: React.FC<propsIFace> = ({ type }) => {
         )}
         <div className={styles.item}>
           <SiAirtable className={styles.icon} />
-          <small>rooms</small>
+          <small>{t("rooms")}</small>
           <b>{rooms?.length || 0}</b>
         </div>
       </div>
@@ -50,13 +62,9 @@ const GamePageHeader: React.FC<propsIFace> = ({ type }) => {
           onClick={(e) => {
             e.stopPropagation();
           }}
-          title={
-            isFilterDisabled
-              ? "Filters disabled when there are 5 or fewer rooms"
-              : ""
-          }
+          title={isFilterDisabled ? t("filter.disabled") : ""}
         >
-          <span>Filter Rooms:</span>
+          <span>{t("filter.label")}</span>
           <button
             className={styles.filter_btn}
             disabled={isFilterDisabled}
@@ -67,13 +75,15 @@ const GamePageHeader: React.FC<propsIFace> = ({ type }) => {
           <Filters />
         </div>
         <div className={styles.col}>
-          <Search roomsLength={rooms?.length || 0} />
+          <Search roomsLength={totalRoomsCount || 0} />
           <button
             className={styles.create_btn}
+            disabled={user?.isGuest}
+            title={user?.isGuest ? "Guests cannot create rooms" : ""}
             onClick={() => setToggleCreateRoom(true, type)}
           >
             <FaPlus className={styles.icon} />
-            <span>Create Room</span>
+            <span>{t("btn")}</span>
           </button>
         </div>
       </div>

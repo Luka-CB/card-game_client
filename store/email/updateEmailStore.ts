@@ -7,10 +7,10 @@ import { AxiosError } from "axios";
 interface UpdateEmailStore {
   isChangeEmailModalOpen: boolean;
   toggleChangeEmailModal: () => void;
-  sendRequestState: "idle" | "loading" | "success" | "error";
+  sendRequestStatus: "idle" | "loading" | "success" | "failed";
   sendRequestError: string | null;
   sendChangeEmailRequest: (email: string) => Promise<void>;
-  confirmCodeStatus: "idle" | "loading" | "success" | "error";
+  confirmCodeStatus: "idle" | "loading" | "success" | "failed";
   confirmCodeError: string | null;
   confirmChangeEmail: (code: string) => Promise<void>;
   reset: () => void;
@@ -20,28 +20,33 @@ const useUpdateEmailStore = create<UpdateEmailStore>((set) => ({
   isChangeEmailModalOpen: false,
   toggleChangeEmailModal: () =>
     set((state) => ({ isChangeEmailModalOpen: !state.isChangeEmailModalOpen })),
-  sendRequestState: "idle",
+  sendRequestStatus: "idle",
   sendRequestError: null,
   sendChangeEmailRequest: async (email) => {
-    set({ sendRequestState: "loading", sendRequestError: null });
+    set({ sendRequestStatus: "loading", sendRequestError: null });
     try {
       const { data } = await api.post("/emails/change/request", {
         newEmail: email,
       });
       if (data.success) {
-        set({ sendRequestState: "success" });
+        set({ sendRequestStatus: "success" });
       }
     } catch (error: unknown) {
-      console.log(error);
       if (error instanceof AxiosError) {
+        const status = error.response?.status;
+        const message =
+          error.response?.data?.error?.message || "An error occurred";
+        if (status && status >= 500) {
+          console.error("Error changing email:", error);
+        }
         set({
-          sendRequestState: "error",
-          sendRequestError:
-            error.response?.data?.error?.message || "An error occurred",
+          sendRequestStatus: "failed",
+          sendRequestError: message,
         });
       } else {
+        console.error("Unexpected error changing email:", error);
         set({
-          sendRequestState: "error",
+          sendRequestStatus: "failed",
           sendRequestError: "An unexpected error occurred",
         });
       }
@@ -57,16 +62,21 @@ const useUpdateEmailStore = create<UpdateEmailStore>((set) => ({
         set({ confirmCodeStatus: "success" });
       }
     } catch (error: unknown) {
-      console.log(error);
       if (error instanceof AxiosError) {
+        const status = error.response?.status;
+        const message =
+          error.response?.data?.error?.message || "An error occurred";
+        if (status && status >= 500) {
+          console.error("Error changing email:", error);
+        }
         set({
-          confirmCodeStatus: "error",
-          confirmCodeError:
-            error.response?.data?.error?.message || "An error occurred",
+          confirmCodeStatus: "failed",
+          confirmCodeError: message,
         });
       } else {
+        console.error("Unexpected error changing email:", error);
         set({
-          confirmCodeStatus: "error",
+          confirmCodeStatus: "failed",
           confirmCodeError: "An unexpected error occurred",
         });
       }
@@ -74,7 +84,7 @@ const useUpdateEmailStore = create<UpdateEmailStore>((set) => ({
   },
   reset: () =>
     set({
-      sendRequestState: "idle",
+      sendRequestStatus: "idle",
       sendRequestError: null,
       confirmCodeStatus: "idle",
       confirmCodeError: null,

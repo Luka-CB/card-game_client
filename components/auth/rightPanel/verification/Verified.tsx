@@ -8,9 +8,13 @@ import { useEffect, useState } from "react";
 import Loader from "@/components/loaders/Loader";
 import useVerifyStore from "@/store/email/verifyStore";
 import useUserStore from "@/store/user/userStore";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
+import { useTranslations } from "next-intl";
 
 const Verified = () => {
+  const t = useTranslations("Auth.rightPanel.verified");
+
   const { status, verifyEmail, error } = useVerifyStore();
   const { setIsVerified } = useUserStore();
 
@@ -62,10 +66,11 @@ const Verified = () => {
         >
           <MdOutlineReportGmailerrorred />
         </motion.div>
-        <h1>Verification Failed!</h1>
-        <p>{error || "An error occurred during email verification."}</p>
+        <h1>{t("failed.title")}</h1>
+        <p>{error || t("failed.error")}</p>
         <small>
-          Redirecting to the request page in <b>{countDown}</b> seconds
+          {t("failed.small.textOne")} <b>{countDown}</b>{" "}
+          {t("failed.small.textTwo")}
         </small>
       </div>
     );
@@ -89,9 +94,10 @@ const Verified = () => {
           </motion.div>
         </motion.div>
       ) : null}
-      <h1>Congratulations! Your account activated successfully.</h1>
+      <h1>{t("success.title")}</h1>
       <small>
-        Redirecting to the main page in <b>{countDown}</b> seconds
+        {t("success.small.textOne")} <b>{countDown}</b>{" "}
+        {t("success.small.textTwo")}
       </small>
     </div>
   );

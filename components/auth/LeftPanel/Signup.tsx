@@ -1,8 +1,9 @@
 "use client";
 
 import styles from "./Sign.module.scss";
-import { useRouter, useSearchParams } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { useRouter, Link } from "@/i18n/navigation";
+import { SubmitEvent, useCallback, useEffect, useRef, useState } from "react";
 import useSignupStore from "@/store/auth/signupStore";
 import useAvatarStore from "@/store/user/avatarStore";
 import BtnLoader from "../../loaders/BtnLoader";
@@ -11,15 +12,22 @@ import Oauth from "./Oauth";
 import { IoMdEye, IoIosEyeOff } from "react-icons/io";
 import useUserStore from "@/store/user/userStore";
 import Image from "next/image";
-import Link from "next/link";
+import { useLocale, useTranslations } from "next-intl";
+import useWindowSize from "@/hooks/useWindowSize";
+import Links from "../Links";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 
 const Signup = () => {
+  const t = useTranslations("Auth.leftPanel.signup");
+  const locale = useLocale();
+
   const router = useRouter();
   const searchParams = useSearchParams();
 
   const { status, signup, error, setError, user } = useSignupStore();
   const { setUser } = useUserStore();
   const { avatar, setAvatar, toggleAvatarGallery } = useAvatarStore();
+  const windowWidth = useWindowSize().width;
 
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -32,6 +40,17 @@ const Signup = () => {
 
   const [visiblePassword, setVisiblePassword] = useState(false);
   const [visibleConfirmPassword, setVisibleConfirmPassword] = useState(false);
+
+  const errorRef = useRef<HTMLParagraphElement | null>(null);
+
+  useEffect(() => {
+    if ((error || avatarError) && errorRef.current) {
+      errorRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }
+  }, [error, avatarError]);
 
   const handleRoute = useCallback(
     (routeName: string) => {
@@ -68,15 +87,26 @@ const Signup = () => {
     }
   }, [setAvatar, status, user, setUser, handleRoute]);
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  useEffect(() => {
+    if (avatar) {
+      setAvatarError(false);
+    }
+  });
+
+  const handleSubmit = (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (password.length < 6) {
+      setError(t("msgs.passwordLength"));
+      return;
+    }
+
     if (password !== confirmPassword) {
-      setError("Passwords do not match");
+      setError(t("msgs.passwordMatch"));
       return;
     }
 
     if (!avatar) {
-      setError("Please select an avatar");
+      setError(t("msgs.avatar"));
       setAvatarError(true);
       return;
     }
@@ -85,9 +115,19 @@ const Signup = () => {
   };
 
   return (
-    <div className={styles.container}>
-      {error && <p className={styles.error}>{error}</p>}
-      <h2>Sign up</h2>
+    <div className={styles.container} data-locale={locale}>
+      {error && (
+        <p ref={errorRef} className={styles.error}>
+          {error}
+        </p>
+      )}
+      {windowWidth <= 900 && (
+        <div className={styles.language_switcher}>
+          <LanguageSwitcher />
+        </div>
+      )}
+      <h2>{t("title")}</h2>
+      <small>{t("small")}</small>
       <div className={styles.local_auth}>
         <div
           className={
@@ -102,10 +142,13 @@ const Signup = () => {
               {!avatar ? (
                 <div className={styles.choose}>
                   <MdOutlineAddPhotoAlternate className={styles.icon} />
-                  <span>Choose</span>
+                  <span>{t("avatar.title")}</span>
                 </div>
               ) : (
-                <div className={styles.image} title="Change avatar">
+                <div
+                  className={styles.image}
+                  title={t("avatar.pickedImgTitle")}
+                >
                   <Image src={avatar} width={100} height={100} alt="avatar" />
                 </div>
               )}
@@ -115,26 +158,26 @@ const Signup = () => {
         <form onSubmit={handleSubmit}>
           <input
             type="text"
-            placeholder="First Name (optional)"
+            placeholder={t("form.firstName.placeholder")}
             value={firstName}
             onChange={(e) => setFirstName(e.target.value)}
           />
           <input
             type="text"
-            placeholder="Last Name (optional)"
+            placeholder={t("form.lastName.placeholder")}
             value={lastName}
             onChange={(e) => setLastName(e.target.value)}
           />
           <input
             type="text"
-            placeholder="Username"
+            placeholder={t("form.username.placeholder")}
             required
             value={username}
             onChange={(e) => setUsername(e.target.value)}
           />
           <input
             type="email"
-            placeholder="Email"
+            placeholder={t("form.email.placeholder")}
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
@@ -142,7 +185,7 @@ const Signup = () => {
           <div className={styles.input_wrapper}>
             <input
               type={visiblePassword ? "text" : "password"}
-              placeholder="Password"
+              placeholder={t("form.password.placeholder")}
               className={styles.password_input}
               required
               value={password}
@@ -152,7 +195,7 @@ const Signup = () => {
               <div
                 onClick={() => setVisiblePassword(false)}
                 className={styles.icon}
-                title="hide password"
+                title={t("form.password.hide")}
               >
                 <IoMdEye />
               </div>
@@ -160,7 +203,7 @@ const Signup = () => {
               <div
                 onClick={() => setVisiblePassword(true)}
                 className={styles.icon}
-                title="show password"
+                title={t("form.password.show")}
               >
                 <IoIosEyeOff />
               </div>
@@ -169,7 +212,7 @@ const Signup = () => {
           <div className={styles.input_wrapper}>
             <input
               type={visibleConfirmPassword ? "text" : "password"}
-              placeholder="Confirm Password"
+              placeholder={t("form.password.confirmPlaceholder")}
               className={styles.password_input}
               required
               value={confirmPassword}
@@ -179,7 +222,7 @@ const Signup = () => {
               <div
                 onClick={() => setVisibleConfirmPassword(false)}
                 className={styles.icon}
-                title="hide password"
+                title={t("form.password.hide")}
               >
                 <IoMdEye />
               </div>
@@ -187,14 +230,14 @@ const Signup = () => {
               <div
                 onClick={() => setVisibleConfirmPassword(true)}
                 className={styles.icon}
-                title="show password"
+                title={t("form.password.show")}
               >
                 <IoIosEyeOff />
               </div>
             )}
           </div>
           <div className={styles.radio_wrapper}>
-            <strong>Your Gender:</strong>
+            <strong>{t("form.gender.label")}</strong>
             <div className={styles.male}>
               <input
                 type="radio"
@@ -204,7 +247,7 @@ const Signup = () => {
                 checked={gender === "male"}
                 onChange={() => setGender("male")}
               />
-              <label htmlFor="male">Male</label>
+              <label htmlFor="male">{t("form.gender.options.male")}</label>
             </div>
             <div className={styles.female}>
               <input
@@ -215,41 +258,29 @@ const Signup = () => {
                 checked={gender === "female"}
                 onChange={() => setGender("female")}
               />
-              <label htmlFor="female">Female</label>
+              <label htmlFor="female">{t("form.gender.options.female")}</label>
             </div>
           </div>
           <button type="submit" disabled={status === "loading"}>
-            {status === "loading" ? <BtnLoader /> : "Sign Up"}
+            {status === "loading" ? <BtnLoader /> : t("form.btn")}
           </button>
         </form>
       </div>
       <div className={styles.divider}>
         <div className={styles.line}></div>
-        <span>or</span>
+        <span>{t("or")}</span>
         <div className={styles.line}></div>
       </div>
       <Oauth />
       <div className={styles.signup}>
-        <p>Already have an account?</p>
-        <span onClick={() => handleRoute("signin")}>Sign In</span>
+        <p>{t("link.paragraph")}</p>
+        <span onClick={() => handleRoute("signin")}>{t("link.span")}</span>
       </div>
-      <div className={styles.links}>
-        <Link href="/rules" className={styles.link}>
-          Game Rules
-        </Link>
-        <Link href="/about" className={styles.link}>
-          About Us
-        </Link>
-        <Link href="/privacy" className={styles.link}>
-          Privacy Policy
-        </Link>
-        <Link href="/terms" className={styles.link}>
-          Terms of Service
-        </Link>
-        <Link href="/data-deletion" className={styles.link}>
-          Data Deletion
-        </Link>
-      </div>
+      {windowWidth <= 900 && (
+        <div className={styles.links}>
+          <Links isSm />
+        </div>
+      )}
     </div>
   );
 };

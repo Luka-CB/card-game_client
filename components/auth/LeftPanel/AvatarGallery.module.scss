@@ -177,6 +177,21 @@
       }
     }
 
+    .header[data-locale="ka"],
+    .header[data-locale="ru"] {
+      h2 {
+        font-size: 1.4rem;
+
+        @media (max-width: 550px) {
+          font-size: 1rem;
+        }
+
+        @media (max-width: 400px) {
+          font-size: 0.7rem;
+        }
+      }
+    }
+
     .loader {
       position: absolute;
       top: 50%;

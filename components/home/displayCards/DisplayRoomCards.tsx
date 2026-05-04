@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { Link, usePathname, useRouter } from "@/i18n/navigation";
 import styles from "./DisplayRoomCard.module.scss";
 import { MdOpenInNew } from "react-icons/md";
 import useSocket from "@/hooks/useSocket";
@@ -9,9 +9,11 @@ import DisplayCard from "./displayCard/DisplayCard";
 import { Room } from "@/utils/interfaces";
 import useDisplayRoomStore from "@/store/displayRoomStore";
 import useUserStore from "@/store/user/userStore";
-import { usePathname, useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 const DisplayRoomCards = () => {
+  const t = useTranslations("HomePage.displayRoomCards");
+
   const [classicRoom, setClassicRoom] = useState<Room | null>(null);
   const [ninesRoom, setNinesRoom] = useState<Room | null>(null);
   const [bettingRoom, setBettingRoom] = useState<Room | null>(null);
@@ -124,7 +126,7 @@ const DisplayRoomCards = () => {
 
   return (
     <div className={styles.cards_container}>
-      <h2>Quick Rooms</h2>
+      <h2>{t("title")}</h2>
       <div className={styles.cards}>
         <div className={styles.card_wrapper}>
           {classicRoom ? (
@@ -136,9 +138,9 @@ const DisplayRoomCards = () => {
           ) : (
             <Info type="classic" />
           )}
-          <h3>Classic</h3>
+          <h3>{t("cards.classic")}</h3>
           <Link href="/rooms">
-            <button className={styles.info_btn} title="View All Rooms">
+            <button className={styles.info_btn} title={t("linkTitle")}>
               <MdOpenInNew />
             </button>
           </Link>
@@ -150,31 +152,33 @@ const DisplayRoomCards = () => {
           ) : (
             <Info type="nines" />
           )}
-          <h3>Nines</h3>
+          <h3>{t("cards.nines")}</h3>
           <Link href="/rooms">
-            <button className={styles.info_btn} title="View All Rooms">
+            <button className={styles.info_btn} title={t("linkTitle")}>
               <MdOpenInNew />
             </button>
           </Link>
         </div>
 
-        <div className={styles.card_wrapper}>
-          {bettingRoom ? (
-            <DisplayCard
-              room={bettingRoom}
-              type="betting"
-              roomImIn={roomImIn}
-            />
-          ) : (
-            <Info type="betting" />
-          )}
-          <h3>With Bet</h3>
-          <Link href="/rooms">
-            <button className={styles.info_btn} title="View All Rooms">
-              <MdOpenInNew />
-            </button>
-          </Link>
-        </div>
+        {!user?.isGuest && (
+          <div className={styles.card_wrapper}>
+            {bettingRoom ? (
+              <DisplayCard
+                room={bettingRoom}
+                type="betting"
+                roomImIn={roomImIn}
+              />
+            ) : (
+              <Info type="betting" />
+            )}
+            <h3>{t("cards.bet")}</h3>
+            <Link href="/rooms">
+              <button className={styles.info_btn} title={t("linkTitle")}>
+                <MdOpenInNew />
+              </button>
+            </Link>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -183,14 +187,14 @@ const DisplayRoomCards = () => {
 export default DisplayRoomCards;
 
 const Info = ({ type }: { type: string }) => {
+  const t = useTranslations("HomePage.displayRoomCards.info");
+
   return (
     <div className={styles.notice}>
-      <p>{`No ${type} rooms available!`}</p>
-      <small>
-        {`To create ${type} room go to rooms page and click "Create Room"`}
-      </small>
+      <p>{`${type === "classic" ? t("paragraph.types.classic") : type === "nines" ? t("paragraph.types.nines") : t("paragraph.types.bet")} ${t("paragraph.text")}`}</p>
+      <small>{`${t("small.textOne")} ${type} ${t("small.textTwo")}`}</small>
       <Link href="/rooms">
-        <button className={styles.notice_btn}>Go to Rooms</button>
+        <button className={styles.notice_btn}>{t("btn")}</button>
       </Link>
     </div>
   );

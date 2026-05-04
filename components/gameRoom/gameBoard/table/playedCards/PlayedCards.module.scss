@@ -3,31 +3,12 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 200px;
-  height: 300px;
-
-  @media (max-width: 1150px) or (max-height: 900px) {
-    width: 150px;
-    height: 200px;
-  }
-
-  @media (max-width: 990px) or (max-height: 900px) {
-    width: 100px;
-    height: 150px;
-  }
-
-  @media (max-width: 600px) or (max-height: 600px) {
-    width: 90px;
-    height: 120px;
-  }
-
-  @media (orientation: landscape) and (max-height: 450px) {
-    width: 70px;
-    height: 100px;
-  }
+  pointer-events: none;
+  /* width/height set via inline style in JS so they always match the card size */
 
   .card {
     position: absolute;
+    pointer-events: all;
   }
 
   .card_0 {

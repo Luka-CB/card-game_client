@@ -2,8 +2,11 @@ import { useEffect, useState } from "react";
 import styles from "./Search.module.scss";
 import { IoSearch } from "react-icons/io5";
 import useSocket from "@/hooks/useSocket";
+import { useTranslations } from "next-intl";
 
 const Search = ({ roomsLength }: { roomsLength: number }) => {
+  const t = useTranslations("GamePage.search");
+
   const [searchQ, setSearchQ] = useState("");
 
   const socket = useSocket();
@@ -31,15 +34,11 @@ const Search = ({ roomsLength }: { roomsLength: number }) => {
   return (
     <div
       className={isSearchDisabled ? styles.disabled : styles.search_bar}
-      title={
-        isSearchDisabled
-          ? "Search disabled when there are 5 or fewer rooms"
-          : ""
-      }
+      title={isSearchDisabled ? t("title") : ""}
     >
       <input
         type="search"
-        placeholder="Search rooms by name..."
+        placeholder={t("placeholder")}
         value={searchQ}
         onChange={handleSearchChange}
         disabled={isSearchDisabled}

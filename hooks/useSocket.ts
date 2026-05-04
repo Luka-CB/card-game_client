@@ -3,6 +3,13 @@ import { io, Socket } from "socket.io-client";
 
 let socketSingleton: Socket | null = null;
 
+export const reconnectSocket = () => {
+  if (socketSingleton) {
+    socketSingleton.disconnect();
+    socketSingleton.connect();
+  }
+};
+
 export default function useSocket() {
   const [socket, setSocket] = useState<Socket | null>(socketSingleton);
 

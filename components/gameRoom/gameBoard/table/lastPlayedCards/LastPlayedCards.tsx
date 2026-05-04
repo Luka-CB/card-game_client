@@ -4,6 +4,8 @@ import Image from "next/image";
 import useWindowSize from "@/hooks/useWindowSize";
 import useLastPlayedCardsStore from "@/store/gamePage/lastPlayedCardsStore";
 import { AnimatePresence, motion } from "framer-motion";
+import { useTranslations } from "next-intl";
+import { useDeckContext } from "@/context/DeckContext";
 
 interface LastPlayedCardsProps {
   lastPlayedCards: PlayedCard[];
@@ -14,6 +16,9 @@ const LastPlayedCards: React.FC<LastPlayedCardsProps> = ({
   lastPlayedCards,
   rotatedPlayers,
 }) => {
+  const t = useTranslations("GameRoom.gameBoard");
+  const { getCardUrl, cardBackUrl } = useDeckContext();
+
   const { toggleLastPlayedCardsModal, setToggleLastPlayedCards } =
     useLastPlayedCardsStore();
 
@@ -29,11 +34,11 @@ const LastPlayedCards: React.FC<LastPlayedCardsProps> = ({
       className={styles.container}
       onClick={() => setToggleLastPlayedCards(true)}
     >
-      <div className={styles.display_cards} title="last played cards">
+      <div className={styles.display_cards} title={t("lastPlayedCards")}>
         {Array.from({ length: 4 }).map((_, index) => (
           <div key={index} className={styles.card}>
             <Image
-              src="/cards/card-back.png"
+              src={cardBackUrl}
               alt="card back"
               width={
                 height < 800
@@ -76,18 +81,14 @@ const LastPlayedCards: React.FC<LastPlayedCardsProps> = ({
               >
                 {card.joker ? (
                   <Image
-                    src={
-                      card.color === "black"
-                        ? "/cards/joker-black.png"
-                        : "/cards/joker-red.png"
-                    }
+                    src={getCardUrl(card)}
                     alt={`${card.rank} of ${card.suit}` || "joker"}
                     width={50}
                     height={80}
                   />
                 ) : (
                   <Image
-                    src={`/cards/${card.suit}-${card.rank?.toLowerCase()}.png`}
+                    src={getCardUrl(card)}
                     alt={`${card.rank} of ${card.suit}` || "card"}
                     width={40}
                     height={60}

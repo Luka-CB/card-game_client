@@ -8,12 +8,12 @@ import useFlashMsgStore from "@/store/flashMsgStore";
 import useUserAccountStore from "@/store/user/userAccountStore";
 import BtnLoader from "@/components/loaders/BtnLoader";
 import useUserActivityStore from "@/store/user/userActivityStore";
+import { useLocale, useTranslations } from "next-intl";
 
 interface ProfileProps {
   userAccount: {
     firstName: string;
     lastName: string;
-    username: string;
     gender?: "male" | "female" | null;
     bio: string;
     provider: "local" | "google" | "facebook";
@@ -23,7 +23,6 @@ interface ProfileProps {
 type User = {
   firstName: string;
   lastName: string;
-  username: string;
   gender?: "male" | "female" | null;
   password?: string;
   bio?: string;
@@ -33,7 +32,6 @@ function getInitialForm(ua?: ProfileProps["userAccount"]): User {
   return {
     firstName: ua?.firstName ?? "",
     lastName: ua?.lastName ?? "",
-    username: ua?.username ?? "",
     gender: ua?.gender ?? null,
     password: "",
     bio: ua?.bio ?? "",
@@ -41,6 +39,9 @@ function getInitialForm(ua?: ProfileProps["userAccount"]): User {
 }
 
 const Profile: React.FC<ProfileProps> = ({ userAccount }) => {
+  const t = useTranslations("AccountPage.profile");
+  const locale = useLocale();
+
   const initialForm = useMemo(() => getInitialForm(userAccount), [userAccount]);
   const [form, setForm] = useState<User>(initialForm);
 
@@ -48,7 +49,7 @@ const Profile: React.FC<ProfileProps> = ({ userAccount }) => {
   const [isPassError, setIsPassError] = useState(false);
 
   const { setMsg } = useFlashMsgStore();
-  const { updateUserAccount, updateState } = useUserAccountStore();
+  const { updateUserAccount, updateStatus } = useUserAccountStore();
   const { fetchUserActivities } = useUserActivityStore();
 
   useEffect(() => {
@@ -62,20 +63,20 @@ const Profile: React.FC<ProfileProps> = ({ userAccount }) => {
   }, [isPassError, form.password]);
 
   useEffect(() => {
-    if (updateState === "success") {
-      setMsg("Profile updated successfully", "success");
+    if (updateStatus === "success") {
+      setMsg(t("msgs.success"), "success");
       fetchUserActivities();
-    } else if (updateState === "error") {
-      setMsg("Failed to update profile", "error");
+    } else if (updateStatus === "error") {
+      setMsg(t("msgs.updateError"), "error");
     }
-  }, [updateState, setMsg, fetchUserActivities]);
+  }, [updateStatus, setMsg, fetchUserActivities]);
 
   function handleSave(e: React.SubmitEvent) {
     e.preventDefault();
 
     if (form.password && form.password.length < 6) {
       setIsPassError(true);
-      setMsg("Password must be at least 6 characters long", "error");
+      setMsg(t("msgs.passwordError"), "error");
       return;
     }
 
@@ -104,16 +105,16 @@ const Profile: React.FC<ProfileProps> = ({ userAccount }) => {
   }, [form, initialForm]);
 
   return (
-    <section className={styles.profile}>
-      <h2>Profile</h2>
+    <section className={styles.profile} data-locale={locale}>
+      <h2>{t("title")}</h2>
       <p className={styles.bio}>
-        {userAccount?.bio ? userAccount.bio : "No bio available"}
+        {userAccount?.bio ? userAccount.bio : t("paragraph")}
       </p>
 
       <form className={styles.form} onSubmit={handleSave}>
         <div className={styles.full_name}>
           <label className={styles.field}>
-            <span>First Name</span>
+            <span>{t("form.firstName.label")}</span>
             <input
               name="firstName"
               value={form.firstName}
@@ -122,7 +123,7 @@ const Profile: React.FC<ProfileProps> = ({ userAccount }) => {
           </label>
 
           <label className={styles.field}>
-            <span>Last Name</span>
+            <span>{t("form.lastName.label")}</span>
             <input
               name="lastName"
               value={form.lastName}
@@ -132,36 +133,27 @@ const Profile: React.FC<ProfileProps> = ({ userAccount }) => {
         </div>
 
         <label className={styles.field}>
-          <span>Username</span>
-          <input
-            name="username"
-            value={form.username}
-            onChange={handleChange}
-          />
-        </label>
-
-        <label className={styles.field}>
-          <span>Gender</span>
+          <span>{t("form.gender.label")}</span>
           <select
             name="gender"
             id="gender"
             value={form.gender || ""}
             onChange={handleChange}
           >
-            <option value="">Select gender</option>
-            <option value="female"> Female </option>
-            <option value="male"> Male </option>
+            <option value="">{t("form.gender.options.select")}</option>
+            <option value="female">{t("form.gender.options.female")}</option>
+            <option value="male">{t("form.gender.options.male")}</option>
           </select>
         </label>
 
         {userAccount?.provider === "local" && (
           <label className={styles.field}>
-            <span>Set New Password</span>
+            <span>{t("form.password.label")}</span>
             <div className={styles.input_wrapper}>
               <input
                 type={visiblePassword ? "text" : "password"}
                 name="password"
-                placeholder="Password must be at least 6 characters long"
+                placeholder={t("form.password.placeholder")}
                 value={form.password}
                 onChange={handleChange}
                 className={isPassError ? styles.input_error : ""}
@@ -170,13 +162,13 @@ const Profile: React.FC<ProfileProps> = ({ userAccount }) => {
                 {visiblePassword ? (
                   <IoMdEye
                     className={styles.icon}
-                    title="show password"
+                    title={t("form.password.title.show")}
                     onClick={() => setVisiblePassword(!visiblePassword)}
                   />
                 ) : (
                   <IoIosEyeOff
                     className={styles.icon}
-                    title="hide password"
+                    title={t("form.password.title.hide")}
                     onClick={() => setVisiblePassword(!visiblePassword)}
                   />
                 )}
@@ -186,25 +178,30 @@ const Profile: React.FC<ProfileProps> = ({ userAccount }) => {
         )}
 
         <label className={styles.field}>
-          <span>Bio (optional)</span>
-          <textarea name="bio" value={form.bio} onChange={handleChange} />
+          <span>{t("form.bio.label")}</span>
+          <textarea
+            name="bio"
+            value={form.bio}
+            onChange={handleChange}
+            placeholder={t("form.bio.placeholder")}
+          />
         </label>
 
         <div className={styles.provider}>
-          <span>Signed up with:</span>
+          <span>{t("form.profider.label")}</span>
           {userAccount?.provider === "google" ? (
             <div className={styles.provider_type}>
               <FcGoogle className={styles.icon} />
-              <span>Google Account</span>
+              <span>{t("form.profider.google")}</span>
             </div>
           ) : userAccount?.provider === "facebook" ? (
             <div className={styles.provider_type}>
               <FaFacebook className={styles.icon} />
-              <span>Facebook Account</span>
+              <span>{t("form.profider.facebook")}</span>
             </div>
           ) : (
             <div className={styles.provider_type}>
-              <span>Local Account</span>
+              <span>{t("form.profider.local")}</span>
             </div>
           )}
         </div>
@@ -213,17 +210,21 @@ const Profile: React.FC<ProfileProps> = ({ userAccount }) => {
           <button
             type="submit"
             className={styles.saveBtn}
-            disabled={!isModified || updateState === "loading"}
+            disabled={!isModified || updateStatus === "loading"}
           >
-            {updateState === "loading" ? <BtnLoader /> : "Save changes"}
+            {updateStatus === "loading" ? (
+              <BtnLoader />
+            ) : (
+              t("form.actions.confirm")
+            )}
           </button>
           <button
             type="button"
             className={styles.resetBtn}
             onClick={resetForm}
-            disabled={updateState === "loading"}
+            disabled={updateStatus === "loading"}
           >
-            Discard
+            {t("form.actions.discard")}
           </button>
         </div>
       </form>

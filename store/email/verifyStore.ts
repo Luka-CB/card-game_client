@@ -23,14 +23,23 @@ const useVerifyStore = create<VerifyStore>((set) => ({
         set({ status: "success" });
       }
     } catch (error: unknown) {
-      console.error(error);
       if (error instanceof AxiosError) {
+        const status = error.response?.status;
+        const message =
+          error.response?.data?.error?.message || "An error occurred";
+        if (status && status >= 500) {
+          console.error("Error verifying email:", error);
+        }
         set({
-          error: error.response?.data?.error?.message || "An error occurred",
           status: "failed",
+          error: message,
         });
       } else {
-        set({ error: "An unexpected error occurred", status: "failed" });
+        console.error("Unexpected error verifying email:", error);
+        set({
+          status: "failed",
+          error: "An unexpected error occurred",
+        });
       }
     }
   },

@@ -1,14 +1,19 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { SubmitEvent, useCallback, useEffect, useState } from "react";
 import useUserStore from "@/store/user/userStore";
 import styles from "./ChangeEmail.module.scss";
 import useChangeEmailStore from "@/store/email/changeEmailStore";
 import BtnLoader from "../../loaders/BtnLoader";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 import { IoMdArrowRoundBack } from "react-icons/io";
+import { useLocale, useTranslations } from "next-intl";
 
 const ChangeEmail = () => {
+  const t = useTranslations("Auth.rightPanel.changeEmail");
+  const locale = useLocale();
+
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -33,36 +38,36 @@ const ChangeEmail = () => {
     }
   }, [status, router, handleRoute]);
 
-  const handleSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
+  const handleSubmit = (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     updateEmail(email);
   };
 
   return (
-    <div className={styles.container}>
-      <h1>Change Email</h1>
+    <div className={styles.container} data-locale={locale}>
+      <h1>{t("title")}</h1>
       <p>
-        <b>{user?.email}</b>: Your current email
+        <b>{user?.email}</b>: {t("currentEmail")}
       </p>
       <form onSubmit={handleSubmit}>
-        <label htmlFor="email">New Email</label>
+        <label htmlFor="email">{t("form.label")}</label>
         <input
           type="email"
           id="email"
           name="email"
-          placeholder="Input valid email"
+          placeholder={t("form.placeholder")}
           required
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
         <button type="submit" disabled={status === "loading"}>
-          {status === "loading" ? <BtnLoader /> : "Submit"}
+          {status === "loading" ? <BtnLoader /> : t("form.btn")}
         </button>
       </form>
       <div className={styles.go_back_wrapper}>
         <div className={styles.go_back} onClick={() => handleRoute("verify")}>
           <IoMdArrowRoundBack className={styles.icon} />
-          <span>Go Back</span>
+          <span>{t("goBack")}</span>
         </div>
       </div>
     </div>

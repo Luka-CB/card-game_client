@@ -12,6 +12,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import useUserAccountStore from "@/store/user/userAccountStore";
 import useFlashMsgStore from "@/store/flashMsgStore";
 import useUserActivityStore from "@/store/user/userActivityStore";
+import { useLocale, useTranslations } from "next-intl";
 
 const LazyAvatar = ({
   av,
@@ -71,6 +72,9 @@ const LazyAvatar = ({
 };
 
 const AvatarGallery = () => {
+  const t = useTranslations("Auth.leftPanel.avatarGallery");
+  const locale = useLocale();
+
   const {
     setAvatar,
     setNewAvatar,
@@ -82,7 +86,7 @@ const AvatarGallery = () => {
     isAvatarGalleryOpen,
     toggleAvatarGallery,
   } = useAvatarStore();
-  const { updateUserAvatar, updateAvatarState, userAccount } =
+  const { updateUserAvatar, updateAvatarStatus, userAccount } =
     useUserAccountStore();
   const { setMsg } = useFlashMsgStore();
   const { fetchUserActivities } = useUserActivityStore();
@@ -100,23 +104,23 @@ const AvatarGallery = () => {
   useEffect(() => {
     let timer: NodeJS.Timeout;
 
-    if (updateAvatarState === "success") {
-      setMsg("Avatar updated successfully!", "success");
+    if (updateAvatarStatus === "success") {
+      setMsg(t("success"), "success");
       fetchUserActivities();
 
       timer = setTimeout(() => {
         toggleAvatarGallery();
         setNewAvatar("");
       }, 2000);
-    } else if (updateAvatarState === "error") {
-      setMsg("Failed to update avatar. Please try again.", "error");
+    } else if (updateAvatarStatus === "error") {
+      setMsg(t("error"), "error");
     }
 
     return () => {
       if (timer) clearTimeout(timer);
     };
   }, [
-    updateAvatarState,
+    updateAvatarStatus,
     setMsg,
     fetchUserActivities,
     toggleAvatarGallery,
@@ -155,7 +159,7 @@ const AvatarGallery = () => {
             transition={{ duration: 0.3, type: "spring" }}
             className={styles.gallery}
           >
-            <div className={styles.header}>
+            <div className={styles.header} data-locale={locale}>
               {(avatar || newAvatar) && (
                 <div className={styles.preview}>
                   <div className={styles.image_wrapper}>
@@ -167,14 +171,14 @@ const AvatarGallery = () => {
                       className={styles.preview_image}
                     />
 
-                    {updateAvatarState === "loading" && (
+                    {updateAvatarStatus === "loading" && (
                       <div className={styles.loading_overlay}></div>
                     )}
                   </div>
 
                   <button
                     className={styles.done_btn}
-                    disabled={updateAvatarState === "loading"}
+                    disabled={updateAvatarStatus === "loading"}
                     onClick={handleDone}
                   >
                     <MdOutlineDoneOutline className={styles.icon} />
@@ -182,7 +186,7 @@ const AvatarGallery = () => {
                   <button
                     className={styles.cancel_btn}
                     onClick={() => setNewAvatar("")}
-                    disabled={!newAvatar || updateAvatarState === "loading"}
+                    disabled={!newAvatar || updateAvatarStatus === "loading"}
                   >
                     <ImCancelCircle className={styles.icon} />
                   </button>
@@ -191,7 +195,7 @@ const AvatarGallery = () => {
               <button className={styles.close_btn} onClick={handleClose}>
                 <FaTimesCircle />
               </button>
-              <h2>Select Your Avatar</h2>
+              <h2>{t("title")}</h2>
             </div>
 
             {status === "loading" && (
@@ -201,7 +205,7 @@ const AvatarGallery = () => {
             )}
 
             {status === "failed" && (
-              <p className={styles.error}>Failed to load avatars.</p>
+              <p className={styles.error}>{t("failed")}</p>
             )}
 
             <div className={styles.body}>
