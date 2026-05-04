@@ -39,12 +39,28 @@ const PlayedCards: React.FC<PlayedCardsProps> = ({
     null,
   );
   const controls = useAnimation();
+  // Tracks whether we're in the post-animation hidden state waiting for the
+  // server to confirm the round cleared. Using state (not a ref) so the restore
+  // effect re-runs when this flips true, handling the race where the server
+  // responds before the animation .then() fires.
+  const [isHidden, setIsHidden] = useState(false);
 
   const winnerIndex = useMemo(() => {
     if (!roundWinnerId) return null;
     const index = getPlayerIndex(roundWinnerId as string, rotatedPlayers);
     return index === -1 ? null : index;
   }, [roundWinnerId, rotatedPlayers]);
+
+  // Restore visibility as soon as both: animation has finished (isHidden=true)
+  // AND the server has moved on (playedCards.length < 4).
+  // Using isHidden as a dependency means this fires immediately when .then()
+  // sets it, even if the server already responded during the animation.
+  useEffect(() => {
+    if (isHidden && playedCards.length < 4) {
+      setIsHidden(false);
+      controls.set({ opacity: 1 });
+    }
+  }, [isHidden, playedCards.length, controls]);
 
   useEffect(() => {
     if (winnerIndex !== null && playedCards.length === 4) {
@@ -64,8 +80,11 @@ const PlayedCards: React.FC<PlayedCardsProps> = ({
           transition: { duration: 0.8, ease: "easeInOut" },
         })
         .then(() => {
-          // Instantly reset position without animation, then clean up state
-          controls.set({ x: 0, y: 0, opacity: 1 });
+          controls.set({ x: 0, y: 0, opacity: 0 });
+          // setIsHidden(true) triggers the restore effect above, which will
+          // immediately restore opacity if the server already responded, or
+          // wait for the next playedCards update if it hasn't yet.
+          setIsHidden(true);
           setRoundWinnerId(null);
           setCardsToAnimate(null);
         });
