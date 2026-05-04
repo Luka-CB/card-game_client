@@ -255,9 +255,14 @@ const GameRounds = ({ hand, gameInfo, user }: GameRoundsProps) => {
 
   // Dynamically size cards so they look good at any viewport size.
   // Use the smaller of (7.5% of width) and (10% of height), clamped to [30, 100]px.
-  const cardWidth = Math.max(
-    30,
-    Math.min(100, Math.min(windowSize.width * 0.075, windowSize.height * 0.1)),
+  const cardWidth = Math.round(
+    Math.max(
+      30,
+      Math.min(
+        100,
+        Math.min(windowSize.width * 0.075, windowSize.height * 0.1),
+      ),
+    ),
   );
   const cardHeight = Math.round(cardWidth * 1.5);
 

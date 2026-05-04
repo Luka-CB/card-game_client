@@ -28,9 +28,14 @@ const PlayedCards: React.FC<PlayedCardsProps> = ({
 
   // Played cards are the table's focal point — size them larger than hand cards.
   // Use the smaller of (5.5% of width) and (8% of height), clamped to [32, 80]px.
-  const cardWidth = Math.max(
-    32,
-    Math.min(80, Math.min(windowSize.width * 0.055, windowSize.height * 0.08)),
+  const cardWidth = Math.round(
+    Math.max(
+      30,
+      Math.min(
+        100,
+        Math.min(windowSize.width * 0.075, windowSize.height * 0.1),
+      ),
+    ),
   );
   const cardHeight = Math.round(cardWidth * 1.5);
 

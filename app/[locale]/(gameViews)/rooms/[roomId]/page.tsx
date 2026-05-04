@@ -513,10 +513,6 @@ const GameRoom: React.FC = () => {
       playerId: string;
       round: number;
     }) => {
-      if (data.playerId === user?._id) {
-        setHand(data.hand);
-      }
-
       const gi = gameInfoRef.current;
       const players = rotatedPlayersRef.current;
       const dealerId = gi?.dealerId as string | null;
@@ -526,14 +522,39 @@ const GameRoom: React.FC = () => {
       if (dealerIndex === -1) return;
       const starterId = players[(dealerIndex + 1) % players.length]?.id;
 
-      if (data.playerId !== starterId) return;
+      const isMyCard = data.playerId === user?._id;
+      const isAnimationTrigger = data.playerId === starterId;
+
+      // Set the hand immediately only when we are NOT the one triggering the
+      // animation (if we are, hand is revealed after animation to avoid
+      // showing all cards before the dealing animation reaches us).
+      if (isMyCard && !isAnimationTrigger) {
+        setHand(data.hand);
+      }
+
+      if (!isAnimationTrigger) return;
       if (dealingLockRef.current) return;
+
+      // Capture our hand now so we can reveal it after the animation.
+      const pendingHand: PlayingCard[] | null = isMyCard ? data.hand : null;
 
       dealingLockRef.current = true;
       setCurrentDealingRound(0);
       setDealingCards({});
 
       animateDealing(players, data.round, dealerId)
+        .then(() => {
+          if (pendingHand) {
+            // Trump chooser: reveal their cards after animation completes.
+            setHand(pendingHand);
+          } else if (user?._id) {
+            // We're not the trump chooser: sync from latest game state.
+            const latestHand = gameInfoRef.current?.hands?.find(
+              (h: { playerId: string }) => h.playerId === user._id,
+            );
+            if (latestHand) setHand(latestHand.hand as PlayingCard[]);
+          }
+        })
         .catch(() => {})
         .finally(() => {
           dealingLockRef.current = false;
@@ -549,6 +570,9 @@ const GameRoom: React.FC = () => {
   // Effect to handle setting newHand after dealing is done
   useEffect(() => {
     if (!gameInfo?.hands || !user?._id) return;
+    // Don't update hand mid-animation — animateDealing's .then() callback
+    // handles the reveal for the trump chooser once animation completes.
+    if (dealingLockRef.current) return;
     const playerHand = gameInfo.hands?.find((h) => h.playerId === user._id);
     if (!playerHand) return;
 
