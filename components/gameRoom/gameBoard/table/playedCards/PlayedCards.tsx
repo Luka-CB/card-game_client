@@ -111,10 +111,7 @@ const PlayedCards: React.FC<PlayedCardsProps> = ({
       {cardsForRender.map(({ playerId, card }, index) => (
         <div
           key={card.id ?? `${playerId}-${index}`}
-          className={`${styles.card} ${styles.card}_${getPlayerIndex(
-            playerId,
-            rotatedPlayers,
-          )}`}
+          className={`${styles.card} ${styles[`card_${getPlayerIndex(playerId, rotatedPlayers)}`]}`}
           style={{
             zIndex: card.type === "pass" ? 0 : index + 1,
           }}

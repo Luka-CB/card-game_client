@@ -15,8 +15,7 @@
   .modal {
     @include bgColor(light);
     border-radius: 8px;
-    padding: 5px;
-    padding: 20px 5;
+    padding: 20px 5px;
     width: 420px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     display: flex;
