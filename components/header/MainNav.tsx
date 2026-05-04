@@ -1,7 +1,6 @@
 import useUserStore from "@/store/user/userStore";
 import styles from "./MainNav.module.scss";
-import { usePathname, useRouter } from "next/navigation";
-import Link from "next/link";
+import { usePathname, useRouter, Link } from "@/i18n/navigation";
 import { TfiStatsDown, TfiStatsUp } from "react-icons/tfi";
 import { PiChartLineLight } from "react-icons/pi";
 import { SiAirtable } from "react-icons/si";
@@ -10,8 +9,8 @@ import { MdManageAccounts } from "react-icons/md";
 import { IoLogOut } from "react-icons/io5";
 import Image from "next/image";
 import Avatar from "./Avatar";
-import { useEffect } from "react";
 import useLogoutStore from "@/store/auth/logoutStore";
+import { useLocale, useTranslations } from "next-intl";
 
 interface MainNavProps {
   jCoins: {
@@ -30,24 +29,26 @@ const MainNav: React.FC<MainNavProps> = ({
   rating,
   onOpenGetMoreModal,
 }) => {
+  const t = useTranslations("Header");
+  const l = useTranslations("Links");
+  const locale = useLocale();
+
   const { user } = useUserStore();
-  const { status, logout } = useLogoutStore();
+  const { logout } = useLogoutStore();
   const router = useRouter();
 
   const pathname = usePathname();
 
-  useEffect(() => {
-    if (status === "success") {
-      router.push("/");
-    }
-  }, [status, router]);
+  const handleLogout = async () => {
+    const ok = await logout();
 
-  const handleLogout = () => {
-    logout();
+    if (ok) {
+      router.push("/?auth=signin");
+    }
   };
 
   return (
-    <header className={styles.main_nav}>
+    <header className={styles.main_nav} data-locale={locale}>
       <nav>
         {user && user._id ? (
           <ul>
@@ -57,28 +58,43 @@ const MainNav: React.FC<MainNavProps> = ({
               }
             >
               <SiAirtable className={styles.icon} />
-              <Link href="/rooms">Rooms</Link>
+              <Link href="/rooms">{l("lobby")}</Link>
             </div>
-            <div
-              className={
-                pathname === "/account" ? styles.link_active : styles.link
-              }
-            >
-              <MdManageAccounts className={styles.icon} />
-              <Link href="/account">Your Account</Link>
-            </div>
-            <div
-              className={
-                pathname === "/feedback" ? styles.link_active : styles.link
-              }
-            >
-              <TbReport className={styles.icon} />
-              <Link href="/feedback">Feedback</Link>
-            </div>
+            {user.isGuest && (
+              <div className={styles.auth_links_guest}>
+                <span className={styles.auth_link} onClick={handleLogout}>
+                  {t("signIn")}
+                </span>
+                <div className={styles.auth_divider}></div>
+                <span className={styles.auth_link} onClick={handleLogout}>
+                  {t("signUp")}
+                </span>
+              </div>
+            )}
+            {!user.isGuest && (
+              <>
+                <div
+                  className={
+                    pathname === "/account" ? styles.link_active : styles.link
+                  }
+                >
+                  <MdManageAccounts className={styles.icon} />
+                  <Link href="/account">{l("account")}</Link>
+                </div>
+                <div
+                  className={
+                    pathname === "/feedback" ? styles.link_active : styles.link
+                  }
+                >
+                  <TbReport className={styles.icon} />
+                  <Link href="/feedback">{l("feedback")}</Link>
+                </div>
+              </>
+            )}
             <div className={styles.divider}></div>
             <div className={styles.logout} onClick={handleLogout}>
               <IoLogOut className={styles.icon} />
-              <span>Logout</span>
+              <span>{l("logout")}</span>
             </div>
           </ul>
         ) : null}
@@ -86,57 +102,59 @@ const MainNav: React.FC<MainNavProps> = ({
       {user && user?._id ? (
         <div className={styles.user}>
           <div className={styles.user_info}>
-            <div className={styles.stats}>
-              <div className={styles.rating}>
-                {rating?.trend === "up" && (
-                  <TfiStatsUp className={styles.up_rating_icon} />
-                )}
-                {rating?.trend === "down" && (
-                  <TfiStatsDown className={styles.down_rating_icon} />
-                )}
-                {rating?.trend === "stable" && (
-                  <PiChartLineLight className={styles.stable_rating_icon} />
-                )}
-                <span
-                  className={
-                    rating && rating.trend === "up"
-                      ? styles.up_rating_value
-                      : rating && rating.trend === "down"
-                        ? styles.down_rating_value
-                        : styles.stable_rating_value
+            {!user.isGuest && (
+              <div className={styles.stats}>
+                <div className={styles.rating}>
+                  {rating?.trend === "up" && (
+                    <TfiStatsUp className={styles.up_rating_icon} />
+                  )}
+                  {rating?.trend === "down" && (
+                    <TfiStatsDown className={styles.down_rating_icon} />
+                  )}
+                  {rating?.trend === "stable" && (
+                    <PiChartLineLight className={styles.stable_rating_icon} />
+                  )}
+                  <span
+                    className={
+                      rating && rating.trend === "up"
+                        ? styles.up_rating_value
+                        : rating && rating.trend === "down"
+                          ? styles.down_rating_value
+                          : styles.stable_rating_value
+                    }
+                  >
+                    {rating !== null ? rating.value : "0"}
+                  </span>
+                </div>
+                <div
+                  className={`${styles.coins} ${jCoins?.raw !== undefined && jCoins.raw < 100 ? styles.clickable_coins : ""}`}
+                  onClick={
+                    jCoins?.raw && jCoins.raw < 100
+                      ? onOpenGetMoreModal
+                      : undefined
                   }
                 >
-                  {rating !== null ? rating.value : "0"}
-                </span>
+                  <Image
+                    src="/coin1.png"
+                    alt="coin"
+                    width={40}
+                    height={40}
+                    className={styles.coin_img}
+                  />
+                  <span
+                    className={
+                      jCoins && jCoins.raw < 0
+                        ? styles.negative_coins
+                        : jCoins && jCoins.raw >= 0 && jCoins.raw < 100
+                          ? styles.warning_value
+                          : styles.coins_value
+                    }
+                  >
+                    {jCoins !== null ? jCoins.value : "0"}
+                  </span>
+                </div>
               </div>
-              <div
-                className={`${styles.coins} ${jCoins?.raw !== undefined && jCoins.raw < 100 ? styles.clickable_coins : ""}`}
-                onClick={
-                  jCoins?.raw && jCoins.raw < 100
-                    ? onOpenGetMoreModal
-                    : undefined
-                }
-              >
-                <Image
-                  src="/coin1.png"
-                  alt="coin"
-                  width={40}
-                  height={40}
-                  className={styles.coin_img}
-                />
-                <span
-                  className={
-                    jCoins && jCoins.raw < 0
-                      ? styles.negative_coins
-                      : jCoins && jCoins.raw >= 0 && jCoins.raw < 100
-                        ? styles.warning_value
-                        : styles.coins_value
-                  }
-                >
-                  {jCoins !== null ? jCoins.value : "0"}
-                </span>
-              </div>
-            </div>
+            )}
             <p>
               {user?.originalUsername ? user.originalUsername : user?.username}
             </p>
@@ -145,9 +163,9 @@ const MainNav: React.FC<MainNavProps> = ({
         </div>
       ) : (
         <div className={styles.auth_links}>
-          <Link href="/?auth=signin">Sign In</Link>
+          <Link href="/?auth=signin">{t("signIn")}</Link>
           <div className={styles.divider}>|</div>
-          <Link href="/?auth=signup">Sign Up</Link>
+          <Link href="/?auth=signup">{t("signUp")}</Link>
         </div>
       )}
     </header>

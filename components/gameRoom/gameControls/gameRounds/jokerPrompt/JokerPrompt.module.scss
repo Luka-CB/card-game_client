@@ -4,7 +4,8 @@
   @include bgColor(light);
   position: absolute;
   bottom: 110%;
-  right: 0;
+  right: 50%;
+  transform: translateX(-50%);
   z-index: 100;
   width: 250px;
   padding: 8px;

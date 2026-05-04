@@ -1,4 +1,25 @@
 import { formatDistanceToNow, formatDistanceToNowStrict } from "date-fns";
+import { enUS, ka, ru } from "date-fns/locale";
+
+type SupportedLocale = "en" | "ka" | "ru";
+
+const dateFnsLocales = {
+  en: enUS,
+  ka,
+  ru,
+} as const;
+
+const intlLocales: Record<SupportedLocale, string> = {
+  en: "en-US",
+  ka: "ka-GE",
+  ru: "ru-RU",
+};
+
+const normalizeLocale = (locale?: string | null): SupportedLocale => {
+  if (!locale) return "en";
+  const baseLocale = locale.toLowerCase().split("-")[0];
+  return baseLocale === "ka" || baseLocale === "ru" ? baseLocale : "en";
+};
 
 const toDate = (d?: string | Date | null): Date | null => {
   if (!d) return null;
@@ -7,23 +28,33 @@ const toDate = (d?: string | Date | null): Date | null => {
   return date as Date;
 };
 
-export const timeAgo = (d: string | Date | null) => {
+export const timeAgo = (d: string | Date | null, locale?: string | null) => {
   const date = toDate(d);
   if (!date) return "unknown";
-  return formatDistanceToNow(date, { addSuffix: true });
+  const normalizedLocale = normalizeLocale(locale);
+
+  return formatDistanceToNow(date, {
+    addSuffix: true,
+    locale: dateFnsLocales[normalizedLocale],
+  });
 };
 
-export const timeAgoStrict = (d?: string | Date | null) => {
+export const timeAgoStrict = (d?: string | Date | null, locale?: string | null) => {
   const date = toDate(d);
   if (!date) return "unknown";
-  return formatDistanceToNowStrict(date, { addSuffix: true });
+  const normalizedLocale = normalizeLocale(locale);
+
+  return formatDistanceToNowStrict(date, {
+    addSuffix: true,
+    locale: dateFnsLocales[normalizedLocale],
+  });
 };
 
 // time formate like january 2020
-export const formatDate = (d?: string | Date | null) => {
+export const formatDate = (d?: string | Date | null, locale?: string | null) => {
   const date = toDate(d);
   if (!date) return "unknown";
-  return date.toLocaleDateString("en-US", {
+  return date.toLocaleDateString(intlLocales[normalizeLocale(locale)], {
     year: "numeric",
     month: "long",
   });

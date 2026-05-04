@@ -4,9 +4,10 @@ import { motion } from "framer-motion";
 import { GiExitDoor } from "react-icons/gi";
 import { useEffect, useState } from "react";
 import useSocket from "@/hooks/useSocket";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 import { soundManager } from "@/utils/sounds";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 
 interface FinishedModeProps {
   users: RoomUser[];
@@ -23,6 +24,8 @@ const FinishedMode: React.FC<FinishedModeProps> = ({
   scoreBoard,
   user,
 }) => {
+  const t = useTranslations("GameRoom.finishedMode");
+
   const [countDown, setCountdown] = useState(59);
 
   const socket = useSocket();
@@ -128,13 +131,13 @@ const FinishedMode: React.FC<FinishedModeProps> = ({
       className={styles.container}
     >
       <div className={styles.exit_button} onClick={exitRoom}>
-        <span>Exit The Room</span>
+        <span>{t("exit")}</span>
         <GiExitDoor className={styles.exit_icon} />
       </div>
-      <h1>Game Finished</h1>
+      <h1>{t("title")}</h1>
       <div className={styles.notice}>
         <p>
-          The room will automatically close in <b>{countDown}</b> seconds.
+          {t("paragraph.textOne")} <b>{countDown}</b> {t("paragraph.textTwo")}
         </p>
       </div>
       <div className={styles.user_list}>
@@ -170,7 +173,7 @@ const FinishedMode: React.FC<FinishedModeProps> = ({
               </div>
               <b className={styles.username}>{user.username}</b>
               <b className={styles.score}>
-                Score: <small>{getPlayerScore(user.id)}</small>
+                {t("score")} <small>{getPlayerScore(user.id)}</small>
               </b>
               {bet ? (
                 <b className={styles.points}>

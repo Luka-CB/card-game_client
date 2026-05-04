@@ -1,13 +1,19 @@
+import { useEffect } from "react";
 import styles from "./Filters.module.scss";
 import useFilterStore from "@/store/gamePage/filterStore";
 import useUserStore from "@/store/user/userStore";
 import { AnimatePresence, motion } from "framer-motion";
+import { useTranslations } from "next-intl";
 import { FaTimesCircle } from "react-icons/fa";
 
 const Filters = () => {
-  const { usersOnline } = useUserStore();
+  const t = useTranslations("GamePage.filters");
+
+  const { usersOnline, user } = useUserStore();
   const { showFilterOptions, checkedFilters, setCheckedFilters } =
     useFilterStore();
+
+  useEffect(() => {}, []);
 
   return (
     <AnimatePresence>
@@ -35,7 +41,7 @@ const Filters = () => {
                 })
               }
             />
-            <label htmlFor="classic">Classic</label>
+            <label htmlFor="classic">{t("classic")}</label>
           </div>
           <div className={styles.checkbox}>
             <input
@@ -50,23 +56,23 @@ const Filters = () => {
                 })
               }
             />
-            <label htmlFor="nines">Nines</label>
+            <label htmlFor="nines">{t("nines")}</label>
           </div>
           <div className={styles.checkbox}>
-            <input
-              type="checkbox"
-              name="betting"
-              id="betting"
-              checked={checkedFilters.betting}
-              onChange={() =>
-                setCheckedFilters({
-                  ...checkedFilters,
-                  betting: !checkedFilters.betting,
-                })
-              }
-            />
-            <label htmlFor="betting">With Bet</label>
-          </div>
+              <input
+                type="checkbox"
+                name="betting"
+                id="betting"
+                checked={checkedFilters.betting}
+                onChange={() =>
+                  setCheckedFilters({
+                    ...checkedFilters,
+                    betting: !checkedFilters.betting,
+                  })
+                }
+              />
+              <label htmlFor="betting">{t("bet")}</label>
+            </div>
           <div className={styles.checkbox}>
             <input
               type="checkbox"
@@ -80,7 +86,7 @@ const Filters = () => {
                 })
               }
             />
-            <label htmlFor="public">Public</label>
+            <label htmlFor="public">{t("public")}</label>
           </div>
           <div className={styles.checkbox}>
             <input
@@ -95,7 +101,7 @@ const Filters = () => {
                 })
               }
             />
-            <label htmlFor="private">Private</label>
+            <label htmlFor="private">{t("private")}</label>
           </div>
           {usersOnline?.length > 100 && (
             <div className={styles.checkbox}>
@@ -111,11 +117,11 @@ const Filters = () => {
                   })
                 }
               />
-              <label htmlFor="chat">With Chat</label>
+              <label htmlFor="chat">{t("chat")}</label>
             </div>
           )}
           <div className={styles.penalties}>
-            <p>Penalties:</p>
+            <p>{t("penalties")}</p>
             <div className={styles.checkbox}>
               <input
                 type="checkbox"
@@ -200,7 +206,7 @@ const Filters = () => {
               })
             }
           >
-            <small>Clear Filters</small>
+            <small>{t("btn")}</small>
             <FaTimesCircle className={styles.clear_icon} />
           </button>
         </motion.div>

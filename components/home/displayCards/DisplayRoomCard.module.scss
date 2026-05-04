@@ -5,6 +5,7 @@
   margin-top: 40px;
 
   h2 {
+    padding: 0 10px;
     margin-bottom: 10px;
     color: var(--clr-light);
 
@@ -42,16 +43,19 @@
         flex-direction: column;
         align-items: center;
         justify-content: center;
+        padding: 0 10px;
 
         p {
           color: var(--clr-warning-400);
           font-size: 1.2rem;
+          text-align: center;
         }
 
         small {
           color: var(--clr-light);
           font-size: 0.8rem;
           margin-top: 5px;
+          text-align: center;
         }
 
         .notice_btn {

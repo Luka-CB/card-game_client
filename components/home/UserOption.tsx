@@ -1,27 +1,19 @@
 "use client";
 
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import styles from "./UserOption.module.scss";
 import { AnimatePresence, motion } from "framer-motion";
 import useUserOptionStore from "@/store/user/userOptionStore";
 import useLogoutStore from "@/store/auth/logoutStore";
 import BtnLoader from "../loaders/BtnLoader";
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
 import useWindowSize from "@/hooks/useWindowSize";
+import useUserStore from "@/store/user/userStore";
 
 const UserOption = () => {
-  const { isOpen, setIsOpen } = useUserOptionStore();
+  const { isOpen } = useUserOptionStore();
   const { status, logout } = useLogoutStore();
-  const router = useRouter();
+  const { user } = useUserStore();
   const windowSize = useWindowSize();
-
-  useEffect(() => {
-    if (status === "success") {
-      router.push("/");
-      setIsOpen(false);
-    }
-  }, [status, router, setIsOpen]);
 
   const handleLogout = () => {
     logout();
@@ -40,9 +32,11 @@ const UserOption = () => {
           }
           onClick={(e) => e.stopPropagation()}
         >
-          <Link href="/account" className={styles.link}>
-            Your Account
-          </Link>
+          {!user?.isGuest && (
+            <Link href="/account" className={styles.link}>
+              Your Account
+            </Link>
+          )}
           <Link href="#" className={styles.link}>
             Something Else
           </Link>

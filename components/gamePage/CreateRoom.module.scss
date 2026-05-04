@@ -220,11 +220,12 @@
 
         .inputs {
           display: flex;
-          gap: 10px;
+          align-items: center;
+          gap: 0.5rem;
 
           input[type="radio"] {
-            width: 20px;
-            height: 20px;
+            width: 18px;
+            height: 18px;
             accent-color: var(--clr-primary-800);
 
             &:not(:first-child) {
@@ -234,6 +235,7 @@
 
           label {
             color: var(--clr-dark);
+            font-size: small;
           }
         }
       }
@@ -394,6 +396,126 @@
           small {
             color: var(--clr-danger-800);
           }
+        }
+      }
+
+      .deck_picker {
+        margin-top: 12px;
+
+        b {
+          color: var(--clr-dark);
+          font-size: 0.9rem;
+        }
+
+        .deck_list {
+          display: flex;
+          gap: 8px;
+          overflow-x: auto;
+          padding: 8px 2px 4px;
+          scrollbar-width: thin;
+
+          &::-webkit-scrollbar {
+            height: 4px;
+          }
+          &::-webkit-scrollbar-thumb {
+            background: var(--clr-dark);
+            border-radius: 2px;
+          }
+        }
+
+        .deck_item {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 5px;
+          padding: 8px 6px 6px;
+          min-width: 86px;
+          border-radius: 8px;
+          border: 2px solid transparent;
+          background: transparent;
+          cursor: pointer;
+          transition: border-color 0.15s, background 0.15s;
+          position: relative;
+          flex-shrink: 0;
+
+          &:hover {
+            border-color: var(--clr-primary-600);
+          }
+        }
+
+        .deck_item_active {
+          border-color: var(--clr-primary-800);
+          background: var(--clr-primary-faded);
+        }
+
+        .deck_item_locked {
+          cursor: default;
+          opacity: 0.45;
+          pointer-events: none;
+
+          &:hover {
+            border-color: transparent;
+          }
+        }
+
+        // Fan of 4 cards
+        .deck_fan {
+          position: relative;
+          width: 72px;
+          height: 62px;
+          flex-shrink: 0;
+        }
+
+        .deck_card {
+          position: absolute;
+          bottom: 0;
+          left: 50%;
+          transform-origin: bottom center;
+          border-radius: 4px;
+          box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.55);
+          object-fit: cover;
+        }
+
+        .deck_c1 { transform: translateX(-50%) rotate(-18deg); }
+        .deck_c2 { transform: translateX(-50%) rotate(-6deg); }
+        .deck_c3 { transform: translateX(-50%) rotate(6deg); }
+        .deck_c4 { transform: translateX(-50%) rotate(18deg); }
+
+        .deck_lock_overlay {
+          position: absolute;
+          top: 8px;
+          left: 50%;
+          transform: translateX(-50%);
+          z-index: 1;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 72px;
+          height: 62px;
+          background: rgba(0, 0, 0, 0.48);
+          border-radius: 4px;
+        }
+
+        .deck_lock_icon {
+          color: var(--clr-light);
+          font-size: 1.1rem;
+        }
+
+        .deck_name {
+          font-size: 0.6rem;
+          color: var(--clr-dark);
+          text-align: center;
+          max-width: 56px;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+
+        .deck_level_hint {
+          font-size: 0.55rem;
+          color: var(--clr-danger-800);
+          text-align: center;
+          text-transform: capitalize;
         }
       }
 
@@ -645,6 +767,52 @@
           border-radius: 5px;
           align-self: center;
         }
+      }
+    }
+  }
+
+  .modal[data-locale="ka"],
+  .modal[data-locale="ru"] {
+    form {
+      .radio_box {
+        b {
+          font-size: small;
+        }
+      }
+
+      .toggle_box {
+        gap: 0.7rem;
+
+        span {
+          font-size: small;
+        }
+      }
+
+      .input_box {
+        label {
+          font-size: small;
+        }
+      }
+
+      .bet_box,
+      .bet_box_error {
+        label {
+          font-size: 0.6rem;
+        }
+
+        .info {
+          small {
+            font-size: 0.6rem;
+          }
+        }
+
+        .error_message {
+          font-size: 0.7rem;
+        }
+      }
+
+      .submit_btn {
+        font-size: 1rem;
       }
     }
   }

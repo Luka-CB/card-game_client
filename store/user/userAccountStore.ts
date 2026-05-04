@@ -30,68 +30,93 @@ export interface UserAccount {
 
 interface UserAccountStore {
   userAccount: UserAccount | null;
-  state: "idle" | "loading" | "success" | "error";
-  updateState: "idle" | "loading" | "success" | "error";
+  status: "idle" | "loading" | "success" | "error";
+  updateStatus: "idle" | "loading" | "success" | "error";
   error: string | null;
-  updateAvatarState: "idle" | "loading" | "success" | "error";
+  updateAvatarStatus: "idle" | "loading" | "success" | "error";
   fetchUserAccount: () => Promise<void>;
   updateUserAccount: (userData: Partial<UserAccount>) => Promise<void>;
   updateUserAvatar: (avatarUrl: string) => Promise<void>;
+  patchUserAccount: (patch: Partial<UserAccount>) => void;
 }
 
 const useUserAccountStore = create<UserAccountStore>((set) => ({
   userAccount: null,
-  state: "idle",
-  updateState: "idle",
-  updateAvatarState: "idle",
+  status: "idle",
+  updateStatus: "idle",
+  updateAvatarStatus: "idle",
   error: null,
+  patchUserAccount: (patch) => {
+    set((state) => ({
+      userAccount: state.userAccount
+        ? { ...state.userAccount, ...patch }
+        : state.userAccount,
+    }));
+  },
   fetchUserAccount: async () => {
-    set({ state: "loading", error: null });
+    set({ status: "loading", error: null });
     try {
       const { data } = await api.get("/users/account");
-      set({ userAccount: data, state: "success" });
+      set({ userAccount: data, status: "success" });
     } catch (error: unknown) {
       if (error instanceof AxiosError) {
         set({
           error: error.response?.data?.error?.message || error.message,
-          state: "error",
+          status: "error",
         });
       } else {
-        set({ error: "An unexpected error occurred", state: "error" });
+        set({ error: "An unexpected error occurred", status: "error" });
       }
     }
   },
   updateUserAccount: async (userData: Partial<UserAccount>) => {
-    set({ updateState: "loading", error: null });
+    set({ updateStatus: "loading", error: null });
     try {
       const { data } = await api.put("/users/account", userData);
-      set({ userAccount: data, updateState: "success" });
+      set({ userAccount: data, updateStatus: "success" });
     } catch (error: unknown) {
       if (error instanceof AxiosError) {
+        const status = error.response?.status;
+        const message =
+          error.response?.data?.error?.message || "An error occurred";
+        if (status && status >= 500) {
+          console.error("Error updating user account:", error);
+        }
         set({
-          error: error.response?.data?.error?.message || error.message,
-          updateState: "error",
+          updateStatus: "error",
+          error: message,
         });
       } else {
-        set({ error: "An unexpected error occurred", updateState: "error" });
+        console.error("Unexpected error updating user account:", error);
+        set({
+          updateStatus: "error",
+          error: "An unexpected error occurred",
+        });
       }
     }
   },
   updateUserAvatar: async (avatarUrl: string) => {
-    set({ updateAvatarState: "loading", error: null });
+    set({ updateAvatarStatus: "loading", error: null });
     try {
       const { data } = await api.put("/users/avatar", { avatarUrl });
-      set({ userAccount: data, updateAvatarState: "success" });
+      set({ userAccount: data, updateAvatarStatus: "success" });
     } catch (error: unknown) {
       if (error instanceof AxiosError) {
+        const status = error.response?.status;
+        const message =
+          error.response?.data?.error?.message || "An error occurred";
+        if (status && status >= 500) {
+          console.error("Error updating user avatar:", error);
+        }
         set({
-          error: error.response?.data?.error?.message || error.message,
-          updateAvatarState: "error",
+          updateAvatarStatus: "error",
+          error: message,
         });
       } else {
+        console.error("Unexpected error updating user avatar:", error);
         set({
+          updateAvatarStatus: "error",
           error: "An unexpected error occurred",
-          updateAvatarState: "error",
         });
       }
     }

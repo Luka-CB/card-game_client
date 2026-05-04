@@ -227,9 +227,56 @@
         }
       }
 
-      @media (max-width: 450px) {
+      @media (max-width: 350px) {
         flex-direction: column;
         gap: 10px;
+
+        .delete,
+        .cancel {
+          width: 100%;
+        }
+      }
+    }
+  }
+
+  .modal[data-locale="ka"],
+  .modal[data-locale="ru"] {
+    h2 {
+      font-size: 1rem;
+    }
+
+    p {
+      font-size: 0.9rem;
+    }
+
+    h3 {
+      font-size: 0.9rem;
+    }
+
+    .reasons {
+      .reason {
+        label {
+          font-size: small;
+        }
+      }
+    }
+
+    .additional_feedback {
+      label {
+        font-size: small;
+      }
+
+      textarea {
+        font-size: small;
+      }
+    }
+  }
+
+  .modal[data-locale="ru"] {
+    .buttons {
+      .delete,
+      .cancel {
+        font-size: 0.7rem;
       }
     }
   }

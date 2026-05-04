@@ -1,8 +1,7 @@
 "use client";
 
-import Link from "next/link";
+import { Link, usePathname } from "@/i18n/navigation";
 import styles from "./SideNav.module.scss";
-import { usePathname } from "next/navigation";
 import Image from "next/image";
 import { AnimatePresence, motion } from "framer-motion";
 import useNavStore from "@/store/navStore";
@@ -13,6 +12,7 @@ import { IoIosLogOut } from "react-icons/io";
 import useUserStore from "@/store/user/userStore";
 import useLogoutStore from "@/store/auth/logoutStore";
 import BtnLoader from "../loaders/BtnLoader";
+import { useTranslations } from "next-intl";
 
 interface SideNavProps {
   jCoins: { value: string; raw: number } | null;
@@ -28,6 +28,9 @@ const SideNav: React.FC<SideNavProps> = ({
   rating,
   onOpenGetMoreModal,
 }) => {
+  const t = useTranslations("Header");
+  const l = useTranslations("Links");
+
   const pathname = usePathname();
   const { toggleNav, isNavOpen } = useNavStore();
   const { status, logout } = useLogoutStore();
@@ -43,7 +46,7 @@ const SideNav: React.FC<SideNavProps> = ({
 
   return (
     <AnimatePresence>
-      {isNavOpen && windowSize.width <= 700 && (
+      {isNavOpen && windowSize.width <= 800 && (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -74,50 +77,61 @@ const SideNav: React.FC<SideNavProps> = ({
                 </div>
                 <span>{user?.username || "Username"}</span>
               </div>
-              <div className={styles.stats}>
-                <div className={styles.rating}>
-                  {rating?.trend === "up" && (
-                    <TfiStatsUp className={styles.up_rating_icon} />
-                  )}
-                  {rating?.trend === "down" && (
-                    <TfiStatsDown className={styles.down_rating_icon} />
-                  )}
-                  {rating?.trend === "stable" && (
-                    <PiChartLineLight className={styles.stable_rating_icon} />
-                  )}
-                  <span
-                    className={
-                      rating && rating.trend === "up"
-                        ? styles.up_rating_value
-                        : rating && rating.trend === "down"
-                          ? styles.down_rating_value
-                          : styles.stable_rating_value
-                    }
-                  >
-                    {rating !== null ? rating.value : "0"}
-                  </span>
-                </div>
-                <div className={styles.coins} onClick={onOpenGetMoreModal}>
-                  <Image
-                    src="/coin1.png"
-                    alt="coin"
-                    width={40}
-                    height={40}
-                    className={styles.coin_img}
-                  />
-                  <span
-                    className={
-                      jCoins && jCoins.raw < 0
-                        ? styles.negative_coins
-                        : jCoins && jCoins.raw >= 0 && jCoins.raw < 100
-                          ? styles.warning_value
-                          : styles.coins_value
-                    }
-                  >
-                    {jCoins !== null ? jCoins.value : "0"}
-                  </span>
-                </div>
+              <div className={styles.auth_links}>
+                <span className={styles.auth_link} onClick={handleLogout}>
+                  Sign in
+                </span>
+                <div className={styles.auth_divider}></div>
+                <span className={styles.auth_link} onClick={handleLogout}>
+                  Sign up
+                </span>
               </div>
+              {!user?.isGuest && (
+                <div className={styles.stats}>
+                  <div className={styles.rating}>
+                    {rating?.trend === "up" && (
+                      <TfiStatsUp className={styles.up_rating_icon} />
+                    )}
+                    {rating?.trend === "down" && (
+                      <TfiStatsDown className={styles.down_rating_icon} />
+                    )}
+                    {rating?.trend === "stable" && (
+                      <PiChartLineLight className={styles.stable_rating_icon} />
+                    )}
+                    <span
+                      className={
+                        rating && rating.trend === "up"
+                          ? styles.up_rating_value
+                          : rating && rating.trend === "down"
+                            ? styles.down_rating_value
+                            : styles.stable_rating_value
+                      }
+                    >
+                      {rating !== null ? rating.value : "0"}
+                    </span>
+                  </div>
+                  <div className={styles.coins} onClick={onOpenGetMoreModal}>
+                    <Image
+                      src="/coin1.png"
+                      alt="coin"
+                      width={40}
+                      height={40}
+                      className={styles.coin_img}
+                    />
+                    <span
+                      className={
+                        jCoins && jCoins.raw < 0
+                          ? styles.negative_coins
+                          : jCoins && jCoins.raw >= 0 && jCoins.raw < 100
+                            ? styles.warning_value
+                            : styles.coins_value
+                      }
+                    >
+                      {jCoins !== null ? jCoins.value : "0"}
+                    </span>
+                  </div>
+                </div>
+              )}
             </div>
             <hr />
             <nav>
@@ -127,7 +141,7 @@ const SideNav: React.FC<SideNavProps> = ({
                   className={pathname === "/" ? styles.active : undefined}
                   onClick={() => toggleNav()}
                 >
-                  Home
+                  {l("home")}
                 </Link>
 
                 <Link
@@ -135,38 +149,40 @@ const SideNav: React.FC<SideNavProps> = ({
                   className={pathname === "/rooms" ? styles.active : undefined}
                   onClick={() => toggleNav()}
                 >
-                  Rooms
+                  {l("lobby")}
                 </Link>
 
-                <Link
-                  href="/account"
-                  className={
-                    pathname === "/account" ? styles.active : undefined
-                  }
-                  onClick={() => toggleNav()}
-                >
-                  Your Account
-                </Link>
+                {!user?.isGuest && (
+                  <Link
+                    href="/account"
+                    className={
+                      pathname === "/account" ? styles.active : undefined
+                    }
+                    onClick={() => toggleNav()}
+                  >
+                    {l("account")}
+                  </Link>
+                )}
                 <Link
                   href="/rules"
                   className={pathname === "/rules" ? styles.active : undefined}
                   onClick={() => toggleNav()}
                 >
-                  Game Rules
+                  {l("rules")}
                 </Link>
                 <Link
                   href="/about"
                   className={pathname === "/about" ? styles.active : undefined}
                   onClick={() => toggleNav()}
                 >
-                  About Us
+                  {l("about")}
                 </Link>
                 <Link
                   href="/terms"
                   className={pathname === "/terms" ? styles.active : undefined}
                   onClick={() => toggleNav()}
                 >
-                  Terms of Service
+                  {l("terms")}
                 </Link>
                 <Link
                   href="/privacy"
@@ -175,7 +191,7 @@ const SideNav: React.FC<SideNavProps> = ({
                   }
                   onClick={() => toggleNav()}
                 >
-                  Privacy Policy
+                  {l("privacy")}
                 </Link>
                 <Link
                   href="/data-deletion"
@@ -184,17 +200,19 @@ const SideNav: React.FC<SideNavProps> = ({
                   }
                   onClick={() => toggleNav()}
                 >
-                  Data Deletion
+                  {l("dataDeletion")}
                 </Link>
-                <Link
-                  href="/feedback"
-                  className={
-                    pathname === "/feedback" ? styles.active : undefined
-                  }
-                  onClick={() => toggleNav()}
-                >
-                  Feedback
-                </Link>
+                {!user?.isGuest && (
+                  <Link
+                    href="/feedback"
+                    className={
+                      pathname === "/feedback" ? styles.active : undefined
+                    }
+                    onClick={() => toggleNav()}
+                  >
+                    {l("feedback")}
+                  </Link>
+                )}
               </ul>
             </nav>
             <hr />
@@ -204,14 +222,14 @@ const SideNav: React.FC<SideNavProps> = ({
                   <BtnLoader />
                 ) : (
                   <>
-                    <span>Logout</span>
+                    <span>{l("logout")}</span>
                     <IoIosLogOut className={styles.logout_icon} />
                   </>
                 )}
               </button>
             </div>
             <button className={styles.close_btn} onClick={() => toggleNav()}>
-              <span>Close</span>
+              <span>{t("close")}</span>
               <TfiClose className={styles.close_icon} />
             </button>
           </motion.div>

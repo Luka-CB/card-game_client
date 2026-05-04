@@ -5,7 +5,7 @@ import { create } from "zustand";
 interface DeleteUserStore {
   isDelModalOpen: boolean;
   toggleDelModal: () => void;
-  state: "idle" | "loading" | "success" | "failed";
+  status: "idle" | "loading" | "success" | "failed";
   error: string | null;
   deleteAccount: (
     reason: { value: string; reasonNumber: number },
@@ -17,13 +17,13 @@ const useDeleteUserStore = create<DeleteUserStore>((set) => ({
   isDelModalOpen: false,
   toggleDelModal: () =>
     set((state) => ({ isDelModalOpen: !state.isDelModalOpen })),
-  state: "idle",
+  status: "idle",
   error: null,
   deleteAccount: async (
     reason: { value: string; reasonNumber: number },
     additionalFeedback?: string,
   ) => {
-    set({ state: "loading", error: null });
+    set({ status: "loading", error: null });
     try {
       const { data } = await api.delete("/users/account", {
         data: {
@@ -32,19 +32,25 @@ const useDeleteUserStore = create<DeleteUserStore>((set) => ({
         },
       });
       if (data.success) {
-        set({ state: "success" });
+        set({ status: "success" });
       }
     } catch (error: unknown) {
-      console.log(error);
       if (error instanceof AxiosError) {
+        const status = error.response?.status;
+        const message =
+          error.response?.data?.error?.message || "An error occurred";
+        if (status && status >= 500) {
+          console.error("Error deleting user account:", error);
+        }
         set({
-          error: error.response?.data?.error?.message || "An error occurred",
-          state: "failed",
+          status: "failed",
+          error: message,
         });
       } else {
+        console.error("Unexpected error deleting user account:", error);
         set({
+          status: "failed",
           error: "An unexpected error occurred",
-          state: "failed",
         });
       }
     }

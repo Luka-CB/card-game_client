@@ -5,18 +5,34 @@ import useDeleteUserStore from "@/store/user/deleteUserStore";
 import { useEffect, useState } from "react";
 import useFlashMsgStore from "@/store/flashMsgStore";
 import BtnLoader from "@/components/loaders/BtnLoader";
+import { useLocale, useTranslations } from "next-intl";
 
 const deletionReasons = [
-  { value: "I have privacy concerns", reasonNumber: 1 },
-  { value: "I receive too many emails", reasonNumber: 2 },
-  { value: "I want to create a new account", reasonNumber: 3 },
-  { value: "I no longer find the service useful", reasonNumber: 4 },
-  { value: "Platform has too many bugs", reasonNumber: 5 },
-  { value: "I waste too much time on the platform", reasonNumber: 6 },
+  { label: "reasonOne", value: "I have privacy concerns", reasonNumber: 1 },
+  { label: "reasonTwo", value: "I receive too many emails", reasonNumber: 2 },
+  {
+    label: "reasonThree",
+    value: "I want to create a new account",
+    reasonNumber: 3,
+  },
+  {
+    label: "reasonFour",
+    value: "I no longer find the service useful",
+    reasonNumber: 4,
+  },
+  { label: "reasonFive", value: "Platform has too many bugs", reasonNumber: 5 },
+  {
+    label: "reasonSix",
+    value: "I waste too much time on the platform",
+    reasonNumber: 6,
+  },
 ];
 
 const DeleteModal = () => {
-  const { isDelModalOpen, toggleDelModal, deleteAccount, state, error } =
+  const t = useTranslations("AccountPage.delete.modal");
+  const locale = useLocale();
+
+  const { isDelModalOpen, toggleDelModal, deleteAccount, status, error } =
     useDeleteUserStore();
   const { setMsg } = useFlashMsgStore();
   const [selectedReason, setSelectedReason] = useState<{
@@ -28,12 +44,12 @@ const DeleteModal = () => {
   useEffect(() => {
     let timout: NodeJS.Timeout;
 
-    if (state === "failed" && error) {
+    if (status === "failed" && error) {
       setMsg(error, "error");
     }
 
-    if (state === "success") {
-      setMsg("Account deleted successfully.", "success");
+    if (status === "success") {
+      setMsg(t("msgs.success"), "success");
 
       timout = setTimeout(() => {
         window.location.href = "/";
@@ -41,7 +57,7 @@ const DeleteModal = () => {
     }
 
     return () => clearTimeout(timout);
-  }, [state, setMsg, error]);
+  }, [status, setMsg, error]);
 
   useEffect(() => {
     if (isDelModalOpen) {
@@ -53,11 +69,17 @@ const DeleteModal = () => {
 
   const handleDelete = () => {
     if (!selectedReason) {
-      setMsg("Please select a reason for deletion.", "error");
+      setMsg(t("msgs.error"), "error");
       return;
     }
 
-    deleteAccount(selectedReason, additionalFeedback);
+    deleteAccount(
+      {
+        value: selectedReason.value,
+        reasonNumber: selectedReason.reasonNumber,
+      },
+      additionalFeedback,
+    );
   };
 
   const handleCancelDelete = () => {
@@ -79,18 +101,16 @@ const DeleteModal = () => {
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.8, opacity: 0 }}
             className={styles.modal}
+            data-locale={locale}
           >
             <FaTimesCircle
               className={styles.close_icon}
               onClick={handleCancelDelete}
             />
-            <h2>Are you sure you want to delete your account?</h2>
-            <p>
-              This action is irreversible. All your data will be permanently
-              deleted.
-            </p>
+            <h2>{t("warning.title")}</h2>
+            <p>{t("warning.paragraph")}</p>
             <hr />
-            <h3>Please let us know why you're leaving (pick one):</h3>
+            <h3>{t("reason.label")}</h3>
             <div className={styles.reasons}>
               {deletionReasons.map((reason) => (
                 <div key={reason.reasonNumber} className={styles.reason}>
@@ -105,20 +125,20 @@ const DeleteModal = () => {
                     onChange={() => setSelectedReason(reason)}
                   />
                   <label htmlFor={`reason-${reason.reasonNumber}`}>
-                    {reason.value}
+                    {t(`deletionReasons.${reason.label}`)}
                   </label>
                 </div>
               ))}
             </div>
             <div className={styles.additional_feedback}>
               <label htmlFor="additionalFeedback">
-                Additional feedback (optional):
+                {t("reason.feedback.label")}
               </label>
               <textarea
                 id="additionalFeedback"
                 value={additionalFeedback}
                 onChange={(e) => setAdditionalFeedback(e.target.value)}
-                placeholder="Your feedback helps us improve our service."
+                placeholder={t("reason.feedback.textarea.placeholder")}
               />
             </div>
             <hr />
@@ -126,16 +146,16 @@ const DeleteModal = () => {
               <button
                 className={styles.cancel}
                 onClick={handleCancelDelete}
-                disabled={state === "loading"}
+                disabled={status === "loading"}
               >
-                Cancel
+                {t("btns.cancel")}
               </button>
               <button
                 className={styles.delete}
-                disabled={!selectedReason || state === "loading"}
+                disabled={!selectedReason || status === "loading"}
                 onClick={handleDelete}
               >
-                {state === "loading" ? <BtnLoader /> : "Delete Account"}
+                {status === "loading" ? <BtnLoader /> : t("btns.confirm")}
               </button>
             </div>
           </motion.div>

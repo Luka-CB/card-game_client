@@ -11,11 +11,13 @@
 
   h1 {
     color: var(--clr-lighter);
+    text-align: center;
   }
 
   p {
     color: var(--clr-light);
     margin-top: 20px;
+    text-align: center;
 
     b {
       font-size: large;
@@ -124,6 +126,65 @@
           font-size: small;
         }
       }
+    }
+  }
+}
+
+.container[data-locale="ka"],
+.container[data-locale="ru"] {
+  h1 {
+    font-size: 1.5rem;
+  }
+
+  p {
+    font-size: 0.8rem;
+
+    b {
+      font-size: small;
+    }
+  }
+
+  form {
+    label {
+      font-size: 0.8rem;
+    }
+
+    input {
+      height: 35px;
+      font-size: 0.6rem;
+      border-width: 1px;
+    }
+
+    button {
+      height: 35px;
+      font-size: 0.8rem;
+      width: 150px;
+      align-self: center;
+      border-width: 1px;
+    }
+  }
+
+  .go_back_wrapper {
+    .go_back {
+      .icon {
+        font-size: 1rem;
+      }
+
+      span {
+        font-size: small;
+      }
+    }
+  }
+}
+
+.container[data-locale="ru"] {
+  form {
+    button {
+      height: 35px;
+      font-size: 0.8rem;
+      width: 180px;
+      align-self: center;
+      border-width: 1px;
     }
   }
 }

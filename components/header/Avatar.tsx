@@ -13,7 +13,7 @@ const Avatar = () => {
   return (
     <>
       <div
-        className={windowSize.width <= 700 ? styles.avatar_sm : styles.avatar}
+        className={windowSize.width <= 800 ? styles.avatar_sm : styles.avatar}
         onClick={() => setIsOpen(!isOpen)}
       >
         <Image

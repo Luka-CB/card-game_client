@@ -6,6 +6,7 @@ import useWindowSize from "@/hooks/useWindowSize";
 import { motion } from "framer-motion";
 import usePlayedCardsStore from "@/store/gamePage/playedCardsStore";
 import { soundManager } from "@/utils/sounds";
+import { useDeckContext } from "@/context/DeckContext";
 
 interface PlayedCardsProps {
   playedCards: PlayedCard[];
@@ -23,6 +24,16 @@ const PlayedCards: React.FC<PlayedCardsProps> = ({
   rotatedPlayers,
 }) => {
   const windowSize = useWindowSize();
+  const { getCardUrl } = useDeckContext();
+
+  // Played cards are the table's focal point — size them larger than hand cards.
+  // Use the smaller of (5.5% of width) and (8% of height), clamped to [32, 80]px.
+  const cardWidth = Math.max(
+    32,
+    Math.min(80, Math.min(windowSize.width * 0.055, windowSize.height * 0.08)),
+  );
+  const cardHeight = Math.round(cardWidth * 1.5);
+
   const { roundWinnerId, setRoundWinnerId } = usePlayedCardsStore();
   const [animationWinnerIndex, setAnimationWinnerIndex] = useState<
     number | null
@@ -95,10 +106,11 @@ const PlayedCards: React.FC<PlayedCardsProps> = ({
       transition={{ duration: 0.8, ease: "easeInOut" }}
       onAnimationComplete={handleAnimationComplete}
       className={styles.played_cards}
+      style={{ width: cardHeight * 2, height: cardHeight * 2 }}
     >
       {cardsForRender.map(({ playerId, card }, index) => (
         <div
-          key={playerId}
+          key={card.id ?? `${playerId}-${index}`}
           className={`${styles.card} ${styles.card}_${getPlayerIndex(
             playerId,
             rotatedPlayers,
@@ -109,93 +121,17 @@ const PlayedCards: React.FC<PlayedCardsProps> = ({
         >
           {card.joker ? (
             <Image
-              src={
-                card.color === "black"
-                  ? "/cards/joker-black.png"
-                  : "/cards/joker-red.png"
-              }
+              src={getCardUrl(card)}
               alt={`${card.rank} of ${card.suit}` || "joker"}
-              width={
-                windowSize.height <= 450
-                  ? 30
-                  : windowSize.height <= 600 && windowSize.height > 450
-                    ? 40
-                    : windowSize.height <= 900 &&
-                        windowSize.height > 600 &&
-                        windowSize.width > 600
-                      ? 50
-                      : windowSize.width <= 600
-                        ? 40
-                        : windowSize.width <= 990 && windowSize.width > 600
-                          ? 50
-                          : windowSize.width <= 1150 && windowSize.width > 990
-                            ? 70
-                            : windowSize.width < 1300 && windowSize.width > 1150
-                              ? 90
-                              : 100
-              }
-              height={
-                windowSize.height <= 450
-                  ? 45
-                  : windowSize.height <= 600 && windowSize.height > 450
-                    ? 60
-                    : windowSize.height <= 900 &&
-                        windowSize.height > 600 &&
-                        windowSize.width > 600
-                      ? 80
-                      : windowSize.width <= 600
-                        ? 55
-                        : windowSize.width <= 990 && windowSize.width > 600
-                          ? 70
-                          : windowSize.width <= 1150 && windowSize.width > 990
-                            ? 100
-                            : windowSize.width < 1300 && windowSize.width > 1150
-                              ? 130
-                              : 150
-              }
+              width={cardWidth}
+              height={cardHeight}
             />
           ) : (
             <Image
-              src={`/cards/${card.suit}-${card.rank?.toLowerCase()}.png`}
+              src={getCardUrl(card)}
               alt={`${card.rank} of ${card.suit}` || "card"}
-              width={
-                windowSize.height <= 450
-                  ? 30
-                  : windowSize.height <= 600 && windowSize.height > 450
-                    ? 40
-                    : windowSize.height <= 900 &&
-                        windowSize.height > 600 &&
-                        windowSize.width > 600
-                      ? 50
-                      : windowSize.width <= 600
-                        ? 40
-                        : windowSize.width <= 990 && windowSize.width > 600
-                          ? 50
-                          : windowSize.width <= 1150 && windowSize.width > 990
-                            ? 70
-                            : windowSize.width < 1300 && windowSize.width > 1150
-                              ? 90
-                              : 100
-              }
-              height={
-                windowSize.height <= 450
-                  ? 45
-                  : windowSize.height <= 600 && windowSize.height > 450
-                    ? 60
-                    : windowSize.height <= 900 &&
-                        windowSize.height > 600 &&
-                        windowSize.width > 600
-                      ? 80
-                      : windowSize.width <= 600
-                        ? 55
-                        : windowSize.width <= 990 && windowSize.width > 600
-                          ? 70
-                          : windowSize.width <= 1150 && windowSize.width > 990
-                            ? 100
-                            : windowSize.width < 1300 && windowSize.width > 1150
-                              ? 130
-                              : 150
-              }
+              width={cardWidth}
+              height={cardHeight}
             />
           )}
         </div>

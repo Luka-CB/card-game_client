@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import styles from "./CookieConsent.module.scss";
 import { motion } from "framer-motion";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 
 const STORAGE_KEY = "hasAcceptedCookies";
 

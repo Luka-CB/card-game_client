@@ -12,6 +12,7 @@ export interface userIFace {
   gender: "male" | "female" | null;
   isVerified: boolean;
   isAdmin: boolean;
+  isGuest: boolean;
 }
 
 interface UserStore {
@@ -32,14 +33,13 @@ const useUserStore = create<UserStore>((set) => ({
   setUser: (user: userIFace | null) => set({ user }),
   setUsersOnline: (users: string[]) => set({ usersOnline: users }),
   getUser: async () => {
+    set({ loading: true });
     try {
       const { data } = await api.get("/users/session-user");
-      if (data) {
-        set({ user: data, loading: false });
-      }
+      set({ user: data || null, loading: false });
     } catch (error) {
       console.log(error);
-      set({ loading: false });
+      set({ user: null, loading: false });
     }
   },
   setIsVerified: (value: boolean) => {

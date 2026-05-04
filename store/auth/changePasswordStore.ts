@@ -29,14 +29,23 @@ const useChangePasswordStore = create<ChangePasswordStore>((set) => ({
         set({ status: "success" });
       }
     } catch (error: unknown) {
-      console.log(error);
       if (error instanceof AxiosError) {
+        const status = error.response?.status;
+        const message =
+          error.response?.data?.error?.message || "An error occurred";
+        if (status && status >= 500) {
+          console.error("Error changing password:", error);
+        }
         set({
-          error: error.response?.data?.error?.message || "An error occurred",
           status: "failed",
+          error: message,
         });
       } else {
-        set({ error: "An unexpected error occurred", status: "failed" });
+        console.error("Unexpected error changing password:", error);
+        set({
+          status: "failed",
+          error: "An unexpected error occurred",
+        });
       }
     }
   },

@@ -112,7 +112,7 @@
   color: white;
   border: none;
   padding: 8px 0;
-  width: 120px;
+  width: 160px;
   height: 30px;
   overflow: hidden;
   display: flex;
@@ -159,5 +159,39 @@
   .provider,
   .actions {
     margin-top: 15px;
+  }
+}
+
+.profile[data-locale="ka"],
+.profile[data-locale="ru"] {
+  .form {
+    .provider {
+      span {
+        font-size: 9px;
+      }
+
+      .provider_type {
+        font-size: 9px;
+        padding: 2px 6px;
+
+        .icon {
+          font-size: 14px;
+        }
+      }
+    }
+
+    .actions {
+      .saveBtn {
+        font-size: 10px;
+        width: 120px;
+        height: 25px;
+      }
+
+      .resetBtn {
+        font-size: 10px;
+        width: 100px;
+        height: 25px;
+      }
+    }
   }
 }

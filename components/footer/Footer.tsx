@@ -1,13 +1,17 @@
 import Image from "next/image";
 import styles from "./Footer.module.scss";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, Link } from "@/i18n/navigation";
+import { useLocale, useTranslations } from "next-intl";
 
 const Footer = () => {
+  const t = useTranslations("Footer");
+  const l = useTranslations("Links");
+  const locale = useLocale();
+
   const pathname = usePathname();
 
   return (
-    <footer className={styles.footer}>
+    <footer className={styles.footer} data-locale={locale}>
       <div className={styles.copyright}>
         <Image
           src="/logos/logo.png"
@@ -17,7 +21,7 @@ const Footer = () => {
           loading="eager"
           className={styles.logo}
         />
-        <p>© 2026 jokerclash.com. All rights reserved.</p>
+        <p>{t("rights")}</p>
       </div>
       <span>|</span>
       <div className={styles.links}>
@@ -25,31 +29,31 @@ const Footer = () => {
           href="/rules"
           className={pathname === "/rules" ? styles.active : ""}
         >
-          Game Rules
+          {l("rules")}
         </Link>
         <Link
           href="/about"
           className={pathname === "/about" ? styles.active : ""}
         >
-          About Us
+          {l("about")}
         </Link>
         <Link
           href="/terms"
           className={pathname === "/terms" ? styles.active : ""}
         >
-          Terms of Service
+          {l("terms")}
         </Link>
         <Link
           href="/privacy"
           className={pathname === "/privacy" ? styles.active : ""}
         >
-          Privacy Policy
+          {l("privacy")}
         </Link>
         <Link
           href="/data-deletion"
           className={pathname === "/data-deletion" ? styles.active : ""}
         >
-          Data Deletion
+          {l("dataDeletion")}
         </Link>
       </div>
     </footer>

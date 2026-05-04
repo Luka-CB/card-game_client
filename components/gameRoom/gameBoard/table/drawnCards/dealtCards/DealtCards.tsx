@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import styles from "./DealtCards.module.scss";
 import useWindowSize from "@/hooks/useWindowSize";
+import { useDeckContext } from "@/context/DeckContext";
 
 interface DealtCardsProps {
   dealingCards: Record<string, number>;
@@ -19,6 +20,7 @@ const DealtCards = ({
   currentPlayerId,
 }: DealtCardsProps) => {
   const windowSize = useWindowSize();
+  const { cardBackUrl } = useDeckContext();
 
   const playerPosition = ["bottom", "left", "top", "right"][
     playerPositionIndex
@@ -82,7 +84,7 @@ const DealtCards = ({
           }}
         >
           <Image
-            src="/cards/card-back.png"
+            src={cardBackUrl}
             alt="Card Back"
             width={
               windowSize.height <= 350

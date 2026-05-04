@@ -72,3 +72,13 @@ p.error {
     order: 2;
   }
 }
+
+.sidebar[data-locale="ka"],
+.sidebar[data-locale="ru"] {
+  .stats {
+    h2 {
+      font-size: 16px;
+      text-align: center;
+    }
+  }
+}

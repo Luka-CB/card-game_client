@@ -20,6 +20,16 @@ export interface UserStatsIFace {
   rating: number;
   ratingHistory: { rating: number; timestamp: Date }[];
   ratingTrend: "up" | "down" | "stable";
+  level:
+    | "novice"
+    | "amateur"
+    | "competent"
+    | "promising"
+    | "professional"
+    | "diabolical"
+    | "legend"
+    | "joker";
+  progressionScore: number;
 }
 
 interface userStatsStore {
@@ -39,14 +49,24 @@ const useUserStatsStore = create<userStatsStore>((set) => ({
       const { data } = await api.get("/stats");
       set({ stats: data.stats, status: "success" });
     } catch (error: unknown) {
-      console.log(error);
-      set({
-        error:
-          error instanceof AxiosError
-            ? error.response?.data?.error?.message || "An error occurred"
-            : "An unexpected error occurred",
-        status: "failed",
-      });
+      if (error instanceof AxiosError) {
+        const status = error.response?.status;
+        const message =
+          error.response?.data?.error?.message || "An error occurred";
+        if (status && status >= 500) {
+          console.error("Error fetching user stats:", error);
+        }
+        set({
+          status: "failed",
+          error: message,
+        });
+      } else {
+        console.error("Unexpected error fetching user stats:", error);
+        set({
+          status: "failed",
+          error: "An unexpected error occurred",
+        });
+      }
     }
   },
 }));

@@ -1,17 +1,18 @@
 import useDeleteUserStore from "@/store/user/deleteUserStore";
 import styles from "./DeleteAccount.module.scss";
+import { useTranslations } from "next-intl";
 
 const DeleteAccount = () => {
+  const t = useTranslations("AccountPage.delete");
+
   const { toggleDelModal } = useDeleteUserStore();
 
   return (
     <div className={styles.deleteWrap}>
-      <h3>Danger zone</h3>
-      <p className={styles.deleteNote}>
-        Deleting your account will remove all personal data!.
-      </p>
+      <h3>{t("title")}</h3>
+      <p className={styles.deleteNote}>{t("paragraph")}</p>
       <button className={styles.deleteBtn} onClick={toggleDelModal}>
-        Delete account
+        {t("btn")}
       </button>
     </div>
   );

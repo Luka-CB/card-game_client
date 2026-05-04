@@ -4,7 +4,8 @@ import styles from "./Header.module.scss";
 import { TiThMenu } from "react-icons/ti";
 import useWindowSize from "@/hooks/useWindowSize";
 import MainNav from "./MainNav";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
+import { useTranslations } from "next-intl";
 import Avatar from "./Avatar";
 import useNavStore from "@/store/navStore";
 import useRatingStore from "@/store/user/stats/ratingStore";
@@ -14,24 +15,33 @@ import useUserStore from "@/store/user/userStore";
 import SideNav from "./SideNav";
 import Image from "next/image";
 import useSocket from "@/hooks/useSocket";
+import LanguageSwitcher from "../LanguageSwitcher";
 
 const Header = () => {
+  const t = useTranslations("Header");
+
   const { toggleNav } = useNavStore();
   const windowSize = useWindowSize();
   const { user } = useUserStore();
-  const { fetchJCoins, jCoins, toggleGetMoreModal } = useJCoinsStore();
-  const { fetchRating, rating } = useRatingStore();
+  const { fetchJCoins, jCoins, toggleGetMoreModal, clearJCoins } =
+    useJCoinsStore();
+  const { fetchRating, rating, clearRating } = useRatingStore();
 
   const socket = useSocket();
 
   useEffect(() => {
-    if (user && !jCoins) {
+    if (!user || user.isGuest) {
+      clearJCoins();
+      return;
+    }
+
+    if (!jCoins) {
       fetchJCoins();
     }
-  }, [user, jCoins, fetchJCoins]);
+  }, [user, jCoins, fetchJCoins, clearJCoins]);
 
   useEffect(() => {
-    if (!socket || !user?._id) return;
+    if (!socket || !user?._id || user.isGuest) return;
 
     const handleJCoinsChanged = (data?: { userIds?: string[] }) => {
       if (!data?.userIds || data.userIds.includes(user._id)) {
@@ -44,13 +54,18 @@ const Header = () => {
     return () => {
       socket.off("jCoinsChanged", handleJCoinsChanged);
     };
-  }, [socket, user?._id, fetchJCoins]);
+  }, [socket, user?._id, user?.isGuest, fetchJCoins]);
 
   useEffect(() => {
-    if (user && !rating) {
+    if (!user || user.isGuest) {
+      clearRating();
+      return;
+    }
+
+    if (!rating) {
       fetchRating();
     }
-  }, [user, rating, fetchRating]);
+  }, [user, rating, fetchRating, clearRating]);
 
   const handleOpenGetMoreModal = () => {
     toggleGetMoreModal();
@@ -71,9 +86,13 @@ const Header = () => {
               className={styles.logo_image}
             />
           </Link>
+
+          <div className={styles.language_switcher}>
+            <LanguageSwitcher />
+          </div>
         </div>
 
-        {windowSize.width <= 700 ? (
+        {windowSize.width <= 800 ? (
           <nav>
             {user && user._id ? (
               <>
@@ -84,9 +103,9 @@ const Header = () => {
               </>
             ) : (
               <div className={styles.auth_links}>
-                <Link href="/?auth=signin">Sign In</Link>
+                <Link href="/?auth=signin">{t("signIn")}</Link>
                 <div className={styles.divider}>|</div>
-                <Link href="/?auth=signup">Sign Up</Link>
+                <Link href="/?auth=signup">{t("signUp")}</Link>
               </div>
             )}
           </nav>

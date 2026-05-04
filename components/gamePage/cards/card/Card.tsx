@@ -17,12 +17,15 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import useJCoinsStore from "@/store/user/stats/jCoinsStore";
 import useDisplayRoomStore from "@/store/displayRoomStore";
+import { useLocale, useTranslations } from "next-intl";
 
 interface CardProps {
   room: Room | null;
 }
 
 const Card: React.FC<CardProps> = ({ room }) => {
+  const t = useTranslations("GamePage.cards.card");
+
   const socket = useSocket();
   const { user, usersOnline } = useUserStore();
   const { setTogglePasswordPrompt } = useRoomStore();
@@ -142,6 +145,11 @@ const Card: React.FC<CardProps> = ({ room }) => {
         return;
       }
 
+      if (user.isGuest && room.bet) {
+        setMsg(t("msgs.guestNoBet"), "error");
+        return;
+      }
+
       if (roomId === room?.id && room?.status === "private") {
         setTogglePasswordPrompt(true);
         clickedRoomIdRef.current = roomId;
@@ -150,16 +158,13 @@ const Card: React.FC<CardProps> = ({ room }) => {
 
       if (jCoins && jCoins.raw < 100) {
         toggleGetMoreModal(true);
-        setMsg("You need at least 100 JCoins to join a room", "error");
+        setMsg(t("coinsNeeded"), "error");
         return;
       }
 
       if (room.bet && jCoins && parseInt(room.bet) > jCoins.raw) {
         toggleGetMoreModal(true);
-        setMsg(
-          "You don't have enough JCoins to join this room with the current bet",
-          "error",
-        );
+        setMsg(t("notEnoughCoins"), "error");
         return;
       }
 
@@ -167,6 +172,7 @@ const Card: React.FC<CardProps> = ({ room }) => {
         id: user._id,
         username: user.username,
         status: "active",
+        isGuest: user.isGuest,
         avatar: user.avatar || "/default-avatar.jpeg",
         botAvatar: getRandomBotAvatar(),
         color: getRandomColor(),
@@ -224,7 +230,12 @@ const Card: React.FC<CardProps> = ({ room }) => {
         clickedRoomId={clickedRoomIdRef.current}
         user={
           user
-            ? { id: user._id, username: user.username, avatar: user.avatar }
+            ? {
+                id: user._id,
+                username: user.username,
+                avatar: user.avatar,
+                isGuest: user.isGuest,
+              }
             : null
         }
       />
@@ -243,11 +254,15 @@ const Card: React.FC<CardProps> = ({ room }) => {
               : `Type: ${room?.type}`
           }
         >
-          <span>{room?.type}</span>
+          <span>
+            {room?.type === "classic" ? t("types.classic") : t("types.nines")}
+          </span>
           {room?.bet && <span className={styles.dash}>--</span>}
           {room?.bet && (
             <div className={styles.bet}>
-              <span>Bet: {room?.bet}</span>
+              <span>
+                {t("bet")}: {room?.bet}
+              </span>
               <Image
                 src="/coinIco.ico"
                 alt="coin"
@@ -264,7 +279,11 @@ const Card: React.FC<CardProps> = ({ room }) => {
           ) : (
             <FaLockOpen className={styles.icon} />
           )}
-          <span>{room?.status}</span>
+          <span>
+            {room?.status === "private"
+              ? t("status.private")
+              : t("status.public")}
+          </span>
         </div>
       </header>
       <div className={styles.body}>
@@ -276,13 +295,13 @@ const Card: React.FC<CardProps> = ({ room }) => {
       <footer>
         <div className={styles.left}>
           <span className={styles.hisht}>
-            Hisht: <b>{room?.hisht}</b>
+            {t("hisht")}: <b>{room?.hisht}</b>
           </span>
           {usersOnline?.length > 100 && (
             <div className={styles.chat}>
               <FaRocketchat className={styles.chat_icon} />
               <small>
-                Chat: <b>{room?.hasChat ? "On" : "Off"}</b>
+                {t("chat")}: <b>{room?.hasChat ? t("on") : t("off")}</b>
               </small>
             </div>
           )}
@@ -296,14 +315,14 @@ const Card: React.FC<CardProps> = ({ room }) => {
               {(roomUser.status === "inactive" ||
                 roomUser.status === "busy") && (
                 <button className={styles.rejoin_btn} onClick={handleRejoin}>
-                  Continue Playing
+                  {t("btns.continue")}
                 </button>
               )}
               <button
                 className={styles.leave_btn}
                 onClick={() => handleLeave(true)}
               >
-                Leave
+                {t("btns.leave")}
               </button>
             </div>
           )}
@@ -313,7 +332,7 @@ const Card: React.FC<CardProps> = ({ room }) => {
             className={styles.leave_btn}
             onClick={() => handleLeave(false)}
           >
-            Leave
+            {t("btns.leave")}
           </button>
         )}
 
@@ -322,7 +341,7 @@ const Card: React.FC<CardProps> = ({ room }) => {
             className={styles.join_btn}
             onClick={() => handleJoin(room?.id || "")}
           >
-            Join
+            {t("btns.join")}
           </button>
         )}
       </footer>
@@ -339,21 +358,19 @@ const LeaveWarning = ({
   onConfirm: () => void;
   onCancel: () => void;
 }) => {
+  const t = useTranslations("GamePage.cards.card.leaveWarning");
+  const locale = useLocale();
+
   return (
-    <div className={styles.leave_warning}>
-      <p>Are you sure you want to leave the room?</p>
-      <small>
-        This action cannot be undone. You won't be able to rejoin this room. And
-        Won't be able to join another room until the current game in this room
-        finishes. 100 JCoins will be deducted as a penalty for leaving an active
-        game.
-      </small>
+    <div className={styles.leave_warning} data-locale={locale}>
+      <p>{t("paragraph")}</p>
+      <small>{t("small")}</small>
       <div className={styles.leave_warning_btns}>
         <button className={styles.confirm_btn} onClick={onConfirm}>
-          Yes, Leave
+          {t("btns.yes")}
         </button>
         <button className={styles.cancel_btn} onClick={onCancel}>
-          No, Stay
+          {t("btns.no")}
         </button>
       </div>
     </div>

@@ -1,0 +1,1167 @@
+{
+  "Metadata": {
+    "title": "Joker Clash",
+    "description": "Play Joker online with friends in real-time."
+  },
+  "Links": {
+    "home": "Home",
+    "lobby": "Lobby",
+    "account": "Your Account",
+    "feedback": "Feedback",
+    "logout": "Logout",
+    "rules": "Game Rules",
+    "about": "About Us",
+    "terms": "Terms of Service",
+    "privacy": "Privacy Policy",
+    "dataDeletion": "Data Deletion"
+  },
+  "Header": {
+    "signIn": "Sign In",
+    "signUp": "Sign Up",
+    "close": "Close"
+  },
+  "Footer": {
+    "rights": "© 2026 Joker Clash. All rights reserved."
+  },
+  "LanguageSwitcher": {
+    "label": "Language",
+    "en": "Eng",
+    "ka": "Geo",
+    "ru": "Rus"
+  },
+  "RoomPage": {
+    "error": "Room not found",
+    "leave": "Leave Room",
+    "scoreboard": "Scoreboard",
+    "chat": "Open Chat"
+  },
+  "AboutPage": {
+    "values": {
+      "fairPlay": {
+        "title": "Fair Play First",
+        "text": "Every round is designed around clear rules, balanced gameplay, and transparent scoring."
+      },
+      "fastMatches": {
+        "title": "Fast, Smooth Matches",
+        "text": "From room creation to final score, we focus on responsive and low-friction gameplay."
+      },
+      "communityDriven": {
+        "title": "Community Driven",
+        "text": "Joker is built around players. Feedback directly shapes features, balancing, and quality-of-life updates."
+      }
+    },
+    "features": {
+      "realtimeMultiplayer": "Real-time multiplayer card matches",
+      "classicMechanics": "Classic trick-taking mechanics with Joker twists",
+      "liveScoreboards": "Live scoreboards and round history",
+      "responsiveExperience": "Responsive experience for desktop and mobile",
+      "soundAndAnimations": "Sound, animations, and in-game UI controls"
+    },
+    "hero": {
+      "badge": "About Joker Clash",
+      "title": "Built for players who love strategy, speed, and card game mastery.",
+      "paragraph": "Joker is an online multiplayer card experience where every hand matters. We combine classic card table energy with modern real-time gameplay."
+    },
+    "sectionOne": {
+      "title": "Who We Are",
+      "paragraph": "We are a small team focused on delivering a polished and competitive card game platform. Our goal is simple: make every match fair, engaging, and fun to replay."
+    },
+    "sectionTwo": {
+      "title": "What Makes Joker Different"
+    },
+    "sectionThree": {
+      "title": "Our Values"
+    },
+    "sectionFour": {
+      "title": "Trust & Transparency",
+      "paragraph": "We are committed to clear policies and player safety. You can review our platform details at any time.",
+      "links": {
+        "rules": "Game Rules",
+        "terms": "Terms of Service",
+        "privacy": "Privacy Policy",
+        "dataDeletion": "Data Deletion"
+      }
+    },
+    "cta": {
+      "title": "Ready to Play?",
+      "paragraph": "Join a room, challenge friends, and climb with smart play.",
+      "link": "Start Playing"
+    }
+  },
+  "DataDeletionPage": {
+    "title": "Delete your data",
+    "lead": "Follow these steps to remove Joker Clash from your account. This stops login and removes the app's access to your data.",
+    "providerOne": {
+      "name": "Facebook",
+      "steps": {
+        "stepOne": {
+          "strong": "Log in to Facebook",
+          "normal": "and open",
+          "em": "Settings & Privacy > Settings"
+        },
+        "stepTwo": {
+          "strong": "Open 'Apps and Websites'",
+          "normal": "to see all apps currently connected to your account."
+        },
+        "stepThree": {
+          "strong": "Find Joker Clash",
+          "normal": "in the list and click the",
+          "em": "Remove",
+          "normalTwo": "button to disconnect and delete the app's access."
+        }
+      }
+    },
+    "providerTwo": {
+      "name": "Google",
+      "steps": {
+        "stepOne": {
+          "strong": "Log in to your Google account",
+          "normal": "and open",
+          "em": "Google Account"
+        },
+        "stepTwo": {
+          "normal": "Go to",
+          "em": "Security",
+          "normalTwo": "and scroll to",
+          "emTwo": "Third-party apps with account access",
+          "normalThree": "or",
+          "emThree": "Apps with access to your account"
+        },
+        "stepThree": {
+          "normal": "Select",
+          "strong": "Manage third-party access",
+          "normalTwo": "find",
+          "strongTwo": "Joker Clash",
+          "normalThree": "and choose",
+          "em": "Remove Access"
+        }
+      }
+    },
+    "providerThree": {
+      "name": "Delete from Joker Clash (local)",
+      "steps": {
+        "stepOne": {
+          "strong": "Log in to your Joker Clash account",
+          "normal": "via the site."
+        },
+        "stepTwo": {
+          "normal": "Open",
+          "em": "Account",
+          "normalTwo": "settings and use the",
+          "strong": "Delete Account",
+          "normalThree": "option (the DeleteAccount modal)."
+        },
+        "stepThree": {
+          "normal": "Follow the on-screen confirmation to permanently remove your account and data."
+        }
+      },
+      "optional": {
+        "text": "Prefer us to remove your account manually?",
+        "link": "Log in",
+        "textTwo": "and use the Delete Account modal, or email"
+      }
+    },
+    "note": "Notes: Make sure your Facebook/Google app settings and redirect URIs are correct, and that your app is live or you are listed as an app admin/tester if testing in development mode.",
+    "noteTwo": "Notes: Make sure your Facebook app is live or you are listed as an app admin/tester in the Facebook Developers dashboard if you run into permissions or scope errors when using Facebook Login."
+  },
+  "FeedbackPage": {
+    "title": "Send Feedback",
+    "subtitle": "Found a bug or want a feature? Tell us what happened and how you'd like it to work.",
+    "inputs": {
+      "labels": {
+        "name": "Your name (optional)",
+        "email": "Email (optional)"
+      }
+    },
+    "select": {
+      "label": "Type",
+      "options": {
+        "one": "Bug",
+        "two": "Feature Request",
+        "three": "Idea / UX",
+        "four": "Other"
+      }
+    },
+    "textarea": {
+      "label": "Message",
+      "placeholder": "At least 15 words...",
+      "wordCount": "15 words"
+    },
+    "checkbox": {
+      "label": "Include browser info (helps debugging)"
+    },
+    "actions": {
+      "submit": "Send Feedback",
+      "reset": "Reset"
+    },
+    "aside": {
+      "cardOne": {
+        "title": "What to include",
+        "ul": {
+          "liOne": "Steps to reproduce the bug",
+          "liTwo": "Expected vs actual behavior",
+          "liThree": "Browser and OS (auto-included if allowed)"
+        }
+      },
+      "cardTwo": {
+        "title": "Why your feedback helps",
+        "paragraph": "We review reports regularly and triage bug fixes and feature work based on impact."
+      }
+    }
+  },
+  "PrivacyPage": {
+    "title": "Privacy Policy",
+    "updated": "Last Updated: March 5, 2026",
+    "intro": "Welcome to Joker Clash. We value your privacy as much as a hidden ace up your sleeve. This policy explains how information is collected, used, and protected when you use our service.",
+    "sectionOne": {
+      "title": "Information We Collect",
+      "paragraph": "To keep the leaderboard running and the cards dealing, we collect:",
+      "ul": {
+        "liOne": {
+          "strong": "Account Data:",
+          "normal": "username, email address, and password."
+        },
+        "liTwo": {
+          "strong": "Gameplay Data:",
+          "normal": "wins, losses, in-game currency, and deck preferences."
+        },
+        "liThree": {
+          "strong": "Technical Data:",
+          "normal": "IP address, browser type, and device information."
+        },
+        "liFour": {
+          "strong": "Cookies:",
+          "normal": "login session and preference data."
+        }
+      }
+    },
+    "sectionTwo": {
+      "title": "How We Use Your Information",
+      "paragraph": "We do not sell personal data. Information is used to:",
+      "ul": {
+        "liOne": "Maintain accounts and game progress.",
+        "liTwo": "Improve game balance and fix bugs.",
+        "liThree": "Send important updates (new features, maintenance notices).",
+        "liFour": "Prevent cheating and keep gameplay fair."
+      }
+    },
+    "sectionThree": {
+      "title": "Third-Party Services",
+      "paragraph": "We may use third-party providers to support the platform:",
+      "ul": {
+        "liOne": {
+          "strong": "Analytics:",
+          "normal": "to understand usage and improve performance."
+        },
+        "liTwo": {
+          "strong": "Ads:",
+          "normal": "partners may use cookies for relevant content (if ads are shown)."
+        },
+        "liThree": {
+          "strong": "Payments:",
+          "normal": "secure processors (e.g., Stripe/PayPal). Full card details are not stored by us."
+        }
+      }
+    },
+    "sectionFour": {
+      "title": "Children's Privacy",
+      "paragraph": "Our service is intended for players aged 13+. We do not knowingly collect personal data from children under this age. If such data is discovered, it is deleted promptly."
+    },
+    "sectionFive": {
+      "title": "Your Rights & Choices",
+      "ul": {
+        "liOne": {
+          "strong": "Access or Update:",
+          "normal": "edit profile information in account settings."
+        },
+        "liTwo": {
+          "strong": "Delete:",
+          "normal": "request account/data deletion by contacting support."
+        },
+        "liThree": {
+          "strong": "Opt-Out:",
+          "normal": "disable cookies in browser settings (some features may not work properly)."
+        }
+      }
+    },
+    "sectionSix": {
+      "title": "Security",
+      "paragraph": "We use industry-standard safeguards to protect data. No method is fully secure, but reasonable measures are continuously applied."
+    },
+    "sectionSeven": {
+      "title": "Data Retention & Deletion",
+      "paragraph": "We retain account and gameplay data to provide the Service, prevent abuse, and comply with legal requirements. You can remove third-party access or request deletion using the instructions below.",
+      "subtitleOne": "Remove Joker Clash from Facebook",
+      "olOne": {
+        "liOne": {
+          "normal": "Log in to Facebook and open",
+          "em": "Settings & Privacy > Settings."
+        },
+        "liTwo": {
+          "normal": "Open",
+          "em": "Apps and Websites",
+          "normalTwo": "to view connected apps."
+        },
+        "liThree": {
+          "normal": "Find",
+          "strong": "Joker Clash",
+          "normalTwo": "and click",
+          "em": "Remove",
+          "normalThree": "to revoke access."
+        }
+      },
+      "subtitleTwo": "Remove Joker Clash from Google",
+      "olTwo": {
+        "liOne": {
+          "normal": "Sign in to",
+          "em": "Google Account"
+        },
+        "liTwo": {
+          "normal": "Go to",
+          "em": "Security > Third-party apps with account access"
+        },
+        "liThree": {
+          "normal": "Choose",
+          "em": "Manage third-party access",
+          "normalTwo": "find",
+          "strong": "Joker Clash",
+          "normalThree": "and remove access."
+        }
+      },
+      "subtitleThree": "Delete your Joker Clash account (local)",
+      "olThree": {
+        "liOne": {
+          "normal": "Log in to your Joker Clash account on the website."
+        },
+        "liTwo": {
+          "normal": "Open",
+          "em": "Account",
+          "normalTwo": "settings and use the",
+          "strong": "Delete Account",
+          "normalThree": "option."
+        },
+        "liThree": {
+          "normal": "Follow the confirmation steps to permanently remove your account and data."
+        }
+      },
+      "paragraphTwo": {
+        "text": "You may also visit our dedicated data deletion page at",
+        "link": "Data Deletion",
+        "textTwo": "for step-by-step guidance, or contact us at",
+        "textThree": "to request manual deletion."
+      }
+    },
+    "sectionEight": {
+      "title": "Contact Us",
+      "paragraph": "Questions about this policy or your data can be sent to:"
+    }
+  },
+  "RulesPage": {
+    "classicRounds": {
+      "roundOne": {
+        "round": "Round 1",
+        "hands": "8 hands",
+        "cards": "1 → 8 cards"
+      },
+      "roundTwo": {
+        "round": "Round 2",
+        "hands": "4 hands",
+        "cards": "9 cards each hand"
+      },
+      "roundThree": {
+        "round": "Round 3",
+        "hands": "8 hands",
+        "cards": "8 → 1 cards"
+      },
+      "roundFour": {
+        "round": "Round 4",
+        "hands": "4 hands",
+        "cards": "9 cards each hand"
+      }
+    },
+    "ninesRounds": {
+      "roundOne": {
+        "round": "Round 1",
+        "hands": "4 hands",
+        "cards": "9 cards each hand"
+      },
+      "roundTwo": {
+        "round": "Round 2",
+        "hands": "4 hands",
+        "cards": "9 cards each hand"
+      },
+      "roundThree": {
+        "round": "Round 3",
+        "hands": "4 hands",
+        "cards": "9 cards each hand"
+      },
+      "roundFour": {
+        "round": "Round 4",
+        "hands": "4 hands",
+        "cards": "9 cards each hand"
+      }
+    },
+    "hero": {
+      "title": "Joker — Official Rules",
+      "paragraph": "Concise guide for Classic Joker and Nines Joker."
+    },
+    "sectionOne": {
+      "title": "Game Modes",
+      "subtitleOne": "Classic Joker",
+      "subtitleTwo": "Nines Joker",
+      "tr": {
+        "thOne": "Round",
+        "thTwo": "Hands",
+        "thThree": "Cards per hand"
+      }
+    },
+    "sectionTwo": {
+      "title": "Hand Flow",
+      "ol": {
+        "liOne": "Cards are dealt.",
+        "liTwo": "Players place bids (expected tricks).",
+        "liThree": "Trump is set (if applicable).",
+        "liFour": "Players play tricks in turn.",
+        "liFive": "Hand points are calculated.",
+        "liSix": "Round score = sum of hand points."
+      }
+    },
+    "sectionThree": {
+      "title": "Joker Rules",
+      "ul": {
+        "liOne": "There are 2 Jokers in the deck.",
+        "liTwo": "Joker is the strongest/special control card.",
+        "liThree": {
+          "text": "If played first in trick, player can request:",
+          "ul": {
+            "liOne": {
+              "b": "Need (to win)",
+              "normal": "request highest of a suit."
+            },
+            "liTwo": {
+              "b": "Don't need (to lose)",
+              "normal": "request highest to take."
+            }
+          }
+        },
+        "liFour": "If played later in trick, Joker can force win or avoid over-winning.",
+        "liFive": "A later Joker can override an earlier Joker.",
+        "liSix": "If player requests to win and someone has no requested suit, trump can be used and may beat the request.",
+        "liSeven": "If player requests to lose and request cannot be satisfied, player may still take the trick."
+      }
+    },
+    "sectionFour": {
+      "title": "Scoring (Per Hand)",
+      "subtitleOne": "Case A — Exact bid (bid = win)",
+      "paragraphOne": {
+        "text": "0/0 = 50, 1/1 = 100, 2/2 = 150 ... 8/8 = 450",
+        "textTwo": "Formula:",
+        "code": "50 + (bid × 50)"
+      },
+      "subtitleTwo": "Case B — Hand number = bid = win",
+      "paragraphTwo": {
+        "text": "Hand 1: 1/1 = 100, Hand 2: 2/2 = 200 ... Hand 9: 9/9 = 900",
+        "textTwo": "Formula:",
+        "code": "hand × 100"
+      },
+      "subtitleThree": "Case C — Spoiled (bid ≠ win, win > 0)",
+      "paragraphThree": {
+        "text": "Examples: 0/1 = 10, 2/5 = 50",
+        "textTwo": "Formula:",
+        "code": "win × 10"
+      },
+      "subtitleFour": "Case D — bid > 0 and win = 0",
+      "paragraphFour": "Penalty is selected by room creator:"
+    },
+    "sectionFive": {
+      "title": "End-of-Game Coins",
+      "subtitleOne": "Normal room (no bet)",
+      "ulOne": {
+        "liOne": "1st: +200",
+        "liTwo": "2nd: +100",
+        "liThree": "3rd: -50",
+        "liFour": "4th: -100"
+      },
+      "paragraph": {
+        "text": "If bot finishes 1st or 2nd, that slot becomes",
+        "b": "-100 penalty",
+        "textTwo": "instead of positive reward."
+      },
+      "subtitleTwo": "Bet room",
+      "ulTwo": {
+        "liOne": "To join, user must have at least the bet amount.",
+        "liTwo": {
+          "normal": "1st place gets:",
+          "code": "bet × 4"
+        },
+        "liThree": {
+          "normal": "Other players get:",
+          "code": "-bet"
+        }
+      }
+    }
+  },
+  "TermsPage": {
+    "title": "Terms of Service",
+    "paragraph": {
+      "strong": "Effective Date:",
+      "normal": "March 10, 2026"
+    },
+    "sectionOne": {
+      "title": "Acceptance of Terms",
+      "paragraph": "By accessing or using Joker Clash, users agree to these Terms of Service and any applicable laws and regulations."
+    },
+    "sectionTwo": {
+      "title": "Eligibility",
+      "paragraph": "Users must be at least 13 years old, or the age required by local law. If under the required age, parental or guardian consent is required."
+    },
+    "sectionThree": {
+      "title": "Accounts and Security",
+      "paragraph": "Users are responsible for account activity and for maintaining confidentiality of login credentials. Unauthorized use must be reported immediately."
+    },
+    "sectionFour": {
+      "title": "Acceptable Use",
+      "paragraph": "Users must not:",
+      "ul": {
+        "liOne": "Cheat, exploit bugs, or manipulate gameplay unfairly.",
+        "liTwo": "Harass, abuse, threaten, or impersonate others.",
+        "liThree": "Attempt unauthorized access to systems or user accounts.",
+        "liFour": "Upload malicious code or interfere with service stability."
+      }
+    },
+    "sectionFive": {
+      "title": "User Content",
+      "paragraph": "Users are responsible for content they submit (e.g., chat, profile text, reports). Content that violates law or these Terms may be removed."
+    },
+    "sectionSix": {
+      "title": "Virtual Items and In-Game Currency",
+      "paragraph": "Virtual items/currency (if any) are licensed, not sold, and have no real-world monetary value unless explicitly stated."
+    },
+    "sectionSeven": {
+      "title": "Intellectual Property",
+      "paragraph": "All trademarks, logos, graphics, code, and game content are owned by JOKERCLASH or licensors and are protected by applicable laws."
+    },
+    "sectionEight": {
+      "title": "Suspension and Termination",
+      "paragraph": "Access may be suspended or terminated for violations of these Terms, abuse, fraud, or actions that harm service integrity."
+    },
+    "sectionNine": {
+      "title": "Disclaimers",
+      "paragraph": "The Service is provided 'as is' and 'as available' without warranties of any kind, to the fullest extent allowed by law."
+    },
+    "sectionTen": {
+      "title": "Limitation of Liability",
+      "paragraph": "To the fullest extent permitted by law, Joker Clash is not liable for indirect, incidental, special, consequential, or punitive damages."
+    },
+    "sectionEleven": {
+      "title": "Governing Law",
+      "paragraph": "These Terms are governed by the laws of Georgia, without regard to conflict of law principles."
+    },
+    "sectionTwelve": {
+      "title": "Changes to Terms",
+      "paragraph": "Terms may be updated from time to time. Continued use of the Service after updates means acceptance of the revised Terms."
+    },
+    "sectionThirteen": {
+      "title": "Contact",
+      "paragraph": "Questions about these Terms:"
+    }
+  },
+  "NotFoundPage": {
+    "title": "404 - Page Not Found",
+    "paragraph": "Sorry, the page you are looking for does not exist. It might have been moved or deleted.",
+    "link": "Go back to Home"
+  },
+  "AccountPage": {
+    "delete": {
+      "title": "Danger zone",
+      "paragraph": "Deleting your account will remove all personal data!.",
+      "btn": "Delete account",
+      "modal": {
+        "deletionReasons": {
+          "reasonOne": "I have privacy concerns",
+          "reasonTwo": "I receive too many emails",
+          "reasonThree": "I want to create a new account",
+          "reasonFour": "I no longer find the service useful",
+          "reasonFive": "Platform has too many bugs",
+          "reasonSix": "I waste too much time on the platform"
+        },
+        "msgs": {
+          "success": "Account deleted successfully.",
+          "error": "Please select a reason for deletion."
+        },
+        "warning": {
+          "title": "Are you sure you want to delete your account?",
+          "paragraph": "This action is irreversible. All your data will be permanently deleted."
+        },
+        "reason": {
+          "label": "Please let us know why you're leaving (pick one):",
+          "feedback": {
+            "label": "Additional feedback (optional):",
+            "textarea": {
+              "placeholder": "Your feedback helps us improve our service..."
+            }
+          }
+        },
+        "btns": {
+          "confirm": "Delete Account",
+          "cancel": "Cancel"
+        }
+      }
+    },
+    "emailUpdate": {
+      "msgs": {
+        "localSuccess": "Confirmation code sent to your email!",
+        "flashSuccess": "Email updated successfully!",
+        "flashError": "You have already requested to change to this email. Please check your inbox for the confirmation code."
+      },
+      "sendRequest": {
+        "title": "Change Email",
+        "inputPlaceholders": {
+          "other": "Enter other valid email",
+          "new": "Enter new valid email"
+        },
+        "btn": "Send Confirmation",
+        "link": "Enter Confirmation Code"
+      },
+      "consfirmRequest": {
+        "title": "Enter Code Sent to Your Email",
+        "inputPlaceholder": "Confirmation Code",
+        "btn": "Confirm",
+        "retry": {
+          "text": "Didn't receive the code?",
+          "btn": "Retry"
+        },
+        "link": "Send New Request Email"
+      }
+    },
+    "changeUsername": {
+      "msg": "Username changed successfully!",
+      "title": "Change Username",
+      "paragraph": "New username must be unique, you will use it to log in.",
+      "placeholder": "Enter new username",
+      "btns": {
+        "confirm": "Confirm",
+        "cancel": "Cancel"
+      }
+    },
+    "header": {
+      "editAvatarTitle": "Change Avatar",
+      "verifiedTitle": "Verified",
+      "notVerifiedTitle": "Not Verified",
+      "editUsernameTitle": "Change Username",
+      "editEmailTitle": "Change Email",
+      "date": "Joined"
+    },
+    "profile": {
+      "msgs": {
+        "success": "Profile updated successfully",
+        "updateError": "Failed to update profile",
+        "passwordError": "Password must be at least 6 characters long"
+      },
+      "title": "Profile",
+      "paragraph": "No bio available",
+      "form": {
+        "firstName": {
+          "label": "First Name"
+        },
+        "lastName": {
+          "label": "Last Name"
+        },
+        "gender": {
+          "label": "Gender",
+          "options": {
+            "select": "Select gender",
+            "male": "Male",
+            "female": "Female"
+          }
+        },
+        "password": {
+          "label": "Set New Password",
+          "placeholder": "Password must be at least 6 characters long",
+          "title": {
+            "show": "Show Password",
+            "hide": "Hide Password"
+          }
+        },
+        "bio": {
+          "label": "Bio (optional)",
+          "placeholder": "Tell others about yourself..."
+        },
+        "profider": {
+          "label": "Signed up with:",
+          "google": "Google Account",
+          "facebook": "Facebook Account",
+          "local": "Email and Password"
+        },
+        "actions": {
+          "confirm": "Save Changes",
+          "discard": "Discard"
+        }
+      }
+    },
+    "recentActivities": {
+      "title": "Recent Activity",
+      "error": "Error loading activities"
+    },
+    "stats": {
+      "title": "Personal Game Stats",
+      "grid": {
+        "gridOne": "Games",
+        "gridTwo": "1st Place",
+        "gridThree": "2nd Place",
+        "gridFour": "3rd Place",
+        "gridFive": "4th Place",
+        "gridSix": "Abandoned Games",
+        "gridSeven": "Rating",
+        "gridEight": "Top score",
+        "gridNine": "Level",
+        "gridTen": "Progress"
+      }
+    }
+  },
+  "Auth": {
+    "info": {
+      "right": {
+        "title": "Deal's ready — are you?",
+        "span": "Sign in or join to take your seat."
+      },
+      "left": {
+        "title": "You're almost at the table!",
+        "span": "Verify your email to join the fun."
+      }
+    },
+    "error": {
+      "title": "Ooops! Something went wrong.",
+      "paragraph": "Please make sure that this google account email is not already registered with us!",
+      "small": "We will try to fix this error, if it's coming from our end!",
+      "link": "back to sign in"
+    },
+    "leftPanel": {
+      "avatarGallery": {
+        "msgs": {
+          "success": "Avatar updated successfully!",
+          "error": "ailed to update avatar. Please try again."
+        },
+        "title": "Select Your Avatar",
+        "failed": "Failed to load avatars."
+      },
+      "oAuth": {
+        "google": "Continue with Google",
+        "facebook": "Continue with Facebook"
+      },
+      "signin": {
+        "title": "Welcome Back!",
+        "small": "Sign in to your account and shuffle up for some fun.",
+        "form": {
+          "username": {
+            "placeholder": "Username",
+            "forgot": "Forgot username?"
+          },
+          "password": {
+            "placeholder": "Password",
+            "hide": "Hide Password",
+            "show": "Show Password",
+            "forgot": "Forgot password?"
+          },
+          "btn": "Sign In",
+          "guestBtn": "Continue as Guest",
+          "guestInfo": {
+            "small": "You can continue as a guest without creating an account. You'll have limited access to features.",
+            "ul": {
+              "liOne": "You can only join Classic and Nines rooms",
+              "liTwo": "You cannot create rooms",
+              "liThree": "You cannot join rooms with bets",
+              "liFour": "Your progress won't be saved after you leave",
+              "liFive": "You cannot give feedback, if there's an issue or if you want to add new features"
+            },
+            "b": "It's a great way to try out the game!"
+          }
+        },
+        "or": "or",
+        "link": {
+          "paragraph": "Don't have an account?",
+          "span": "Sign up"
+        }
+      },
+      "signup": {
+        "msgs": {
+          "passwordLength": "Password must be at least 6 characters long!",
+          "passwordMatch": "Passwords do not match!",
+          "avatar": "Please select an avatar!"
+        },
+        "title": "Welcome!",
+        "small": "Sign up to create your account and join the fun.",
+        "avatar": {
+          "title": "Choose",
+          "pickedImgTitle": "Change avatar"
+        },
+        "form": {
+          "firstName": {
+            "placeholder": "First Name (Optional)"
+          },
+          "lastName": {
+            "placeholder": "Last Name (Optional)"
+          },
+          "username": {
+            "placeholder": "Username*"
+          },
+          "email": {
+            "placeholder": "Email*"
+          },
+          "password": {
+            "placeholder": "Password*",
+            "confirmPlaceholder": "Confirm Password*",
+            "hide": "Hide Password",
+            "show": "Show Password"
+          },
+          "gender": {
+            "label": "Your Gender:",
+            "options": {
+              "male": "Male",
+              "female": "Female"
+            }
+          },
+          "btn": "Sign Up"
+        },
+        "or": "or",
+        "link": {
+          "paragraph": "Already have an account?",
+          "span": "Sign in"
+        }
+      },
+      "changePassword": {
+        "msgs": {
+          "success": "Password changed successfully!",
+          "passwordLength": "Password must be at least 6 characters long!",
+          "passwordMatch": "Passwords do not match!"
+        },
+        "title": "Change Password",
+        "form": {
+          "hide": "Hide Password",
+          "show": "Show Password",
+          "password": {
+            "label": "New Password",
+            "placeholder": "Password must be at least 6 characters long"
+          },
+          "confirmPassword": {
+            "label": "Confirm New Password",
+            "placeholder": "Confirm your new password"
+          },
+          "btn": "Submit"
+        },
+        "link": "back to sign in"
+      },
+      "confirmEmail": {
+        "success": {
+          "paragraph": "Email Sent Successfully!",
+          "small": "We sent recovery email with your username! Please go to your email and follow the instructions."
+        },
+        "title": "Confirm Email",
+        "form": {
+          "label": "Enter Email that you've used for registration",
+          "placeholder": "Input email",
+          "btn": "Submit"
+        },
+        "link": "go back"
+      },
+      "forgotUsername": {
+        "success": {
+          "paragraph": "Email Sent Successfully!",
+          "small": "We sent recovery email with your username! Please go to your email and follow the instructions."
+        },
+        "title": "Username Recovery",
+        "small": "We'll send you an email with your username.",
+        "form": {
+          "label": "Enter Email that you've used for registration",
+          "placeholder": "Input email",
+          "btn": "Submit"
+        },
+        "link": "go back"
+      }
+    },
+    "rightPanel": {
+      "verify": {
+        "infoVerify": {
+          "title": {
+            "normal": "Almost there!",
+            "span": "Verify email to start playing!"
+          }
+        },
+        "msgs": {
+          "msgOne": "Authenticated successfully!",
+          "msgTwo": "Email sent to new email successfully!",
+          "msgThree": "Email sent successfully!"
+        },
+        "paragraph": "We've sent you a verification email, please check your email and verify it.",
+        "small": "If you didn't receive the email, please check your spam folder or try resending it.",
+        "btn": "Send Again",
+        "notice": {
+          "warning": {
+            "text": {
+              "normal": "Please make sure, that you've used",
+              "b": "valid email address",
+              "normalTwo": "for registration"
+            }
+          },
+          "usedEmail": "This is the email you've used for registration:",
+          "sudgestion": {
+            "text": "If it's not a correct email:",
+            "link": "change email"
+          },
+          "finalSudgestion": "If you still have issues with email verification, please contact our support team at"
+        },
+        "goBack": "Go Back To Signin"
+      },
+      "verified": {
+        "failed": {
+          "title": "Verification Failed!",
+          "error": "An error occurred during email verification.",
+          "small": {
+            "textOne": "Redirecting to the request page in",
+            "textTwo": "seconds..."
+          }
+        },
+        "success": {
+          "title": "Congratulations! Your account activated successfully.",
+          "small": {
+            "textOne": "Redirecting to the main page in",
+            "textTwo": "seconds..."
+          }
+        }
+      },
+      "changeEmail": {
+        "title": "Change Email",
+        "currentEmail": "Your current email",
+        "form": {
+          "label": "New Email",
+          "placeholder": "Input valid email",
+          "btn": "Submit"
+        },
+        "goBack": "Go Back"
+      }
+    }
+  },
+  "Chat": {
+    "title": "Chat",
+    "noMessages": "No messages yet. Start the conversation!",
+    "placeholder": "Type your message...",
+    "btn": "Send"
+  },
+  "GamePage": {
+    "header": {
+      "players": "Players",
+      "rooms": "Rooms",
+      "filter": {
+        "label": "Filter Rooms:",
+        "disabled": "Filters disabled when there are 5 or fewer rooms"
+      },
+      "btn": "Create Room"
+    },
+    "createRoom": {
+      "msgs": {
+        "roomUser": "You can't be in more than one room at the same time",
+        "betAmount": "Bet must be at least 50",
+        "noEnoughCoins": "You don't have enough JCoins to place this bet",
+        "coinsNeeded": "You need at least 100 JCoins to create a room"
+      },
+      "types": {
+        "classic": "Classic",
+        "nines": "Nines"
+      },
+      "visibility": {
+        "public": "Public",
+        "publicTitle": "open to all players",
+        "private": "Private",
+        "privateTitle": "requires a password to join"
+      },
+      "form": {
+        "name": "Room Name",
+        "password": "Create Password",
+        "bet": {
+          "label": "Bet (optional):",
+          "min": "Minimum bet:"
+        },
+        "hisht": "Hisht:",
+        "chat": {
+          "label": "In Game Chat:",
+          "on": "On",
+          "off": "Off"
+        },
+        "deck": {
+          "label": "Card Deck:",
+          "default": "Default",
+          "lockedInfo": "Reach {level} to unlock"
+        },
+        "btn": "Create"
+      }
+    },
+    "filters": {
+      "classic": "Classic",
+      "nines": "Nines",
+      "bet": "With Bet",
+      "public": "Public",
+      "private": "Private",
+      "chat": "With Chat",
+      "penalties": "Penalties",
+      "btn": "Clear Filters"
+    },
+    "cards": {
+      "msg": "No rooms available. Create one!",
+      "card": {
+        "msgs": {
+          "fullRoom": "Room is full",
+          "alreadyInRoom": "You can't be more than one room at the same time!",
+          "coinsNeeded": "You need at least 100 JCoins to join a room",
+          "notEnoughCoins": "You don't have enough JCoins to join this room with the current bet",
+          "guestNoBet": "Sign in to join betting rooms"
+        },
+        "passwordPrompt": {
+          "msgs": {
+            "localErrors": {
+              "passwordRequired": "Password is required to join this room",
+              "incorrectPassword": "Incorrect password. Please try again."
+            },
+            "flashErrors": {
+              "passwordRequired": "Please enter a password",
+              "incorrectPassword": "Incorrect password. Please try again."
+            }
+          },
+          "placeholder": "Enter password",
+          "btn": "Join"
+        },
+        "leaveWarning": {
+          "paragraph": "Are you sure you want to leave the room?",
+          "small": "This action cannot be undone. You won't be able to rejoin this room. And Won't be able to join another room until the current game in this room finishes. 100 JCoins will be deducted as a penalty for leaving an active game.",
+          "btns": {
+            "yes": "Yes, Leave",
+            "no": "No, Stay"
+          }
+        },
+        "types": {
+          "classic": "Classic",
+          "nines": "Nines"
+        },
+        "bet": "Bet:",
+        "status": {
+          "private": "Private",
+          "public": "Public"
+        },
+        "hisht": "Hisht:",
+        "chat": {
+          "label": "Chat:",
+          "on": "On",
+          "off": "Off"
+        },
+        "btns": {
+          "continue": "Continue Playing",
+          "leave": "Leave",
+          "join": "Join"
+        }
+      }
+    },
+    "search": {
+      "title": "Search disabled when there are 5 or fewer rooms",
+      "placeholder": "Search rooms by name..."
+    }
+  },
+  "GameRoom": {
+    "GameControls": {
+      "trumpModal": {
+        "choose": "Choose a Trump",
+        "noTrump": "No Trump"
+      },
+      "leaveRoomModal": {
+        "title": "Are you sure you want to leave?",
+        "paragraph": "If you leave, a bot will continue playing instead of you. You'll be able to rejoin as long as there's one real player left in the room.",
+        "btns": {
+          "leave": "Leave",
+          "cancel": "Cancel"
+        }
+      },
+      "gameRounds": {
+        "playBtn": "Play"
+      },
+      "jokerPrompt": {
+        "needHighest": "Need highest:",
+        "takesHighest": "Takes highest:",
+        "need": "I'll take it",
+        "pass": "I don't need it"
+      },
+      "bidModal": {
+        "title": "Choose a Bid"
+      }
+    },
+    "gameBoard": {
+      "table": {
+        "handInfo": {
+          "distribution": "Distributed By:",
+          "stuffing": "Stuffing:",
+          "tearing": "Tearing:"
+        },
+        "hisht": "Hisht:",
+        "bet": "Bet:"
+      },
+      "lastPlayedCards": "Last Played Cards",
+      "players": {
+        "userMeta": {
+          "rating": "Rating:",
+          "member": "Member Since:",
+          "guestUser": "Guest — no profile available.",
+          "level": "Level:"
+        },
+        "bot": "bot",
+        "you": "You"
+      }
+    },
+    "finishedMode": {
+      "exit": "Exit The Room",
+      "title": "Game Finished",
+      "paragraph": {
+        "textOne": "The room will automatically close in",
+        "textTwo": "seconds."
+      },
+      "score": "Score:"
+    },
+    "busyBg": {
+      "paragraph": "You're out of the game. The bot is playing instead of you.",
+      "btns": {
+        "continue": "Continue Playing",
+        "leave": "Leave Room"
+      }
+    }
+  },
+  "HomePage": {
+    "metadata": {
+      "title": "Joker Clash | Online Card Game",
+      "description": "Join rooms, play Joker online, and compete in real-time."
+    },
+    "banner": {
+      "online": "online",
+      "total": "total"
+    },
+    "displayRoomCards": {
+      "title": "Quick Rooms",
+      "info": {
+        "paragraph": {
+          "types": {
+            "classic": "Classic",
+            "nines": "Nines",
+            "bet": "Betting"
+          },
+          "text": "rooms are not available!"
+        },
+        "small": {
+          "textOne": "To create",
+          "textTwo": "room go to rooms page and click \"Create Room\""
+        },
+        "btn": "Go to lobby"
+      },
+      "linkTitle": "View All Rooms",
+      "cards": {
+        "classic": "Classic",
+        "nines": "Nines",
+        "bet": "With Bet"
+      }
+    }
+  }
+}

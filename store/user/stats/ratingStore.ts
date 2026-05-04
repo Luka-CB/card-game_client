@@ -11,6 +11,7 @@ interface ratingStore {
   } | null;
 
   fetchRating: () => Promise<void>;
+  clearRating: () => void;
 }
 
 const useRatingStore = create<ratingStore>((set) => ({
@@ -29,6 +30,7 @@ const useRatingStore = create<ratingStore>((set) => ({
       set({ status: "failed" });
     }
   },
+  clearRating: () => set({ rating: null, status: "idle" }),
 }));
 
 export default useRatingStore;

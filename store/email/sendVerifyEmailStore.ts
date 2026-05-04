@@ -24,14 +24,23 @@ const useSendVerifyEmailStore = create<SendVerifyEmailStore>((set) => ({
         set({ email: data.email, status: "success" });
       }
     } catch (error) {
-      console.error(error);
       if (error instanceof AxiosError) {
+        const status = error.response?.status;
+        const message =
+          error.response?.data?.error?.message || "An error occurred";
+        if (status && status >= 500) {
+          console.error("Error sending verification email:", error);
+        }
         set({
-          error: error.response?.data?.error?.message || "An error occurred",
           status: "failed",
+          error: message,
         });
       } else {
-        set({ error: "An unexpected error occurred", status: "failed" });
+        console.error("Unexpected error sending verification email:", error);
+        set({
+          status: "failed",
+          error: "An unexpected error occurred",
+        });
       }
     }
   },

@@ -15,6 +15,8 @@ import CookieConsent from "@/components/CookieConsent";
 import useFilterStore from "@/store/gamePage/filterStore";
 import useSocket from "@/hooks/useSocket";
 import AvatarGallery from "@/components/auth/LeftPanel/AvatarGallery";
+import LevelUpNotification from "@/components/levelUp/LevelUpNotification";
+import useLevelUpStore from "@/store/levelUpStore";
 
 export default function ClientLayout({
   children,
@@ -24,6 +26,8 @@ export default function ClientLayout({
   const { isOpen, setIsOpen } = useUserOptionStore();
   const { getUser, loading, setUsersOnline } = useUserStore();
   const { msg } = useFlashMsgStore();
+  const { setLevelUp } = useLevelUpStore();
+  const user = useUserStore((s) => s.user);
   const { showFilterOptions, toggleFilterOptions } = useFilterStore();
   const { toggleLastPlayedCardsModal, setToggleLastPlayedCards } =
     useLastPlayedCardsStore();
@@ -56,6 +60,25 @@ export default function ClientLayout({
     };
   }, [socket]);
 
+  useEffect(() => {
+    if (!socket || !user?._id || user.isGuest) return;
+
+    const handleLevelUp = (data: {
+      levelUps: { playerId: string; fromLevel: string; toLevel: string }[];
+    }) => {
+      const mine = data?.levelUps?.find((lu) => lu.playerId === user._id);
+      if (mine) {
+        setLevelUp({ fromLevel: mine.fromLevel, toLevel: mine.toLevel });
+      }
+    };
+
+    socket.on("levelUp", handleLevelUp);
+
+    return () => {
+      socket.off("levelUp", handleLevelUp);
+    };
+  }, [socket, user?._id, user?.isGuest, setLevelUp]);
+
   return (
     <div className="app-root" onClick={handleClosePopup}>
       {loading ? (
@@ -73,6 +96,7 @@ export default function ClientLayout({
       {!isGameRoom && <Footer />}
       <CookieConsent />
       <AvatarGallery />
+      <LevelUpNotification />
     </div>
   );
 }
