@@ -173,6 +173,22 @@ const GameRoom: React.FC = () => {
     };
   }, [socket, roomId]);
 
+  // Re-request all game state on socket reconnection (e.g. after idle disconnect)
+  useEffect(() => {
+    if (!socket || !roomId) return;
+
+    const handleReconnect = () => {
+      socket.emit("getRoom", roomId);
+      socket.emit("getGameInfo", roomId);
+    };
+
+    socket.io.on("reconnect", handleReconnect);
+
+    return () => {
+      socket.io.off("reconnect", handleReconnect);
+    };
+  }, [socket, roomId]);
+
   // Effect to get room data and listen for updates
   useEffect(() => {
     if (!socket || !roomId) return;
@@ -567,11 +583,7 @@ const GameRoom: React.FC = () => {
   }, []);
 
   if (loading) {
-    return (
-      <div className={styles.loading}>
-        <Loader />
-      </div>
-    );
+    return <Loader fullPage />;
   }
 
   if (!room) {

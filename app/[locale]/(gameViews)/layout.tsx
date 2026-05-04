@@ -20,7 +20,7 @@ export default function GameViewsLayout({
   }, [loading, user, router]);
 
   if (loading || !user) {
-    return <Loader />;
+    return <Loader fullPage />;
   }
 
   return <>{children}</>;

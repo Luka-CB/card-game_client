@@ -20,11 +20,7 @@ export default function AccountPage() {
   }, []);
 
   if (updateStatus === "loading") {
-    return (
-      <div className={styles.loading}>
-        <Loader />
-      </div>
-    );
+    return <Loader fullPage />;
   }
 
   if (updateStatus === "error" && error) {

@@ -74,9 +74,7 @@ const LastPlayedCards: React.FC<LastPlayedCardsProps> = ({
             {lastPlayedCards.map(({ playerId, card }, index) => (
               <div
                 key={playerId}
-                className={`${styles.card} ${styles.card}_${getPlayerIndex(
-                  playerId,
-                )}`}
+                className={`${styles.card} ${styles[`card_${getPlayerIndex(playerId)}`]}`}
                 style={{ zIndex: index + 1 }}
               >
                 {card.joker ? (
