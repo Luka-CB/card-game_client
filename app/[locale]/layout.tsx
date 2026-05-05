@@ -65,6 +65,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       description: metadata.description || "Joker Card Game",
       images: ["/banner-img.jpg"],
     },
+    verification: {
+      google: "wDvTxc9cUvOBg74ES5U8XVYbliBbniOP-X82j9q5Dgs",
+    },
   };
 }
 

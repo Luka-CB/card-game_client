@@ -14,6 +14,7 @@ import User from "./User";
 import PasswordPrompt from "./PasswordPrompt";
 import useRoomStore from "@/store/gamePage/roomStore";
 import { useRouter } from "next/navigation";
+import { usePathname } from "@/i18n/navigation";
 import Image from "next/image";
 import useJCoinsStore from "@/store/user/stats/jCoinsStore";
 import useDisplayRoomStore from "@/store/displayRoomStore";
@@ -136,7 +137,13 @@ const Card: React.FC<CardProps> = ({ room }) => {
     setIsWarningVisible(false);
   };
 
+  const pathname = usePathname();
+
   const handleJoin = (roomId: string) => {
+    if (!user) {
+      router.push(`${pathname}?auth=signin`);
+      return;
+    }
     if (room && user) {
       isLeavingRef.current = false;
 

@@ -48,7 +48,7 @@ const Auth = () => {
   };
 
   useEffect(() => {
-    if (!loading && !user && !auth) {
+    if (!loading && !user && !auth && pathname !== "/") {
       router.replace(buildUrlWithAuth("signin"), { scroll: false });
     }
 
@@ -77,8 +77,8 @@ const Auth = () => {
 
   useEffect(() => {
     if (
-      !user ||
-      (!user.isGuest && !user.isVerified) ||
+      (!user && auth) ||
+      (!user?.isGuest && !user?.isVerified && user) ||
       auth === "redirecting"
     ) {
       document.body.style.overflow = "hidden";
@@ -91,7 +91,11 @@ const Auth = () => {
     };
   }, [user, auth]);
 
-  if (!user || (!user.isGuest && !user.isVerified) || auth === "redirecting") {
+  if (
+    (!user && auth) ||
+    (!user?.isGuest && !user?.isVerified && user) ||
+    auth === "redirecting"
+  ) {
     return (
       <motion.main
         initial={{ backdropFilter: "blur(0)" }}

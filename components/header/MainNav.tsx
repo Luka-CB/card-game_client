@@ -98,6 +98,18 @@ const MainNav: React.FC<MainNavProps> = ({
             </div>
           </ul>
         ) : null}
+        {!user && (
+          <ul>
+            <div
+              className={
+                pathname === "/rooms" ? styles.link_active : styles.link
+              }
+            >
+              <SiAirtable className={styles.icon} />
+              <Link href="/rooms">{l("lobby")}</Link>
+            </div>
+          </ul>
+        )}
       </nav>
       {user && user?._id ? (
         <div className={styles.user}>
