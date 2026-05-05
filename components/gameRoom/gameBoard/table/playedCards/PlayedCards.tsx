@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { PlayedCard, RoomUser } from "@/utils/interfaces";
 import styles from "./PlayedCards.module.scss";
 import Image from "next/image";
@@ -26,14 +26,14 @@ const PlayedCards: React.FC<PlayedCardsProps> = ({
   const windowSize = useWindowSize();
   const { getCardUrl } = useDeckContext();
 
-  // Played cards are the table's focal point — size them larger than hand cards.
-  // Use the smaller of (5.5% of width) and (8% of height), clamped to [32, 80]px.
+  // Played cards are slightly smaller than hand cards (~85% of hand size).
+  // Use the smaller of (6.4% of width) and (8.5% of height), clamped to [26, 85]px.
   const cardWidth = Math.round(
     Math.max(
-      30,
+      26,
       Math.min(
-        100,
-        Math.min(windowSize.width * 0.075, windowSize.height * 0.1),
+        85,
+        Math.min(windowSize.width * 0.064, windowSize.height * 0.085),
       ),
     ),
   );
@@ -44,6 +44,18 @@ const PlayedCards: React.FC<PlayedCardsProps> = ({
     null,
   );
   const controls = useAnimation();
+  const animationTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const isMountedRef = useRef(true);
+  useEffect(() => {
+    isMountedRef.current = true;
+    return () => {
+      isMountedRef.current = false;
+      if (animationTimerRef.current) {
+        clearTimeout(animationTimerRef.current);
+        animationTimerRef.current = null;
+      }
+    };
+  }, []);
   // Tracks whether we're in the post-animation hidden state waiting for the
   // server to confirm the round cleared. Using state (not a ref) so the restore
   // effect re-runs when this flips true, handling the race where the server
@@ -77,22 +89,30 @@ const PlayedCards: React.FC<PlayedCardsProps> = ({
       const targetX =
         winnerIndex === 1 ? "-50vh" : winnerIndex === 3 ? "50vh" : 0;
 
-      controls
-        .start({
-          x: targetX,
-          y: targetY,
-          opacity: 0,
-          transition: { duration: 0.8, ease: "easeInOut" },
-        })
-        .then(() => {
-          controls.set({ x: 0, y: 0, opacity: 0 });
-          // setIsHidden(true) triggers the restore effect above, which will
-          // immediately restore opacity if the server already responded, or
-          // wait for the next playedCards update if it hasn't yet.
-          setIsHidden(true);
-          setRoundWinnerId(null);
-          setCardsToAnimate(null);
-        });
+      // Small delay so the browser has time to paint the 4th card image
+      // (custom decks load from the network and may not be cached yet).
+      // No cleanup here — cancelling on deps change would abort the animation
+      // when the server clears playedCards mid-delay. Unmount cleanup is handled
+      // by the dedicated effect above.
+      if (animationTimerRef.current) clearTimeout(animationTimerRef.current);
+      animationTimerRef.current = setTimeout(() => {
+        animationTimerRef.current = null;
+        if (!isMountedRef.current) return;
+        controls
+          .start({
+            x: targetX,
+            y: targetY,
+            opacity: 0,
+            transition: { duration: 0.8, ease: "easeInOut" },
+          })
+          .then(() => {
+            if (!isMountedRef.current) return;
+            controls.set({ x: 0, y: 0, opacity: 0 });
+            setIsHidden(true);
+            setRoundWinnerId(null);
+            setCardsToAnimate(null);
+          });
+      }, 250);
     }
   }, [winnerIndex, playedCards]); // eslint-disable-line react-hooks/exhaustive-deps
 
