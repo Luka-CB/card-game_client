@@ -48,10 +48,6 @@ const Auth = () => {
   };
 
   useEffect(() => {
-    if (!loading && !user && !auth && pathname !== "/") {
-      router.replace(buildUrlWithAuth("signin"), { scroll: false });
-    }
-
     if (!loading && user && !user?.isGuest && !user?.isVerified && !auth) {
       router.replace(buildUrlWithAuth("verify"), { scroll: false });
     }
