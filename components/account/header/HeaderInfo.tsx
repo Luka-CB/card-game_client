@@ -18,7 +18,7 @@ interface HeaderInfoProps {
   email: string;
   isVerified: boolean;
   createdAt: string;
-  provider: "local" | "google" | "facebook";
+  provider: "local" | "google";
 }
 
 const HeaderInfo: React.FC<HeaderInfoProps> = ({

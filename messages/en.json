@@ -690,7 +690,6 @@
         "profider": {
           "label": "Signed up with:",
           "google": "Google Account",
-          "facebook": "Facebook Account",
           "local": "Email and Password"
         },
         "actions": {
@@ -746,8 +745,7 @@
         "failed": "Failed to load avatars."
       },
       "oAuth": {
-        "google": "Continue with Google",
-        "facebook": "Continue with Facebook"
+        "google": "Continue with Google"
       },
       "signin": {
         "title": "Welcome Back!",

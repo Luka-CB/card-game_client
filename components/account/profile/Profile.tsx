@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import styles from "./Profile.module.scss";
 import { IoMdEye, IoIosEyeOff } from "react-icons/io";
 import { FcGoogle } from "react-icons/fc";
-import { FaFacebook } from "react-icons/fa6";
+
 import DeleteAccount from "../delete/DeleteAccount";
 import useFlashMsgStore from "@/store/flashMsgStore";
 import useUserAccountStore from "@/store/user/userAccountStore";
@@ -16,7 +16,7 @@ interface ProfileProps {
     lastName: string;
     gender?: "male" | "female" | null;
     bio: string;
-    provider: "local" | "google" | "facebook";
+    provider: "local" | "google";
   };
 }
 
@@ -193,11 +193,6 @@ const Profile: React.FC<ProfileProps> = ({ userAccount }) => {
             <div className={styles.provider_type}>
               <FcGoogle className={styles.icon} />
               <span>{t("form.profider.google")}</span>
-            </div>
-          ) : userAccount?.provider === "facebook" ? (
-            <div className={styles.provider_type}>
-              <FaFacebook className={styles.icon} />
-              <span>{t("form.profider.facebook")}</span>
             </div>
           ) : (
             <div className={styles.provider_type}>

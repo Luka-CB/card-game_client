@@ -690,7 +690,6 @@
         "profider": {
           "label": "Зарегистрирован с помощью:",
           "google": "Аккаунт Google",
-          "facebook": "Аккаунт Facebook",
           "local": "Электронная почта и пароль"
         },
         "actions": {
@@ -746,8 +745,7 @@
         "failed": "Не удалось загрузить аватары."
       },
       "oAuth": {
-        "google": "Продолжить с Google",
-        "facebook": "Продолжить с Facebook"
+        "google": "Продолжить с Google"
       },
       "signin": {
         "title": "С возвращением!",

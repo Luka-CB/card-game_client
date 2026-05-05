@@ -13,7 +13,7 @@ export interface UserAccount {
   email: string;
   gender?: "male" | "female" | null;
   avatar: string;
-  provider: "local" | "google" | "facebook";
+  provider: "local" | "google";
   providerId: string;
   isVerified: boolean;
   isAdmin: boolean;

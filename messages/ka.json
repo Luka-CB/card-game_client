@@ -690,7 +690,6 @@
         "profider": {
           "label": " რეგისტრაცია განხორციელდა:",
           "google": "Google-ის ანგარიშით",
-          "facebook": "Facebook-ის ანგარიშით",
           "local": "ელ.ფოსტით და პაროლით"
         },
         "actions": {
@@ -746,8 +745,7 @@
         "failed": "ავატარების ჩატვირთვა ვერ მოხერხდა."
       },
       "oAuth": {
-        "google": "გაგრძელება Google-ით",
-        "facebook": "გაგრძელება Facebook-ით"
+        "google": "გაგრძელება Google-ით"
       },
       "signin": {
         "title": "კეთილი დაბრუნება!",
