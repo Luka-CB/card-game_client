@@ -26,6 +26,9 @@ export const metadata: Metadata = {
     shortcut: "/logo-icon.ico",
     apple: "/logo-icon.ico",
   },
+  verification: {
+    google: "wDvTxc9cUvOBg74ES5U8XVYbliBbniOP-X82j9q5Dgs",
+  },
 };
 
 export default async function RootLayout({
