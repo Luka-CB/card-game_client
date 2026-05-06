@@ -91,12 +91,14 @@ const MainNav: React.FC<MainNavProps> = ({
                 </div>
               </>
             )}
-            <div className={styles.divider}></div>
-            {user && (
-              <div className={styles.logout} onClick={handleLogout}>
-                <IoLogOut className={styles.icon} />
-                <span>{l("logout")}</span>
-              </div>
+            {user && !user.isGuest && (
+              <>
+                <div className={styles.divider}></div>
+                <div className={styles.logout} onClick={handleLogout}>
+                  <IoLogOut className={styles.icon} />
+                  <span>{l("logout")}</span>
+                </div>
+              </>
             )}
           </ul>
         ) : null}
