@@ -10,10 +10,12 @@ export const reconnectSocket = () => {
   }
 };
 
-export default function useSocket() {
+export default function useSocket(shouldConnect: boolean = true) {
   const [socket, setSocket] = useState<Socket | null>(socketSingleton);
 
   useEffect(() => {
+    if (!shouldConnect) return;
+
     if (socketSingleton) {
       setSocket(socketSingleton);
       return;
@@ -36,7 +38,7 @@ export default function useSocket() {
     return () => {
       window.removeEventListener("beforeunload", handleBeforeUnload);
     };
-  }, []);
+  }, [shouldConnect]);
 
   return socket;
 }

@@ -75,7 +75,6 @@ const DealtCards = ({
             duration: 0.4,
             type: "spring",
             damping: 15,
-            delay: index * 0.1,
           }}
           style={{
             position: "absolute",

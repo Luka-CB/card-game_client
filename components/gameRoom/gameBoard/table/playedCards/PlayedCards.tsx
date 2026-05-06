@@ -82,7 +82,6 @@ const PlayedCards: React.FC<PlayedCardsProps> = ({
   useEffect(() => {
     if (winnerIndex !== null && playedCards.length === 4) {
       setCardsToAnimate(playedCards);
-      soundManager.play("winCards");
 
       const targetY =
         winnerIndex === 0 ? "30vh" : winnerIndex === 2 ? "-30vh" : 0;
@@ -98,6 +97,7 @@ const PlayedCards: React.FC<PlayedCardsProps> = ({
       animationTimerRef.current = setTimeout(() => {
         animationTimerRef.current = null;
         if (!isMountedRef.current) return;
+        soundManager.play("winCards");
         controls
           .start({
             x: targetX,
@@ -112,7 +112,7 @@ const PlayedCards: React.FC<PlayedCardsProps> = ({
             setRoundWinnerId(null);
             setCardsToAnimate(null);
           });
-      }, 250);
+      }, 700);
     }
   }, [winnerIndex, playedCards]); // eslint-disable-line react-hooks/exhaustive-deps
 

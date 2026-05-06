@@ -32,7 +32,7 @@ export default function ClientLayout({
   const { toggleLastPlayedCardsModal, setToggleLastPlayedCards } =
     useLastPlayedCardsStore();
   const pathname = usePathname();
-  const socket = useSocket();
+  const socket = useSocket(!loading);
 
   const isGameRoom = pathname?.includes("/rooms/");
 
