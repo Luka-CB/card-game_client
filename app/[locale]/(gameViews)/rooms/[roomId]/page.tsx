@@ -398,7 +398,7 @@ const GameRoom: React.FC = () => {
     const durationMs = duration * 1000;
 
     const animate = () => {
-      const elapsed = Date.now() - startedAt;
+      const elapsed = Math.max(0, Date.now() - new Date(startedAt).getTime());
       const progress = Math.min(1, elapsed / durationMs);
       setTimerProgress(progress);
 

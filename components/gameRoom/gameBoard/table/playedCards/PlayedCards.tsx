@@ -120,15 +120,18 @@ const PlayedCards: React.FC<PlayedCardsProps> = ({
     if (playedCards.length > 0) {
       const lastPlayedCard = playedCards[playedCards.length - 1];
 
-      if (lastPlayedCard.card.joker && lastPlayedCard.card.type) {
-        if (lastPlayedCard.card.type === "pass") {
-          soundManager.play("slideUnder");
+      // Small delay to let React render the card visually first
+      setTimeout(() => {
+        if (lastPlayedCard.card.joker && lastPlayedCard.card.type) {
+          if (lastPlayedCard.card.type === "pass") {
+            soundManager.play("slideUnder");
+          } else {
+            soundManager.play("playJoker");
+          }
         } else {
-          soundManager.play("playJoker");
+          soundManager.play("playCard");
         }
-      } else {
-        soundManager.play("playCard");
-      }
+      }, 50);
     }
   }, [playedCards]);
 
