@@ -261,7 +261,11 @@ const Signup = () => {
               <label htmlFor="female">{t("form.gender.options.female")}</label>
             </div>
           </div>
-          <button type="submit" disabled={status === "loading"}>
+          <button
+            type="submit"
+            disabled={status === "loading"}
+            className={styles.signup_btn}
+          >
             {status === "loading" ? <BtnLoader /> : t("form.btn")}
           </button>
         </form>
