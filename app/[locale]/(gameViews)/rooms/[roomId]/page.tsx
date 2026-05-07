@@ -68,6 +68,7 @@ const GameRoom: React.FC = () => {
   const [timerData, setTimerData] = useState<{
     duration: number;
     startedAt: number;
+    sourceStartedAt: number;
     playerId: string;
     type: string;
   } | null>(null);
@@ -118,6 +119,24 @@ const GameRoom: React.FC = () => {
 
     setShowLeaveModal(false);
   };
+
+  const createClientTimerData = ({
+    duration,
+    sourceStartedAt,
+    playerId,
+    type,
+  }: {
+    duration: number;
+    sourceStartedAt?: number;
+    playerId?: string;
+    type?: string;
+  }) => ({
+    duration,
+    startedAt: Date.now(),
+    sourceStartedAt: sourceStartedAt ?? Date.now(),
+    playerId: playerId ?? "",
+    type: type ?? "playing",
+  });
 
   const handleCancelLeave = () => {
     setShowLeaveModal(false);
@@ -363,12 +382,14 @@ const GameRoom: React.FC = () => {
     }) => {
       stopAnim();
       setTimerProgress(0);
-      setTimerData({
-        duration: data.remainingTime ?? data.timer?.duration ?? 20,
-        startedAt: data.timer?.startTime ?? Date.now(),
-        playerId: data.timer?.playerId ?? "",
-        type: data.timer?.type ?? "playing",
-      });
+      setTimerData(
+        createClientTimerData({
+          duration: data.remainingTime ?? data.timer?.duration ?? 20,
+          sourceStartedAt: data.timer?.startTime,
+          playerId: data.timer?.playerId,
+          type: data.timer?.type,
+        }),
+      );
     };
 
     const onTimerExpired = () => {
@@ -438,11 +459,25 @@ const GameRoom: React.FC = () => {
         if (
           prev &&
           prev.playerId === data.playerId &&
-          prev.startedAt === data.startedAt
+          prev.type === data.type &&
+          prev.sourceStartedAt === data.startedAt &&
+          prev.duration === data.duration
         ) {
           return prev;
         }
-        return data;
+
+        const elapsedSeconds = Math.max(
+          0,
+          (Date.now() - data.startedAt) / 1000,
+        );
+        const remainingDuration = Math.max(0, data.duration - elapsedSeconds);
+
+        return createClientTimerData({
+          duration: remainingDuration,
+          sourceStartedAt: data.startedAt,
+          playerId: data.playerId,
+          type: data.type,
+        });
       });
     };
 
