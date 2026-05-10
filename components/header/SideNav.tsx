@@ -1,6 +1,6 @@
 "use client";
 
-import { Link, usePathname } from "@/i18n/navigation";
+import { Link, usePathname, useRouter } from "@/i18n/navigation";
 import styles from "./SideNav.module.scss";
 import Image from "next/image";
 import { AnimatePresence, motion } from "framer-motion";
@@ -32,6 +32,7 @@ const SideNav: React.FC<SideNavProps> = ({
   const l = useTranslations("Links");
 
   const pathname = usePathname();
+  const router = useRouter();
   const { toggleNav, isNavOpen } = useNavStore();
   const { status, logout } = useLogoutStore();
 
@@ -39,9 +40,13 @@ const SideNav: React.FC<SideNavProps> = ({
 
   const windowSize = useWindowSize();
 
-  const handleLogout = () => {
-    logout();
-    toggleNav();
+  const handleLogout = async (mode: "signin" | "signup") => {
+    const ok = await logout();
+
+    if (ok) {
+      toggleNav();
+      router.push(`/?auth=${mode}`);
+    }
   };
 
   return (
@@ -78,11 +83,17 @@ const SideNav: React.FC<SideNavProps> = ({
                 <span>{user?.username || "Username"}</span>
               </div>
               <div className={styles.auth_links}>
-                <span className={styles.auth_link} onClick={handleLogout}>
+                <span
+                  className={styles.auth_link}
+                  onClick={() => handleLogout("signin")}
+                >
                   Sign in
                 </span>
                 <div className={styles.auth_divider}></div>
-                <span className={styles.auth_link} onClick={handleLogout}>
+                <span
+                  className={styles.auth_link}
+                  onClick={() => handleLogout("signup")}
+                >
                   Sign up
                 </span>
               </div>
@@ -217,7 +228,10 @@ const SideNav: React.FC<SideNavProps> = ({
             </nav>
             <hr />
             <div className={styles.logout}>
-              <button className={styles.logout_btn} onClick={handleLogout}>
+              <button
+                className={styles.logout_btn}
+                onClick={() => handleLogout("signin")}
+              >
                 {status === "loading" ? (
                   <BtnLoader />
                 ) : (

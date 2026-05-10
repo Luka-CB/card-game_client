@@ -39,11 +39,11 @@ const MainNav: React.FC<MainNavProps> = ({
 
   const pathname = usePathname();
 
-  const handleLogout = async () => {
+  const handleLogout = async (mode: "signin" | "signup") => {
     const ok = await logout();
 
     if (ok) {
-      router.push("/?auth=signin");
+      router.push(`/?auth=${mode}`);
     }
   };
 
@@ -62,11 +62,17 @@ const MainNav: React.FC<MainNavProps> = ({
             </div>
             {user.isGuest && (
               <div className={styles.auth_links_guest}>
-                <span className={styles.auth_link} onClick={handleLogout}>
+                <span
+                  className={styles.auth_link}
+                  onClick={() => handleLogout("signin")}
+                >
                   {t("signIn")}
                 </span>
                 <div className={styles.auth_divider}></div>
-                <span className={styles.auth_link} onClick={handleLogout}>
+                <span
+                  className={styles.auth_link}
+                  onClick={() => handleLogout("signup")}
+                >
                   {t("signUp")}
                 </span>
               </div>
@@ -94,7 +100,10 @@ const MainNav: React.FC<MainNavProps> = ({
             {user && !user.isGuest && (
               <>
                 <div className={styles.divider}></div>
-                <div className={styles.logout} onClick={handleLogout}>
+                <div
+                  className={styles.logout}
+                  onClick={() => handleLogout("signin")}
+                >
                   <IoLogOut className={styles.icon} />
                   <span>{l("logout")}</span>
                 </div>
