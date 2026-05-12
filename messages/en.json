@@ -1161,5 +1161,19 @@
         "bet": "With Bet"
       }
     }
+  },
+  "Popup": {
+    "userTurn": "It's your turn!",
+    "joker": {
+      "takes": "Takes",
+      "need": "Requested",
+      "highest": "Highest",
+      "suits": {
+        "hearts": "Hearts",
+        "diamonds": "Diamonds",
+        "clubs": "Clubs",
+        "spades": "Spades"
+      }
+    }
   }
 }

@@ -1,8 +1,11 @@
 import { substringText } from "@/utils/misc";
 import styles from "./Popup.module.scss";
 import { AnimatePresence, motion } from "framer-motion";
+import { useTranslations } from "next-intl";
 
 export const UserTurnPopup = ({ username }: { username: string }) => {
+  const t = useTranslations("Popup");
+
   return (
     <AnimatePresence>
       <motion.div
@@ -15,7 +18,7 @@ export const UserTurnPopup = ({ username }: { username: string }) => {
         transition={{ duration: 0.5 }}
         className={styles.your_turn_popup}
       >
-        <p>it&apos;s your turn</p>
+        <p>{t("userTurn")}</p>
         <b title={username.length > 6 ? username : undefined}>
           {substringText(username, 6)}
         </b>
@@ -33,6 +36,8 @@ export const JokerPopup = ({
   sute: string;
   type: string;
 }) => {
+  const t = useTranslations("Popup.joker");
+
   return (
     <AnimatePresence>
       <motion.div
@@ -48,8 +53,10 @@ export const JokerPopup = ({
         <b title={username.length > 6 ? username : undefined}>
           {substringText(username, 6)}
         </b>
-        <p>{type === "takes" ? "Takes" : "Requested"} highest</p>
-        <b>{sute}</b>
+        <p>
+          {type === "takes" ? t("takes") : t("need")} {t("highest")}
+        </p>
+        <b>{t(`suits.${sute}`)}</b>
       </motion.div>
     </AnimatePresence>
   );
