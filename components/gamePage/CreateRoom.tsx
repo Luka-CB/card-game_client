@@ -407,11 +407,15 @@ const CreateRoom = () => {
                             className={`${styles.deck_item} ${selectedDeckId === deck._id ? styles.deck_item_active : ""}`}
                             onClick={() => setSelectedDeckId(deck._id)}
                           >
-                            <DeckFan cards={[
-                              deck.cardBack.url,
-                              ...(deck.previewImages ?? []),
-                            ]} />
-                            <span className={styles.deck_name}>{deck.name}</span>
+                            <DeckFan
+                              cards={[
+                                deck.cardBack.url,
+                                ...(deck.previewImages ?? []),
+                              ]}
+                            />
+                            <span className={styles.deck_name}>
+                              {deck.name}
+                            </span>
                           </button>
                         ))}
 
@@ -424,13 +428,17 @@ const CreateRoom = () => {
                             })}
                           >
                             <div className={styles.deck_lock_overlay}>
-                            <FaLock className={styles.deck_lock_icon} />
+                              <FaLock className={styles.deck_lock_icon} />
                             </div>
-                            <DeckFan cards={[
-                              deck.cardBack.url,
-                              ...(deck.previewImages ?? []),
-                            ]} />
-                            <span className={styles.deck_name}>{deck.name}</span>
+                            <DeckFan
+                              cards={[
+                                deck.cardBack.url,
+                                ...(deck.previewImages ?? []),
+                              ]}
+                            />
+                            <span className={styles.deck_name}>
+                              {deck.name}
+                            </span>
                             <span className={styles.deck_level_hint}>
                               {nextLevel}
                             </span>
@@ -443,7 +451,7 @@ const CreateRoom = () => {
                 return null;
               })()}
 
-              {usersOnline?.length > 100 && (
+              {(usersOnline?.length > 100 || currentStatus === "private") && (
                 <div className={styles.toggle_box}>
                   <span>{t("form.chat.label")}</span>
                   <label htmlFor="toggleChat" className={styles.toggle_switch}>

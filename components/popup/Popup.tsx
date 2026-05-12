@@ -37,6 +37,8 @@ export const JokerPopup = ({
   type: string;
 }) => {
   const t = useTranslations("Popup.joker");
+  const normalizedSuitKey =
+    sute === "trump" ? "trump" : sute === "no trump" ? "noTrump" : sute;
 
   return (
     <AnimatePresence>
@@ -56,7 +58,7 @@ export const JokerPopup = ({
         <p>
           {type === "takes" ? t("takes") : t("need")} {t("highest")}
         </p>
-        <b>{t(`suits.${sute}`)}</b>
+        <b>{t(`suits.${normalizedSuitKey}`)}</b>
       </motion.div>
     </AnimatePresence>
   );

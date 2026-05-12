@@ -1030,6 +1030,14 @@
         "leaveWarning": {
           "paragraph": "Are you sure you want to leave the room?",
           "small": "This action cannot be undone. You won't be able to rejoin this room. And Won't be able to join another room until the current game in this room finishes. 100 JCoins will be deducted as a penalty for leaving an active game.",
+          "creatorRoom": {
+            "paragraph": "Leave and delete this private room?",
+            "small": "Because you created this private room and the game has not started yet, leaving now will delete the whole room for everyone inside. They will all be removed from this room.",
+            "btns": {
+              "yes": "Yes, Delete Room",
+              "no": "No, Stay"
+            }
+          },
           "btns": {
             "yes": "Yes, Leave",
             "no": "No, Stay"
@@ -1050,6 +1058,12 @@
           "on": "On",
           "off": "Off"
         },
+        "invite": {
+          "btn": "Copy Invite",
+          "creating": "Creating...",
+          "copySuccess": "Invite link copied",
+          "createError": "Failed to create invite link"
+        },
         "btns": {
           "continue": "Continue Playing",
           "leave": "Leave",
@@ -1060,6 +1074,27 @@
     "search": {
       "title": "Search disabled when there are 5 or fewer rooms",
       "placeholder": "Search rooms by name..."
+    }
+  },
+  "InvitePage": {
+    "eyebrow": "Private Room Invite",
+    "title": "Joining room",
+    "expires": "Invite expires: {date}",
+    "states": {
+      "loadingInvite": "Checking invite details...",
+      "loadingSession": "Preparing your player session...",
+      "joining": "Joining the private room..."
+    },
+    "errors": {
+      "invalid": "This invite is invalid or expired.",
+      "full": "This room is already full.",
+      "started": "This game has already started.",
+      "denied": "This invite can no longer be used.",
+      "session": "Could not prepare your session. Please refresh and try again."
+    },
+    "cta": {
+      "rooms": "Open Rooms",
+      "home": "Go Home"
     }
   },
   "GameRoom": {
@@ -1172,7 +1207,9 @@
         "hearts": "Hearts",
         "diamonds": "Diamonds",
         "clubs": "Clubs",
-        "spades": "Spades"
+        "spades": "Spades",
+        "trump": "Trump",
+        "noTrump": "No Trump"
       }
     }
   }

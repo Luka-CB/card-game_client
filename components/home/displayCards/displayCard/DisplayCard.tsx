@@ -4,17 +4,14 @@ import useUserStore from "@/store/user/userStore";
 import useJCoinsStore from "@/store/user/stats/jCoinsStore";
 import { FaLock, FaLockOpen, FaRocketchat } from "react-icons/fa";
 import useFlashMsgStore from "@/store/flashMsgStore";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import useRoomStore from "@/store/gamePage/roomStore";
-import {
-  getRandomBotAvatar,
-  getRandomColor,
-  substringText,
-} from "@/utils/misc";
+import { substringText } from "@/utils/misc";
 import Image from "next/image";
 import useSocket from "@/hooks/useSocket";
 import useDisplayRoomStore from "@/store/displayRoomStore";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
+import { buildJoinRoomUserPayload } from "@/utils/roomJoin";
 
 interface DisplayCardProps {
   room: Room;
@@ -34,6 +31,15 @@ const DisplayCard: React.FC<DisplayCardProps> = ({ room, type, roomImIn }) => {
 
   const isLeavingRef = useRef(false);
   const hasNavigatedRef = useRef(false);
+  const [isWarningVisible, setIsWarningVisible] = useState(false);
+
+  const isPrivateCreatorLeaveWarning = Boolean(
+    room &&
+    user &&
+    !room.isActive &&
+    room.status === "private" &&
+    room.creatorId === user._id,
+  );
 
   const roomUser = room?.users?.find(
     (u) => u.id === user?._id && u.status !== "left",
@@ -52,6 +58,11 @@ const DisplayCard: React.FC<DisplayCardProps> = ({ room, type, roomImIn }) => {
 
   const handleLeave = () => {
     if (room && user) {
+      if (isPrivateCreatorLeaveWarning) {
+        setIsWarningVisible(true);
+        return;
+      }
+
       isLeavingRef.current = true;
       hasNavigatedRef.current = false;
 
@@ -70,6 +81,21 @@ const DisplayCard: React.FC<DisplayCardProps> = ({ room, type, roomImIn }) => {
       }
       setDisplayRoomType({ type, withUser: false });
     }
+  };
+
+  const onConfirmWarning = () => {
+    if (!room || !user) return;
+
+    isLeavingRef.current = true;
+    hasNavigatedRef.current = false;
+
+    socket?.emit("leaveRoom", room.id, user._id);
+    setDisplayRoomType({ type, withUser: false });
+    setIsWarningVisible(false);
+  };
+
+  const onCancelWarning = () => {
+    setIsWarningVisible(false);
   };
 
   const handleJoin = () => {
@@ -108,15 +134,12 @@ const DisplayCard: React.FC<DisplayCardProps> = ({ room, type, roomImIn }) => {
         return;
       }
 
-      socket?.emit("joinRoom", room.id, user._id, {
-        id: user._id,
-        username: user.username,
-        status: "active",
-        isGuest: user.isGuest,
-        avatar: user.avatar || "/default-avatar.jpeg",
-        botAvatar: getRandomBotAvatar(),
-        color: getRandomColor(),
-      });
+      socket?.emit(
+        "joinRoom",
+        room.id,
+        user._id,
+        buildJoinRoomUserPayload(user),
+      );
 
       setDisplayRoomType({ type, withUser: true });
     }
@@ -124,6 +147,9 @@ const DisplayCard: React.FC<DisplayCardProps> = ({ room, type, roomImIn }) => {
 
   return (
     <div className={styles.room_card}>
+      {isWarningVisible && (
+        <LeaveWarning onConfirm={onConfirmWarning} onCancel={onCancelWarning} />
+      )}
       <div className={styles.card_header}>
         <h4
           title={room?.name && room.name?.length > 10 ? room.name : undefined}
@@ -207,6 +233,32 @@ const DisplayCard: React.FC<DisplayCardProps> = ({ room, type, roomImIn }) => {
 };
 
 export default DisplayCard;
+
+const LeaveWarning = ({
+  onConfirm,
+  onCancel,
+}: {
+  onConfirm: () => void;
+  onCancel: () => void;
+}) => {
+  const t = useTranslations("GamePage.cards.card.leaveWarning.creatorRoom");
+  const locale = useLocale();
+
+  return (
+    <div className={styles.leave_warning} data-locale={locale}>
+      <p>{t("paragraph")}</p>
+      <small>{t("small")}</small>
+      <div className={styles.leave_warning_btns}>
+        <button className={styles.confirm_btn} onClick={onConfirm}>
+          {t("btns.yes")}
+        </button>
+        <button className={styles.cancel_btn} onClick={onCancel}>
+          {t("btns.no")}
+        </button>
+      </div>
+    </div>
+  );
+};
 
 interface UserProps {
   user: RoomUser | null;

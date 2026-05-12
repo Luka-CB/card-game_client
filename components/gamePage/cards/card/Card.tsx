@@ -1,11 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { FaLock, FaLockOpen, FaRocketchat } from "react-icons/fa";
 import styles from "../Cards.module.scss";
-import {
-  substringText,
-  getRandomBotAvatar,
-  getRandomColor,
-} from "@/utils/misc";
+import { substringText } from "@/utils/misc";
 import { Room } from "@/utils/interfaces";
 import useSocket from "@/hooks/useSocket";
 import useUserStore from "@/store/user/userStore";
@@ -19,6 +15,8 @@ import Image from "next/image";
 import useJCoinsStore from "@/store/user/stats/jCoinsStore";
 import useDisplayRoomStore from "@/store/displayRoomStore";
 import { useLocale, useTranslations } from "next-intl";
+import api from "@/utils/axios";
+import { buildJoinRoomUserPayload } from "@/utils/roomJoin";
 
 interface CardProps {
   room: Room | null;
@@ -40,6 +38,15 @@ const Card: React.FC<CardProps> = ({ room }) => {
   const clickedRoomIdRef = useRef<string | null>(null);
 
   const [isWarningVisible, setIsWarningVisible] = useState(false);
+  const [isGeneratingInvite, setIsGeneratingInvite] = useState(false);
+
+  const isPrivateCreatorLeaveWarning = Boolean(
+    room &&
+    user &&
+    !room.isActive &&
+    room.status === "private" &&
+    room.creatorId === user._id,
+  );
 
   const roomUser = room?.users.find(
     (u) => u.id === user?._id && u.status !== "left",
@@ -99,23 +106,37 @@ const Card: React.FC<CardProps> = ({ room }) => {
 
   const handleLeave = (isForGood: boolean) => {
     if (room && user) {
-      isLeavingRef.current = true;
       hasNavigatedRef.current = false;
+
+      if (isForGood || isPrivateCreatorLeaveWarning) {
+        setIsWarningVisible(true);
+        return;
+      }
+
+      isLeavingRef.current = true;
 
       if (!isForGood) {
         socket?.emit("leaveRoom", room.id, user._id);
 
         const type = room?.bet ? "betting" : room?.type || "none";
         setDisplayRoomType({ type, withUser: false });
-      } else {
-        setIsWarningVisible(true);
-        return;
       }
     }
   };
 
   const onConfirmWarning = () => {
     if (room && user) {
+      isLeavingRef.current = true;
+
+      if (isPrivateCreatorLeaveWarning) {
+        socket?.emit("leaveRoom", room.id, user._id);
+
+        const type = room?.bet ? "betting" : room?.type || "none";
+        setDisplayRoomType({ type, withUser: false });
+        setIsWarningVisible(false);
+        return;
+      }
+
       const usersWhoLeft = room?.users.filter(
         (roomUser) => roomUser.status === "left",
       );
@@ -165,29 +186,62 @@ const Card: React.FC<CardProps> = ({ room }) => {
 
       if (jCoins && jCoins.raw < 100) {
         toggleGetMoreModal(true);
-        setMsg(t("coinsNeeded"), "error");
+        setMsg(t("msgs.coinsNeeded"), "error");
         return;
       }
 
       if (room.bet && jCoins && parseInt(room.bet) > jCoins.raw) {
         toggleGetMoreModal(true);
-        setMsg(t("notEnoughCoins"), "error");
+        setMsg(t("msgs.notEnoughCoins"), "error");
         return;
       }
 
-      socket?.emit("joinRoom", room.id, user._id, {
-        id: user._id,
-        username: user.username,
-        status: "active",
-        isGuest: user.isGuest,
-        avatar: user.avatar || "/default-avatar.jpeg",
-        botAvatar: getRandomBotAvatar(),
-        color: getRandomColor(),
-      });
+      socket?.emit(
+        "joinRoom",
+        room.id,
+        user._id,
+        buildJoinRoomUserPayload(user),
+      );
 
       const type = room?.bet ? "betting" : room?.type;
 
       setDisplayRoomType({ type, withUser: true });
+    }
+  };
+
+  const handleCreateInvite = async () => {
+    if (!room || !user || room.creatorId !== user._id) return;
+
+    setIsGeneratingInvite(true);
+
+    try {
+      const { data } = await api.post("/room-invites", { roomId: room.id });
+      const inviteUrl = data?.invite?.inviteUrl as string | undefined;
+
+      if (!inviteUrl) {
+        throw new Error(t("invite.createError"));
+      }
+
+      await navigator.clipboard.writeText(inviteUrl);
+      setMsg(t("invite.copySuccess"), "success");
+    } catch (error: unknown) {
+      const message =
+        typeof error === "object" &&
+        error !== null &&
+        "response" in error &&
+        typeof (
+          error as { response?: { data?: { error?: { message?: string } } } }
+        ).response?.data?.error?.message === "string"
+          ? (
+              error as {
+                response?: { data?: { error?: { message?: string } } };
+              }
+            ).response?.data?.error?.message
+          : t("invite.createError");
+
+      setMsg(message || t("invite.createError"), "error");
+    } finally {
+      setIsGeneratingInvite(false);
     }
   };
 
@@ -235,19 +289,14 @@ const Card: React.FC<CardProps> = ({ room }) => {
       <PasswordPrompt
         room={room as Room}
         clickedRoomId={clickedRoomIdRef.current}
-        user={
-          user
-            ? {
-                id: user._id,
-                username: user.username,
-                avatar: user.avatar,
-                isGuest: user.isGuest,
-              }
-            : null
-        }
+        user={user}
       />
       {isWarningVisible && (
-        <LeaveWarning onConfirm={onConfirmWarning} onCancel={onCancelWarning} />
+        <LeaveWarning
+          onConfirm={onConfirmWarning}
+          onCancel={onCancelWarning}
+          destroyRoomOnLeave={isPrivateCreatorLeaveWarning}
+        />
       )}
       <header>
         <h4 title={room?.name && room.name.length > 10 ? room.name : undefined}>
@@ -334,14 +383,32 @@ const Card: React.FC<CardProps> = ({ room }) => {
             </div>
           )}
 
-        {!room?.isActive && roomUser?.status === "active" && (
-          <button
-            className={styles.leave_btn}
-            onClick={() => handleLeave(false)}
-          >
-            {t("btns.leave")}
-          </button>
-        )}
+        {!room?.isActive &&
+          roomUser?.status === "active" &&
+          (room?.status === "private" && room.creatorId === user?._id ? (
+            <div className={styles.btns}>
+              <button
+                className={styles.rejoin_btn}
+                onClick={handleCreateInvite}
+                disabled={isGeneratingInvite}
+              >
+                {isGeneratingInvite ? t("invite.creating") : t("invite.btn")}
+              </button>
+              <button
+                className={styles.leave_btn}
+                onClick={() => handleLeave(false)}
+              >
+                {t("btns.leave")}
+              </button>
+            </div>
+          ) : (
+            <button
+              className={styles.leave_btn}
+              onClick={() => handleLeave(false)}
+            >
+              {t("btns.leave")}
+            </button>
+          ))}
 
         {!roomUser && !room?.isActive && (
           <button
@@ -361,23 +428,25 @@ export default Card;
 const LeaveWarning = ({
   onConfirm,
   onCancel,
+  destroyRoomOnLeave,
 }: {
   onConfirm: () => void;
   onCancel: () => void;
+  destroyRoomOnLeave: boolean;
 }) => {
   const t = useTranslations("GamePage.cards.card.leaveWarning");
   const locale = useLocale();
 
   return (
     <div className={styles.leave_warning} data-locale={locale}>
-      <p>{t("paragraph")}</p>
-      <small>{t("small")}</small>
+      <p>{destroyRoomOnLeave ? t("creatorRoom.paragraph") : t("paragraph")}</p>
+      <small>{destroyRoomOnLeave ? t("creatorRoom.small") : t("small")}</small>
       <div className={styles.leave_warning_btns}>
         <button className={styles.confirm_btn} onClick={onConfirm}>
-          {t("btns.yes")}
+          {destroyRoomOnLeave ? t("creatorRoom.btns.yes") : t("btns.yes")}
         </button>
         <button className={styles.cancel_btn} onClick={onCancel}>
-          {t("btns.no")}
+          {destroyRoomOnLeave ? t("creatorRoom.btns.no") : t("btns.no")}
         </button>
       </div>
     </div>

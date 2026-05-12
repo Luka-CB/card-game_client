@@ -12,6 +12,59 @@
   flex-direction: column;
   position: relative;
 
+  .leave_warning {
+    position: absolute;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.72);
+    backdrop-filter: blur(8px);
+    border-radius: 10px;
+    z-index: 20;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+
+    p {
+      color: var(--clr-warning-600);
+      text-shadow: 1px 1px 2px black;
+      font-size: 1rem;
+      margin-bottom: 10px;
+      text-align: center;
+    }
+
+    small {
+      color: var(--clr-warning-400);
+      margin-bottom: 16px;
+      text-align: center;
+      font-size: 0.72rem;
+    }
+
+    .leave_warning_btns {
+      display: flex;
+      gap: 12px;
+
+      button {
+        @include btn();
+        padding: 4px 10px;
+        height: auto;
+        font-size: 0.7rem;
+      }
+
+      .confirm_btn {
+        background-color: var(--clr-danger-faded);
+        border-color: var(--clr-danger-600);
+        color: var(--clr-danger-600);
+      }
+
+      .cancel_btn {
+        background-color: var(--clr-light-faded);
+        border-color: var(--clr-light);
+        color: var(--clr-light);
+      }
+    }
+  }
+
   .card_header {
     display: flex;
     align-items: center;

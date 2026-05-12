@@ -6,15 +6,13 @@ import useFlashMsgStore from "@/store/flashMsgStore";
 import { Room } from "@/utils/interfaces";
 import useRoomStore from "@/store/gamePage/roomStore";
 import { useTranslations } from "next-intl";
+import { userIFace } from "@/store/user/userStore";
+import { buildJoinRoomUserPayload } from "@/utils/roomJoin";
+
 interface PasswordPromptProps {
   room: Room;
   clickedRoomId: string | null;
-  user: {
-    id: string;
-    username: string;
-    avatar: string | null;
-    isGuest?: boolean;
-  } | null;
+  user: userIFace | null;
 }
 
 const PasswordPrompt: React.FC<PasswordPromptProps> = ({
@@ -39,18 +37,13 @@ const PasswordPrompt: React.FC<PasswordPromptProps> = ({
       return;
     }
 
-    if (password !== room.password) {
-      setError(t("msgs.localErrors.incorrectPassword"));
-      setMsg(t("msgs.flashErrors.incorrectPassword"), "error");
-      return;
-    }
-
-    socket.emit("joinRoom", room.id, user.id, {
-      id: user.id,
-      username: user.username,
-      isGuest: user.isGuest,
-      avatar: user.avatar,
-    });
+    socket.emit(
+      "joinRoom",
+      room.id,
+      user._id,
+      buildJoinRoomUserPayload(user),
+      { password },
+    );
 
     setTogglePasswordPrompt(false);
   };

@@ -244,6 +244,7 @@
         display: flex;
         align-items: center;
         gap: 1rem;
+        margin-top: 20px;
         margin-bottom: 1.5rem;
 
         span {
@@ -434,7 +435,9 @@
           border: 2px solid transparent;
           background: transparent;
           cursor: pointer;
-          transition: border-color 0.15s, background 0.15s;
+          transition:
+            border-color 0.15s,
+            background 0.15s;
           position: relative;
           flex-shrink: 0;
 
@@ -476,10 +479,18 @@
           object-fit: cover;
         }
 
-        .deck_c1 { transform: translateX(-50%) rotate(-18deg); }
-        .deck_c2 { transform: translateX(-50%) rotate(-6deg); }
-        .deck_c3 { transform: translateX(-50%) rotate(6deg); }
-        .deck_c4 { transform: translateX(-50%) rotate(18deg); }
+        .deck_c1 {
+          transform: translateX(-50%) rotate(-18deg);
+        }
+        .deck_c2 {
+          transform: translateX(-50%) rotate(-6deg);
+        }
+        .deck_c3 {
+          transform: translateX(-50%) rotate(6deg);
+        }
+        .deck_c4 {
+          transform: translateX(-50%) rotate(18deg);
+        }
 
         .deck_lock_overlay {
           position: absolute;
