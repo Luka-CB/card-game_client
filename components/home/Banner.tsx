@@ -44,11 +44,14 @@ const Banner = () => {
         )}
       </div>
       <div className={styles.glitch_wrapper}>
-        <div
-          className={`${styles.glitch} ${bytesized.className}`}
-          data-glitch="Joker Clash"
-        >
-          Joker Clash
+        <div className={styles.hero_text}>
+          <div
+            className={`${styles.glitch} ${bytesized.className}`}
+            data-glitch="Joker Clash"
+          >
+            Joker Clash
+          </div>
+          <p className={styles.subtitle}>{t("subtitle")}</p>
         </div>
       </div>
     </div>
