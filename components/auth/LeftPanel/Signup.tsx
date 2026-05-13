@@ -2,7 +2,7 @@
 
 import styles from "./Sign.module.scss";
 import { useSearchParams } from "next/navigation";
-import { useRouter, Link } from "@/i18n/navigation";
+import { useRouter } from "@/i18n/navigation";
 import { SubmitEvent, useCallback, useEffect, useRef, useState } from "react";
 import useSignupStore from "@/store/auth/signupStore";
 import useAvatarStore from "@/store/user/avatarStore";

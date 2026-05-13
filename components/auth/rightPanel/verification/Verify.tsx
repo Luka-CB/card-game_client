@@ -5,7 +5,7 @@ import Loader from "../../../loaders/Loader";
 import styles from "./Verify.module.scss";
 import { useEffect } from "react";
 import useUserStore from "@/store/user/userStore";
-import { Link, usePathname, useRouter } from "@/i18n/navigation";
+import { Link, useRouter } from "@/i18n/navigation";
 import { CiWarning } from "react-icons/ci";
 import useChangeEmailStore from "@/store/email/changeEmailStore";
 import useSendVerifyEmailStore from "@/store/email/sendVerifyEmailStore";

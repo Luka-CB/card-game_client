@@ -1,6 +1,6 @@
 import useSocket from "@/hooks/useSocket";
 import styles from "./BidModal.module.scss";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, type Variants } from "framer-motion";
 import { HandBid, RoomUser } from "@/utils/interfaces";
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
@@ -26,7 +26,7 @@ const BidModal: React.FC<BidModalProps> = ({ data }) => {
 
   const socket = useSocket();
 
-  const overlayVariants = {
+  const overlayVariants: Variants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
@@ -44,7 +44,7 @@ const BidModal: React.FC<BidModalProps> = ({ data }) => {
     },
   };
 
-  const modalVariants = {
+  const modalVariants: Variants = {
     hidden: {
       opacity: 0,
       y: 22,
@@ -76,7 +76,7 @@ const BidModal: React.FC<BidModalProps> = ({ data }) => {
     },
   };
 
-  const bidItemVariants = {
+  const bidItemVariants: Variants = {
     hidden: { opacity: 0, y: 8, scale: 0.95 },
     visible: {
       opacity: 1,

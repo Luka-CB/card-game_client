@@ -118,7 +118,7 @@ const PlayedCards: React.FC<PlayedCardsProps> = ({
           });
       }, 700);
     }
-  }, [winnerIndex, playedCards]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [winnerIndex, playedCards, controls, setRoundWinnerId]);
 
   useEffect(() => {
     if (playedCards.length > 0) {

@@ -54,7 +54,7 @@ const useJCoinsStore = create<jCoinsStore>((set) => ({
         jCoins: { value: data.jCoins, raw: data.rawJCoins },
         status: "success",
       });
-    } catch (error) {
+    } catch {
       console.warn("Failed to fetch jCoins");
       set({ status: "failed" });
     }

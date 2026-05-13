@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import styles from "./Filters.module.scss";
 import useFilterStore from "@/store/gamePage/filterStore";
 import useUserStore from "@/store/user/userStore";
@@ -9,11 +8,9 @@ import { FaTimesCircle } from "react-icons/fa";
 const Filters = () => {
   const t = useTranslations("GamePage.filters");
 
-  const { usersOnline, user } = useUserStore();
+  const { usersOnline } = useUserStore();
   const { showFilterOptions, checkedFilters, setCheckedFilters } =
     useFilterStore();
-
-  useEffect(() => {}, []);
 
   return (
     <AnimatePresence>
@@ -59,20 +56,20 @@ const Filters = () => {
             <label htmlFor="nines">{t("nines")}</label>
           </div>
           <div className={styles.checkbox}>
-              <input
-                type="checkbox"
-                name="betting"
-                id="betting"
-                checked={checkedFilters.betting}
-                onChange={() =>
-                  setCheckedFilters({
-                    ...checkedFilters,
-                    betting: !checkedFilters.betting,
-                  })
-                }
-              />
-              <label htmlFor="betting">{t("bet")}</label>
-            </div>
+            <input
+              type="checkbox"
+              name="betting"
+              id="betting"
+              checked={checkedFilters.betting}
+              onChange={() =>
+                setCheckedFilters({
+                  ...checkedFilters,
+                  betting: !checkedFilters.betting,
+                })
+              }
+            />
+            <label htmlFor="betting">{t("bet")}</label>
+          </div>
           <div className={styles.checkbox}>
             <input
               type="checkbox"

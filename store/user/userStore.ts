@@ -37,7 +37,7 @@ const useUserStore = create<UserStore>((set) => ({
     try {
       const { data } = await api.get("/users/session-user");
       set({ user: data || null, loading: false });
-    } catch (error: unknown) {
+    } catch {
       // No active session — auto sign in as guest
       try {
         const { data: guestData } = await api.post("/auth/guest");
