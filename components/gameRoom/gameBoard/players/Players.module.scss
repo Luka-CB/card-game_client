@@ -182,8 +182,8 @@
       .bid {
         color: var(--clr-primary-200);
         position: absolute;
-        top: 0;
-        right: 5px;
+        top: 5px;
+        right: 10px;
 
         b {
           font-size: 1.2rem;
@@ -203,6 +203,41 @@
 
         .warning {
           color: var(--clr-warning-200);
+        }
+      }
+
+      .round_sum {
+        position: absolute;
+        bottom: 10px;
+        right: 10px;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 0.65rem;
+        color: var(--clr-light);
+
+        small {
+          opacity: 0.8;
+        }
+
+        .round_sum_positive,
+        .round_sum_negative,
+        .round_sum_neutral {
+          font-size: 0.8rem;
+          font-weight: 700;
+          text-shadow: 1px 1px 1px rgba(0, 0, 0, 1);
+        }
+
+        .round_sum_positive {
+          color: var(--clr-success-200);
+        }
+
+        .round_sum_negative {
+          color: var(--clr-danger-200);
+        }
+
+        .round_sum_neutral {
+          color: var(--clr-light);
         }
       }
     }
@@ -560,6 +595,12 @@
           top: 50%;
           margin-right: 15px;
         }
+
+        .round_sum {
+          left: 50%;
+          transform: translateX(-90%);
+          top: 0;
+        }
       }
     }
 
@@ -580,8 +621,8 @@
 
         .name {
           position: absolute;
-          left: 0;
-          top: 100%;
+          left: 10%;
+          top: calc(100% + 5px);
           width: 80px;
         }
 
@@ -589,6 +630,13 @@
           left: 50%;
           margin-left: 10px;
           top: -10%;
+        }
+
+        .round_sum {
+          left: 50%;
+          margin-left: 10px;
+          top: 22px;
+          right: auto;
         }
       }
     }
@@ -618,6 +666,13 @@
           top: 0;
           margin-left: 10px;
         }
+
+        .round_sum {
+          left: 100%;
+          top: 22px;
+          margin-left: 10px;
+          right: auto;
+        }
       }
     }
 
@@ -638,14 +693,20 @@
 
         .name {
           position: absolute;
-          right: 0;
-          top: 100%;
+          right: 10%;
+          top: calc(100% + 5px);
           width: 80px;
         }
 
         .bid {
           right: 20px;
           top: -10%;
+          margin-right: 10px;
+        }
+
+        .round_sum {
+          right: 20px;
+          top: 22px;
           margin-right: 10px;
         }
       }
@@ -669,9 +730,17 @@
         }
 
         .bid {
-          left: 50%;
+          left: 60%;
           top: 50%;
           transform: translateY(-50%);
+        }
+
+        .round_sum {
+          left: 70%;
+          top: calc(50% + 20px);
+          transform: translateY(-50%);
+          right: auto;
+          margin-left: 0;
         }
       }
     }
@@ -684,8 +753,15 @@
         }
 
         .bid {
-          left: 10%;
+          left: 0;
+          top: 60%;
+        }
+
+        .round_sum {
+          left: 0;
           top: 120%;
+          right: auto;
+          margin-left: 0;
         }
       }
     }
@@ -703,6 +779,13 @@
           right: 50%;
           top: 50%;
           transform: translateY(-50%);
+        }
+
+        .round_sum {
+          right: 70%;
+          top: calc(50% + 20px);
+          transform: translateY(-50%);
+          margin-right: 0;
         }
       }
     }

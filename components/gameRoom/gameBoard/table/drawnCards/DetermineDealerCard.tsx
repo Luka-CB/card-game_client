@@ -97,9 +97,8 @@ const DetermineDealerCard = ({ card, index, playerPositionIndex }: Props) => {
       initial={getInitial()}
       animate={getAnimate()}
       transition={{
-        duration: 0.2,
-        damping: 15,
-        type: "spring",
+        duration: 0.04,
+        ease: "linear",
       }}
       className={styles.card}
       style={{
@@ -111,6 +110,7 @@ const DetermineDealerCard = ({ card, index, playerPositionIndex }: Props) => {
         src={cardUrl}
         alt={card.rank || "card"}
         onLoad={() => setIsLoaded(true)}
+        loading="eager"
         width={
           windowSize.height <= 350
             ? 40

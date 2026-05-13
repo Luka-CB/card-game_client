@@ -25,15 +25,19 @@ const PlayedCards: React.FC<PlayedCardsProps> = ({
 }) => {
   const windowSize = useWindowSize();
   const { getCardUrl } = useDeckContext();
+  const isSmallScreen = windowSize.width <= 600;
 
   // Played cards are slightly smaller than hand cards (~85% of hand size).
-  // Use the smaller of (6.4% of width) and (8.5% of height), clamped to [26, 85]px.
+  // Around mobile widths, scale them up with the hand cards while avoiding overflow.
   const cardWidth = Math.round(
     Math.max(
-      26,
+      isSmallScreen ? 36 : 32,
       Math.min(
-        85,
-        Math.min(windowSize.width * 0.064, windowSize.height * 0.085),
+        isSmallScreen ? 98 : 86,
+        Math.min(
+          windowSize.width * (isSmallScreen ? 0.108 : 0.088),
+          windowSize.height * (isSmallScreen ? 0.112 : 0.095),
+        ),
       ),
     ),
   );

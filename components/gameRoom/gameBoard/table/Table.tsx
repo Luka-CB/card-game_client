@@ -164,6 +164,8 @@ const Table: React.FC<TableProps> = ({
               dealerId: gameInfo?.dealerId as string | null,
               status: gameInfo?.status as string,
               currentPlayerId: gameInfo?.currentPlayerId as string,
+              currentHand: gameInfo?.currentHand as number | null,
+              trumpCard: gameInfo?.trumpCard || null,
             }}
           />
         ))}

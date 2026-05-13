@@ -17,6 +17,7 @@ import useSocket from "@/hooks/useSocket";
 import AvatarGallery from "@/components/auth/LeftPanel/AvatarGallery";
 import LevelUpNotification from "@/components/levelUp/LevelUpNotification";
 import useLevelUpStore from "@/store/levelUpStore";
+import JCoinsSync from "@/components/jCoinst/JCoinsSync";
 
 export default function ClientLayout({
   children,
@@ -93,6 +94,7 @@ export default function ClientLayout({
         </>
       )}
       <GetMoreModal />
+      <JCoinsSync />
       {!isGameRoom && <Footer />}
       <CookieConsent />
       <AvatarGallery />

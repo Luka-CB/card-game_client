@@ -98,6 +98,7 @@ const GameRoom: React.FC = () => {
   const [visibleCards, setVisibleCards] = useState<
     Record<string, PlayingCard[]>
   >({});
+  const pendingMyHandRef = useRef<PlayingCard[] | null>(null);
 
   const revealInProgressRef = useRef(revealInProgress);
   useEffect(() => {
@@ -497,6 +498,21 @@ const GameRoom: React.FC = () => {
     }
   }, [gameInfo?.status]);
 
+  // Prevent stale dealt-card stacks from flashing before a new dealing phase.
+  useEffect(() => {
+    const status = gameInfo?.status;
+
+    if (status === "dealing") {
+      setDealingCards({});
+      setCurrentDealingRound(0);
+      return;
+    }
+
+    if (status !== "choosingTrump") {
+      setDealingCards({});
+    }
+  }, [gameInfo?.status]);
+
   const gameInfoRef = useRef(gameInfo);
   useEffect(() => {
     gameInfoRef.current = gameInfo;
@@ -553,25 +569,17 @@ const GameRoom: React.FC = () => {
       const dealerId = gi?.dealerId as string | null;
       if (!dealerId || players.length === 0) return;
 
+      if (!data?.round || data.round <= 0) return;
+
       const dealerIndex = players.findIndex((p) => p.id === dealerId);
       if (dealerIndex === -1) return;
-      const starterId = players[(dealerIndex + 1) % players.length]?.id;
-
       const isMyCard = data.playerId === user?._id;
-      const isAnimationTrigger = data.playerId === starterId;
 
-      // Set the hand immediately only when we are NOT the one triggering the
-      // animation (if we are, hand is revealed after animation to avoid
-      // showing all cards before the dealing animation reaches us).
-      if (isMyCard && !isAnimationTrigger) {
-        setHand(data.hand);
+      if (isMyCard) {
+        pendingMyHandRef.current = data.hand;
       }
 
-      if (!isAnimationTrigger) return;
       if (dealingLockRef.current) return;
-
-      // Capture our hand now so we can reveal it after the animation.
-      const pendingHand: PlayingCard[] | null = isMyCard ? data.hand : null;
 
       dealingLockRef.current = true;
       setCurrentDealingRound(0);
@@ -579,9 +587,10 @@ const GameRoom: React.FC = () => {
 
       animateDealing(players, data.round, dealerId)
         .then(() => {
-          if (pendingHand) {
-            // Trump chooser: reveal their cards after animation completes.
-            setHand(pendingHand);
+          if (pendingMyHandRef.current) {
+            // Reveal our cards only after dealing animation completes.
+            setHand(pendingMyHandRef.current);
+            pendingMyHandRef.current = null;
           } else if (user?._id) {
             // We're not the trump chooser: sync from latest game state.
             const latestHand = gameInfoRef.current?.hands?.find(
@@ -905,6 +914,7 @@ const GameRoom: React.FC = () => {
                   currentHand: number | null;
                   hands: { hand: PlayingCard[]; playerId: string }[] | null;
                   trumpCard: PlayingCard | null;
+                  scoreBoard?: ScoreBoard[] | null;
                 } | null
               }
               room={room}

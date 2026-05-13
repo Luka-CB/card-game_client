@@ -19,7 +19,11 @@ class SoundManager {
         sound.volume = 0.5;
 
         if (name === "dealCard") {
-          sound.playbackRate = 0.8;
+          sound.playbackRate = 2;
+        }
+
+        if (name === "dealerReveal") {
+          sound.playbackRate = 1.7;
         }
       });
     }

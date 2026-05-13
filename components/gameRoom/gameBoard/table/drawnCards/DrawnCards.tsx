@@ -13,6 +13,8 @@ interface DrawnCardsProps {
     dealerId: string | null;
     status: string;
     currentPlayerId: string;
+    currentHand: number | null;
+    trumpCard?: PlayingCard | null;
   };
 }
 
@@ -27,10 +29,10 @@ const DrawnCards = ({
     playerPositionIndex === 0
       ? styles.bottom_drawn_cards
       : playerPositionIndex === 1
-      ? styles.left_drawn_cards
-      : playerPositionIndex === 2
-      ? styles.top_drawn_cards
-      : styles.right_drawn_cards;
+        ? styles.left_drawn_cards
+        : playerPositionIndex === 2
+          ? styles.top_drawn_cards
+          : styles.right_drawn_cards;
 
   return (
     <motion.div className={`${styles.drawn_cards} ${playerPosition}`}>
@@ -55,6 +57,13 @@ const DrawnCards = ({
           playerId={playerId}
           currentPlayerId={gameInfo.currentPlayerId}
           status={gameInfo.status}
+          baseDealtCards={
+            gameInfo.status === "dealing" &&
+            gameInfo.currentHand === 9 &&
+            Boolean(gameInfo.trumpCard)
+              ? 3
+              : 0
+          }
         />
       )}
     </motion.div>

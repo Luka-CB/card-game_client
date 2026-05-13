@@ -3,6 +3,8 @@ import Image from "next/image";
 import styles from "./DealtCards.module.scss";
 import useWindowSize from "@/hooks/useWindowSize";
 import { useDeckContext } from "@/context/DeckContext";
+import { useEffect, useRef } from "react";
+import { soundManager } from "@/utils/sounds";
 
 interface DealtCardsProps {
   dealingCards: Record<string, number>;
@@ -10,6 +12,7 @@ interface DealtCardsProps {
   playerId: string;
   currentPlayerId?: string;
   status?: string;
+  baseDealtCards?: number;
 }
 
 const DealtCards = ({
@@ -18,9 +21,12 @@ const DealtCards = ({
   playerId,
   status,
   currentPlayerId,
+  baseDealtCards = 0,
 }: DealtCardsProps) => {
   const windowSize = useWindowSize();
   const { cardBackUrl } = useDeckContext();
+  const incrementalDealtCount = dealingCards[playerId] || 0;
+  const dealtCardCount = baseDealtCards + incrementalDealtCount;
 
   const playerPosition = ["bottom", "left", "top", "right"][
     playerPositionIndex
@@ -28,20 +34,20 @@ const DealtCards = ({
 
   const initialY =
     windowSize.width <= 500
-      ? 10
+      ? 6
       : windowSize.width <= 800 && windowSize.width > 500
-        ? 30
+        ? 18
         : windowSize.width < 1400 && windowSize.width > 800
-          ? 50
-          : 100;
+          ? 30
+          : 60;
   const initialX =
     windowSize.width <= 500
-      ? 15
+      ? 8
       : windowSize.width <= 800 && windowSize.width > 500
-        ? 30
+        ? 18
         : windowSize.width < 1400 && windowSize.width > 800
-          ? 50
-          : 100;
+          ? 30
+          : 60;
 
   const offset =
     windowSize.width <= 500
@@ -52,17 +58,63 @@ const DealtCards = ({
           ? 3
           : 5;
 
+  const stackSpread = Math.max(0, (dealtCardCount - 1) * offset);
+  const dealDuration =
+    dealtCardCount >= 8 ? 0.012 : dealtCardCount >= 5 ? 0.018 : 0.025;
+  const prevIncrementalDealtCountRef = useRef(incrementalDealtCount);
+  const lastDealSoundAtRef = useRef(0);
+  const lastDealSoundCountRef = useRef(0);
+
+  useEffect(() => {
+    const prevCount = prevIncrementalDealtCountRef.current;
+    const hasNewCard = incrementalDealtCount > prevCount;
+
+    // Trigger one deal sound per dealing step from a single anchor position,
+    // so audio cadence matches the visual speed without overlapping 4x.
+    if (hasNewCard && status === "dealing" && playerPositionIndex === 0) {
+      const now = Date.now();
+      const isSameCountReplay =
+        incrementalDealtCount === lastDealSoundCountRef.current;
+
+      // Avoid audible "double hit" artifacts when updates arrive back-to-back
+      // at cycle boundaries (e.g. card 4 then immediate next cycle event).
+      if (!isSameCountReplay && now - lastDealSoundAtRef.current >= 110) {
+        soundManager.play("dealCard");
+        lastDealSoundAtRef.current = now;
+        lastDealSoundCountRef.current = incrementalDealtCount;
+      }
+    }
+
+    if (incrementalDealtCount === 0) {
+      lastDealSoundCountRef.current = 0;
+    }
+
+    prevIncrementalDealtCountRef.current = incrementalDealtCount;
+  }, [incrementalDealtCount, playerPositionIndex, status]);
+
+  const getCardLeft = (index: number) => {
+    if (playerPositionIndex === 3) {
+      return index * offset - stackSpread;
+    }
+
+    if (playerPositionIndex === 0 || playerPositionIndex === 2) {
+      return index * offset - stackSpread / 2;
+    }
+
+    return index * offset;
+  };
+
   if (status === "choosingTrump" && currentPlayerId === playerId) {
     return null;
   }
 
   return (
     <div className={`${styles.dealtCards_container} ${styles[playerPosition]}`}>
-      {Array.from({ length: dealingCards[playerId] || 0 }).map((_, index) => (
+      {Array.from({ length: dealtCardCount }).map((_, index) => (
         <motion.div
           key={index}
           initial={{
-            opacity: 0,
+            opacity: 1,
             y: playerPositionIndex === 0 ? initialY : -initialY,
             x: playerPositionIndex === 1 ? -initialX : initialX,
           }}
@@ -72,19 +124,19 @@ const DealtCards = ({
             x: 0,
           }}
           transition={{
-            duration: 0.4,
-            type: "spring",
-            damping: 15,
+            duration: dealDuration,
+            ease: "easeOut",
           }}
           style={{
             position: "absolute",
-            left: `${index * offset}px`,
+            left: `${getCardLeft(index)}px`,
             zIndex: index,
           }}
         >
           <Image
             src={cardBackUrl}
             alt="Card Back"
+            loading="eager"
             width={
               windowSize.height <= 350
                 ? 40

@@ -1,8 +1,9 @@
 import useSocket from "@/hooks/useSocket";
 import styles from "./BidModal.module.scss";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { HandBid, RoomUser } from "@/utils/interfaces";
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { useTranslations } from "next-intl";
 
 interface BidModalProps {
@@ -21,8 +22,73 @@ const BidModal: React.FC<BidModalProps> = ({ data }) => {
   const t = useTranslations("GameRoom.GameControls.bidModal");
 
   const [choosingBid, setChoosingBid] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
 
   const socket = useSocket();
+
+  const overlayVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        duration: 0.14,
+        ease: "easeOut",
+      },
+    },
+    exit: {
+      opacity: 0,
+      transition: {
+        duration: 0.1,
+        ease: "easeIn",
+      },
+    },
+  };
+
+  const modalVariants = {
+    hidden: {
+      opacity: 0,
+      y: 22,
+      scale: 0.96,
+      filter: "blur(2px)",
+    },
+    visible: {
+      opacity: 1,
+      y: 0,
+      scale: 1,
+      filter: "blur(0px)",
+      transition: {
+        type: "spring",
+        stiffness: 420,
+        damping: 30,
+        mass: 0.7,
+        staggerChildren: 0.015,
+        delayChildren: 0.03,
+      },
+    },
+    exit: {
+      opacity: 0,
+      y: 12,
+      scale: 0.98,
+      transition: {
+        duration: 0.12,
+        ease: "easeIn",
+      },
+    },
+  };
+
+  const bidItemVariants = {
+    hidden: { opacity: 0, y: 8, scale: 0.95 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      scale: 1,
+      transition: {
+        type: "spring",
+        stiffness: 500,
+        damping: 28,
+      },
+    },
+  };
 
   const bids =
     data.handBids
@@ -50,45 +116,54 @@ const BidModal: React.FC<BidModalProps> = ({ data }) => {
     setChoosingBid(false);
   }, [data.currentPlayerId]);
 
-  return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{
-        opacity: 1,
-        transition: { duration: 0.2 },
-      }}
-      exit={{ opacity: 0, transition: { duration: 0.2 } }}
-      className={styles.modal_bg}
-    >
+  useEffect(() => {
+    setIsMounted(true);
+
+    return () => {
+      setIsMounted(false);
+    };
+  }, []);
+
+  if (!isMounted) return null;
+
+  return createPortal(
+    <AnimatePresence mode="wait" initial={false}>
       <motion.div
-        initial={{ opacity: 0, y: 100 }}
-        animate={{
-          opacity: 1,
-          y: 0,
-          transition: { duration: 0.4 },
-        }}
-        exit={{ opacity: 0, y: 100, transition: { duration: 0.4 } }}
-        className={styles.modal}
+        key={`${data.currentPlayerId}-${data.handCount}-${data.currentHand}`}
+        variants={overlayVariants}
+        initial="hidden"
+        animate="visible"
+        exit="exit"
+        className={styles.modal_bg}
       >
-        <h4>{t("title")}</h4>
-        <div className={styles.bids}>
-          {Array.from({ length: data.currentHand + 1 }).map((_, index) => (
-            <button
-              key={index}
-              className={styles.bid_btn}
-              onClick={() => handleBidClick(index)}
-              disabled={
+        <motion.div variants={modalVariants} className={styles.modal}>
+          <h4>{t("title")}</h4>
+          <div className={styles.bids}>
+            {Array.from({ length: data.currentHand + 1 }).map((_, index) => {
+              const isDisabled =
                 choosingBid ||
                 (data.currentPlayerId === data.dealerId &&
-                  bidSum + index === data.currentHand)
-              }
-            >
-              {index === 0 ? "-" : index}
-            </button>
-          ))}
-        </div>
+                  bidSum + index === data.currentHand);
+
+              return (
+                <motion.button
+                  key={index}
+                  variants={bidItemVariants}
+                  className={`${styles.bid_btn} ${choosingBid ? styles.submitting : ""}`}
+                  onClick={() => handleBidClick(index)}
+                  whileHover={!isDisabled ? { scale: 1.06, y: -2 } : undefined}
+                  whileTap={!isDisabled ? { scale: 0.95 } : undefined}
+                  disabled={isDisabled}
+                >
+                  {index === 0 ? "-" : index}
+                </motion.button>
+              );
+            })}
+          </div>
+        </motion.div>
       </motion.div>
-    </motion.div>
+    </AnimatePresence>,
+    document.body,
   );
 };
 

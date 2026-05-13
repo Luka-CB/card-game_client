@@ -12,6 +12,12 @@ interface ScoreBoardProps {
   closeModal?: () => void;
 }
 
+const normalizeScore = (value: number, precision = 2) => {
+  const factor = 10 ** precision;
+  const rounded = Math.round((value + Number.EPSILON) * factor) / factor;
+  return Object.is(rounded, -0) ? 0 : rounded;
+};
+
 const ScoreBoardModal: React.FC<ScoreBoardProps> = ({
   scoreBoard,
   roomUsers,
@@ -103,7 +109,7 @@ const ScoreBoardModal: React.FC<ScoreBoardProps> = ({
               </section>
               <RoundSum roundSum={score.roundSumFour || 0} />
               <section className={styles.total}>
-                <span>{score.totalSum || "-"}</span>
+                <span>{normalizeScore(score.totalSum || 0) || "-"}</span>
               </section>
             </div>
           ))}
@@ -160,9 +166,11 @@ const RoundContent = ({ round, hisht }: { round: Round; hisht: string }) => {
 };
 
 const RoundSum = ({ roundSum }: { roundSum: number }) => {
+  const normalizedRoundSum = normalizeScore(roundSum || 0);
+
   return (
     <section className={styles.round_sum}>
-      <span>{roundSum || "-"}</span>
+      <span>{normalizedRoundSum || "-"}</span>
     </section>
   );
 };

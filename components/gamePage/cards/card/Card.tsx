@@ -160,13 +160,15 @@ const Card: React.FC<CardProps> = ({ room }) => {
 
   const pathname = usePathname();
 
-  const handleJoin = (roomId: string) => {
+  const handleJoin = async (roomId: string) => {
     if (!user) {
       router.push(`${pathname}?auth=signin`);
       return;
     }
     if (room && user) {
       isLeavingRef.current = false;
+
+      const latestJCoins = jCoins;
 
       if (occupiedSeats >= 4) {
         setMsg("Room is full", "error");
@@ -178,21 +180,25 @@ const Card: React.FC<CardProps> = ({ room }) => {
         return;
       }
 
-      if (roomId === room?.id && room?.status === "private") {
-        setTogglePasswordPrompt(true);
-        clickedRoomIdRef.current = roomId;
-        return;
-      }
-
-      if (jCoins && jCoins.raw < 100) {
+      if (latestJCoins && latestJCoins.raw < 100) {
         toggleGetMoreModal(true);
         setMsg(t("msgs.coinsNeeded"), "error");
         return;
       }
 
-      if (room.bet && jCoins && parseInt(room.bet) > jCoins.raw) {
+      if (
+        room.bet &&
+        latestJCoins &&
+        parseInt(room.bet, 10) > latestJCoins.raw
+      ) {
         toggleGetMoreModal(true);
         setMsg(t("msgs.notEnoughCoins"), "error");
+        return;
+      }
+
+      if (roomId === room?.id && room?.status === "private") {
+        setTogglePasswordPrompt(true);
+        clickedRoomIdRef.current = roomId;
         return;
       }
 

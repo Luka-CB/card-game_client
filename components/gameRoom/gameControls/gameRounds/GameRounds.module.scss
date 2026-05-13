@@ -4,9 +4,12 @@
   z-index: 1;
   display: flex;
   align-items: center;
+  width: max-content;
   gap: 0.3rem;
   position: absolute;
   bottom: 120%;
+  left: 50%;
+  transform: translateX(-50%);
 
   .card,
   .card_faded {
@@ -75,9 +78,14 @@
         z-index: 10;
       }
     }
+  }
 
-    @media (max-width: 480px) {
-      margin: 0 -8px;
+  @media (max-width: 600px) {
+    &.mobile_overlap {
+      .card,
+      .card_faded {
+        margin: 0 -8px;
+      }
     }
   }
 

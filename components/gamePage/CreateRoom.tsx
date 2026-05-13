@@ -87,7 +87,7 @@ const CreateRoom = () => {
 
   const socket = useSocket();
   const { user, usersOnline } = useUserStore();
-  const { jCoins, toggleGetMoreModal } = useJCoinsStore();
+  const { jCoins, toggleGetMoreModal, fetchJCoins } = useJCoinsStore();
   const { stats, fetchStats } = useUserStatsStore();
 
   const resetModal = () => {
@@ -113,6 +113,9 @@ const CreateRoom = () => {
       return;
     }
 
+    await fetchJCoins();
+    const latestJCoins = useJCoinsStore.getState().jCoins ?? jCoins;
+
     const roomUser = rooms.find((room) =>
       room?.users.some((u) => u.id === user._id),
     );
@@ -127,12 +130,12 @@ const CreateRoom = () => {
       return;
     }
 
-    if (bet && jCoins && parseInt(bet) > jCoins.raw) {
+    if (bet && latestJCoins && parseInt(bet, 10) > latestJCoins.raw) {
       setBetError(t("msgs.noEnoughCoins"));
       return;
     }
 
-    if (jCoins && jCoins.raw < 100) {
+    if (latestJCoins && latestJCoins.raw < 100) {
       toggleGetMoreModal(true);
       setMsg(t("msgs.coinsNeeded"), "error");
       resetModal();

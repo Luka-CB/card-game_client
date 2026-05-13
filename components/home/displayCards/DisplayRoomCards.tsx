@@ -17,6 +17,13 @@ const DisplayRoomCards = () => {
   const [classicRoom, setClassicRoom] = useState<Room | null>(null);
   const [ninesRoom, setNinesRoom] = useState<Room | null>(null);
   const [bettingRoom, setBettingRoom] = useState<Room | null>(null);
+  const [optimisticClassicRoom, setOptimisticClassicRoom] =
+    useState<Room | null>(null);
+  const [optimisticNinesRoom, setOptimisticNinesRoom] = useState<Room | null>(
+    null,
+  );
+  const [optimisticBettingRoom, setOptimisticBettingRoom] =
+    useState<Room | null>(null);
   const [roomImIn, setRoomImIn] = useState<Room | null>(null);
   const { displayRoomType } = useDisplayRoomStore();
   const { user } = useUserStore();
@@ -95,6 +102,14 @@ const DisplayRoomCards = () => {
   }, [socket, user?._id]);
 
   useEffect(() => {
+    if (!displayRoomType.withUser) {
+      setOptimisticClassicRoom(null);
+      setOptimisticNinesRoom(null);
+      setOptimisticBettingRoom(null);
+    }
+  }, [displayRoomType.withUser]);
+
+  useEffect(() => {
     if (!socket) return;
     if (pathname !== "/") return;
 
@@ -124,16 +139,51 @@ const DisplayRoomCards = () => {
     displayRoomType.withUser,
   ]);
 
+  const shouldPinJoinedCard =
+    pathname === "/" &&
+    displayRoomType.withUser &&
+    roomImIn &&
+    roomImIn.users?.some((u) => u.id === user?._id && u.status !== "left");
+
+  const handleOptimisticJoin = (
+    room: Room,
+    type: "classic" | "nines" | "betting",
+  ) => {
+    if (type === "classic") setOptimisticClassicRoom(room);
+    if (type === "nines") setOptimisticNinesRoom(room);
+    if (type === "betting") setOptimisticBettingRoom(room);
+  };
+
+  const classicRoomToRender =
+    optimisticClassicRoom ||
+    classicRoom ||
+    (shouldPinJoinedCard && displayRoomType.type === "classic"
+      ? roomImIn
+      : null);
+
+  const ninesRoomToRender =
+    optimisticNinesRoom ||
+    ninesRoom ||
+    (shouldPinJoinedCard && displayRoomType.type === "nines" ? roomImIn : null);
+
+  const bettingRoomToRender =
+    optimisticBettingRoom ||
+    bettingRoom ||
+    (shouldPinJoinedCard && displayRoomType.type === "betting"
+      ? roomImIn
+      : null);
+
   return (
     <div className={styles.cards_container}>
       <h2>{t("title")}</h2>
       <div className={styles.cards}>
         <div className={styles.card_wrapper}>
-          {classicRoom ? (
+          {classicRoomToRender ? (
             <DisplayCard
-              room={classicRoom}
+              room={classicRoomToRender}
               type="classic"
               roomImIn={roomImIn}
+              onOptimisticJoin={handleOptimisticJoin}
             />
           ) : (
             <Info type="classic" />
@@ -147,8 +197,13 @@ const DisplayRoomCards = () => {
         </div>
 
         <div className={styles.card_wrapper}>
-          {ninesRoom ? (
-            <DisplayCard room={ninesRoom} type="nines" roomImIn={roomImIn} />
+          {ninesRoomToRender ? (
+            <DisplayCard
+              room={ninesRoomToRender}
+              type="nines"
+              roomImIn={roomImIn}
+              onOptimisticJoin={handleOptimisticJoin}
+            />
           ) : (
             <Info type="nines" />
           )}
@@ -161,11 +216,12 @@ const DisplayRoomCards = () => {
         </div>
 
         <div className={styles.card_wrapper}>
-          {bettingRoom ? (
+          {bettingRoomToRender ? (
             <DisplayCard
-              room={bettingRoom}
+              room={bettingRoomToRender}
               type="betting"
               roomImIn={roomImIn}
+              onOptimisticJoin={handleOptimisticJoin}
             />
           ) : (
             <Info type="betting" />

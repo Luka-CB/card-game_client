@@ -1,5 +1,11 @@
 import React, { useMemo, useState } from "react";
-import { HandBid, GameInfo, PlayingCard, RoomUser } from "@/utils/interfaces";
+import {
+  HandBid,
+  GameInfo,
+  PlayingCard,
+  RoomUser,
+  ScoreBoard,
+} from "@/utils/interfaces";
 import GameRounds from "../../gameControls/gameRounds/GameRounds";
 import styles from "./Players.module.scss";
 import Image from "next/image";
@@ -28,6 +34,7 @@ interface PlayersProps {
     currentHand: number | null;
     hands: { hand: PlayingCard[]; playerId: string }[] | null;
     trumpCard: PlayingCard | null;
+    scoreBoard?: ScoreBoard[] | null;
   } | null;
   room: { id: string; users: RoomUser[] | null };
   hand: PlayingCard[];
@@ -61,6 +68,12 @@ const interpolateColor = (value: number): string => {
   return `rgb(${r}, ${g}, 0)`;
 };
 
+const normalizeScore = (value: number, precision = 2) => {
+  const factor = 10 ** precision;
+  const rounded = Math.round((value + Number.EPSILON) * factor) / factor;
+  return Object.is(rounded, -0) ? 0 : rounded;
+};
+
 const Players: React.FC<PlayersProps> = ({
   rotatedPlayers,
   user,
@@ -88,6 +101,21 @@ const Players: React.FC<PlayersProps> = ({
   const ringColor = interpolateColor(timerProgress);
 
   const choosingTrumpHand = useMemo(() => hand.slice(0, 3), [hand]);
+
+  const getCumulativeRoundSum = (playerId: string) => {
+    const playerScore = gameInfo?.scoreBoard?.find(
+      (score) => score.playerId === playerId,
+    );
+
+    if (!playerScore) return 0;
+
+    return (
+      (playerScore.roundSumOne || 0) +
+      (playerScore.roundSumTwo || 0) +
+      (playerScore.roundSumThree || 0) +
+      (playerScore.roundSumFour || 0)
+    );
+  };
 
   const handleClickPlayer = (
     e: React.MouseEvent,
@@ -120,6 +148,8 @@ const Players: React.FC<PlayersProps> = ({
 
         const showTimer =
           isCurrentTurn && secondsLeft !== null && secondsLeft > 0;
+        const cumulativeRoundSum = getCumulativeRoundSum(player.id);
+        const normalizedRoundSum = normalizeScore(cumulativeRoundSum);
 
         return (
           <div
@@ -270,6 +300,22 @@ const Players: React.FC<PlayersProps> = ({
                       }
                     >
                       {getWins(player.id)}
+                    </span>
+                  </div>
+                  <div className={styles.round_sum}>
+                    <small>{t("roundSum")}</small>
+                    <span
+                      className={
+                        normalizedRoundSum > 0
+                          ? styles.round_sum_positive
+                          : normalizedRoundSum < 0
+                            ? styles.round_sum_negative
+                            : styles.round_sum_neutral
+                      }
+                    >
+                      {normalizedRoundSum > 0
+                        ? `+${normalizedRoundSum}`
+                        : normalizedRoundSum}
                     </span>
                   </div>
                 </>

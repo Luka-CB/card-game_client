@@ -17,9 +17,18 @@ interface DisplayCardProps {
   room: Room;
   type: "classic" | "nines" | "betting";
   roomImIn?: Room | null;
+  onOptimisticJoin?: (
+    room: Room,
+    type: "classic" | "nines" | "betting",
+  ) => void;
 }
 
-const DisplayCard: React.FC<DisplayCardProps> = ({ room, type, roomImIn }) => {
+const DisplayCard: React.FC<DisplayCardProps> = ({
+  room,
+  type,
+  roomImIn,
+  onOptimisticJoin,
+}) => {
   const t = useTranslations("GamePage.cards.card");
 
   const { setTogglePasswordPrompt } = useRoomStore();
@@ -98,9 +107,11 @@ const DisplayCard: React.FC<DisplayCardProps> = ({ room, type, roomImIn }) => {
     setIsWarningVisible(false);
   };
 
-  const handleJoin = () => {
+  const handleJoin = async () => {
     if (room && user) {
       isLeavingRef.current = false;
+
+      const latestJCoins = jCoins;
 
       if (occupiedSeats >= 4) {
         setMsg(t("msgs.fullRoom"), "error");
@@ -117,20 +128,24 @@ const DisplayCard: React.FC<DisplayCardProps> = ({ room, type, roomImIn }) => {
         return;
       }
 
-      if (room.status === "private") {
-        setTogglePasswordPrompt(true);
-        return;
-      }
-
-      if (jCoins && jCoins.raw < 100) {
+      if (latestJCoins && latestJCoins.raw < 100) {
         toggleGetMoreModal(true);
         setMsg(t("msgs.coinsNeeded"), "error");
         return;
       }
 
-      if (room.bet && jCoins && parseInt(room.bet) > jCoins.raw) {
+      if (
+        room.bet &&
+        latestJCoins &&
+        parseInt(room.bet, 10) > latestJCoins.raw
+      ) {
         toggleGetMoreModal(true);
         setMsg(t("msgs.notEnoughCoins"), "error");
+        return;
+      }
+
+      if (room.status === "private") {
+        setTogglePasswordPrompt(true);
         return;
       }
 
@@ -140,6 +155,21 @@ const DisplayCard: React.FC<DisplayCardProps> = ({ room, type, roomImIn }) => {
         user._id,
         buildJoinRoomUserPayload(user),
       );
+
+      const hasUserAlready = room.users?.some((u) => u.id === user._id);
+      if (!hasUserAlready) {
+        const optimisticRoom: Room = {
+          ...room,
+          users: [
+            ...(room.users || []),
+            {
+              ...buildJoinRoomUserPayload(user),
+            },
+          ],
+        };
+
+        onOptimisticJoin?.(optimisticRoom, type);
+      }
 
       setDisplayRoomType({ type, withUser: true });
     }
@@ -223,7 +253,7 @@ const DisplayCard: React.FC<DisplayCardProps> = ({ room, type, roomImIn }) => {
         )}
 
         {!roomUser && !room?.isActive && (
-          <button className={styles.join_btn} onClick={() => handleJoin()}>
+          <button className={styles.join_btn} onClick={handleJoin}>
             {t("btns.join")}
           </button>
         )}

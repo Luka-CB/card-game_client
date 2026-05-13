@@ -252,17 +252,44 @@ const GameRounds = ({ hand, gameInfo, user }: GameRoundsProps) => {
   }, [selectedCardId, sortedCards, handlePlayCard]);
 
   const isPlayerTurn = gameInfo?.currentPlayerId === user._id;
+  const isSmallScreen = windowSize.width <= 600;
+  const shouldOverlapOnMobile = isSmallScreen && sortedCards.length >= 6;
 
   // Dynamically size cards so they look good at any viewport size.
-  // Use the smaller of (7.5% of width) and (10% of height), clamped to [30, 100]px.
-  const cardWidth = Math.round(
+  // Around mobile widths, bias slightly larger so cards remain readable.
+  const baseCardWidth = Math.round(
     Math.max(
-      30,
+      isSmallScreen ? 42 : 36,
       Math.min(
-        100,
-        Math.min(windowSize.width * 0.075, windowSize.height * 0.1),
+        isSmallScreen ? 118 : 104,
+        Math.min(
+          windowSize.width * (isSmallScreen ? 0.125 : 0.102),
+          windowSize.height * (isSmallScreen ? 0.135 : 0.112),
+        ),
       ),
     ),
+  );
+
+  const visibleCardCount = Math.max(sortedCards.length || hand.length, 1);
+  const maxHandWidth = Math.round(
+    windowSize.width *
+      (windowSize.width <= 600
+        ? 0.94
+        : windowSize.width <= 992
+          ? 0.82
+          : windowSize.width <= 1300
+            ? 0.66
+            : 0.88),
+  );
+  const estimatedGapPx = windowSize.width <= 600 ? 2 : 5;
+  const fittedCardWidth = Math.floor(
+    (maxHandWidth - Math.max(0, visibleCardCount - 1) * estimatedGapPx) /
+      visibleCardCount,
+  );
+
+  const cardWidth = Math.max(
+    isSmallScreen ? 32 : 26,
+    Math.min(baseCardWidth, fittedCardWidth),
   );
   const cardHeight = Math.round(cardWidth * 1.5);
 
@@ -317,13 +344,10 @@ const GameRounds = ({ hand, gameInfo, user }: GameRoundsProps) => {
 
   return (
     <motion.div
-      initial={{
-        opacity: 0,
-        y: 100,
-      }}
-      animate={{ opacity: 1, y: 0 }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
       transition={{ duration: 0.3 }}
-      className={styles.player_hand}
+      className={`${styles.player_hand} ${shouldOverlapOnMobile ? styles.mobile_overlap : ""}`}
     >
       {jokerCard && (
         <JokerPrompt
