@@ -302,7 +302,7 @@ const User: React.FC<UserProps> = ({ user }) => {
           src={
             user.status === "left"
               ? user.botAvatar || "/bots/bot-1.jpeg"
-              : user.avatar || "/avatars/avatar-1.jpeg"
+              : user.avatar || "/default-avatar.jpeg"
           }
           alt={user.username || "User"}
           width={200}

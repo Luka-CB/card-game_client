@@ -4,11 +4,21 @@ import useUserStore from "@/store/user/userStore";
 import Image from "next/image";
 // import { FaCaretDown } from "react-icons/fa6";
 import useWindowSize from "@/hooks/useWindowSize";
+import useUserStatsStore from "@/store/user/stats/userStatsStore";
+import { useEffect } from "react";
+import LevelBadge from "@/components/common/LevelBadge";
 
 const Avatar = () => {
   const { setIsOpen, isOpen } = useUserOptionStore();
   const { user } = useUserStore();
   const windowSize = useWindowSize();
+  const { stats, fetchStats } = useUserStatsStore();
+
+  useEffect(() => {
+    if (user && !user.isGuest && !stats) {
+      fetchStats();
+    }
+  }, [user, stats, fetchStats]);
 
   return (
     <>
@@ -23,6 +33,13 @@ const Avatar = () => {
           height={50}
           className={styles.avatar_img}
         />
+        {!user?.isGuest && (
+          <LevelBadge
+            level={stats?.level || "novice"}
+            compact
+            className={styles.level_badge}
+          />
+        )}
         {/* <div className={styles.caret}>
           <FaCaretDown className={styles.caret_icon} />
         </div> */}

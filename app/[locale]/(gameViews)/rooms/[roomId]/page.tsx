@@ -502,6 +502,10 @@ const GameRoom: React.FC = () => {
   useEffect(() => {
     const status = gameInfo?.status;
 
+    if (dealingLockRef.current) {
+      return;
+    }
+
     if (status === "dealing") {
       setDealingCards({});
       setCurrentDealingRound(0);
@@ -529,26 +533,43 @@ const GameRoom: React.FC = () => {
 
     // Function to Animate dealing cards to players
     const animateDealing = async (
-      players: typeof rotatedPlayers,
+      playerIds: string[],
       targetPerPlayer: number,
       dealerId: string | null,
     ) => {
       if (!dealerId || !socket || !roomId) return;
 
-      const dealerIndex = players.findIndex((p) => p.id === dealerId);
+      const dealerIndex = playerIds.findIndex((id) => id === dealerId);
+
+      if (dealerIndex === -1) return;
 
       const dealingOrder = [
-        ...players.slice(dealerIndex + 1),
-        ...players.slice(0, dealerIndex + 1),
+        ...playerIds.slice(dealerIndex + 1),
+        ...playerIds.slice(0, dealerIndex + 1),
       ];
 
+      // Seed all players to 0 before the first step so the first increment
+      // always produces a visible card update for the first receiver.
+      setDealingCards(
+        playerIds.reduce(
+          (acc, playerId) => {
+            acc[playerId] = 0;
+            return acc;
+          },
+          {} as Record<string, number>,
+        ),
+      );
+
+      // Let the initial 0-state commit before starting step updates.
+      await new Promise((res) => setTimeout(res, 50));
+
       for (let round = 1; round <= targetPerPlayer; round++) {
-        for (const player of dealingOrder) {
+        for (const playerId of dealingOrder) {
           soundManager.play("dealCard");
 
           setDealingCards((prev) => ({
             ...prev,
-            [player.id]: round,
+            [playerId]: (prev[playerId] || 0) + 1,
           }));
 
           await new Promise((res) => setTimeout(res, 400));
@@ -565,13 +586,15 @@ const GameRoom: React.FC = () => {
       round: number;
     }) => {
       const gi = gameInfoRef.current;
-      const players = rotatedPlayersRef.current;
+      const fallbackPlayerIds = rotatedPlayersRef.current.map((p) => p.id);
+      const playerIds =
+        gi?.players && gi.players.length > 0 ? gi.players : fallbackPlayerIds;
       const dealerId = gi?.dealerId as string | null;
-      if (!dealerId || players.length === 0) return;
+      if (!dealerId || playerIds.length === 0) return;
 
       if (!data?.round || data.round <= 0) return;
 
-      const dealerIndex = players.findIndex((p) => p.id === dealerId);
+      const dealerIndex = playerIds.findIndex((id) => id === dealerId);
       if (dealerIndex === -1) return;
       const isMyCard = data.playerId === user?._id;
 
@@ -585,7 +608,7 @@ const GameRoom: React.FC = () => {
       setCurrentDealingRound(0);
       setDealingCards({});
 
-      animateDealing(players, data.round, dealerId)
+      animateDealing(playerIds, data.round, dealerId)
         .then(() => {
           if (pendingMyHandRef.current) {
             // Reveal our cards only after dealing animation completes.
@@ -614,13 +637,18 @@ const GameRoom: React.FC = () => {
   // Effect to handle setting newHand after dealing is done
   useEffect(() => {
     if (!gameInfo?.hands || !user?._id) return;
-    // Don't update hand mid-animation — animateDealing's .then() callback
-    // handles the reveal for the trump chooser once animation completes.
-    if (dealingLockRef.current) return;
     const playerHand = gameInfo.hands?.find((h) => h.playerId === user._id);
     if (!playerHand) return;
 
     const newHand = playerHand.hand as PlayingCard[];
+
+    // If server hand updates while dealing animation is in progress (common in
+    // nines: 3-card phase -> refill to 9), queue the latest hand and apply it
+    // in animateDealing().then() to avoid ending up with fewer cards locally.
+    if (dealingLockRef.current) {
+      pendingMyHandRef.current = newHand;
+      return;
+    }
 
     setHand((prev) => {
       if (prev.length !== newHand.length) return newHand;

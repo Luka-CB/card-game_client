@@ -16,27 +16,68 @@ interface CardBackImage {
 
 const DEFAULT_CARD_BACK_URL = "/cards/card-back.png";
 
+type DeckCacheEntry = {
+  deckImages: CardImage[];
+  cardBackUrl: string;
+  imageMap: Map<string, string>;
+};
+
+const deckCache = new Map<string, DeckCacheEntry>();
+
+const toDeckKey = (rank: string | undefined, suit: string | undefined) =>
+  `${rank ?? ""}|${suit ?? ""}`;
+
+const buildImageMap = (images: CardImage[]) => {
+  const map = new Map<string, string>();
+  for (const img of images) {
+    map.set(toDeckKey(img.rank, img.suit), img.url);
+  }
+  return map;
+};
+
 export function useDeckImages(selectedDeckId: string | undefined) {
   const [deckImages, setDeckImages] = useState<CardImage[] | null>(null);
   const [cardBackUrl, setCardBackUrl] = useState(DEFAULT_CARD_BACK_URL);
+  const [imageMap, setImageMap] = useState<Map<string, string> | null>(null);
 
   useEffect(() => {
     if (!selectedDeckId || selectedDeckId === "default") {
       setDeckImages(null);
       setCardBackUrl(DEFAULT_CARD_BACK_URL);
+      setImageMap(null);
       return;
     }
 
-    let cancelled = false;
+    const cached = deckCache.get(selectedDeckId);
+    if (cached) {
+      setDeckImages(cached.deckImages);
+      setCardBackUrl(cached.cardBackUrl);
+      setImageMap(cached.imageMap);
+      return;
+    }
 
-    fetch(`/api/game/card-decks/${selectedDeckId}`)
+    const controller = new AbortController();
+
+    fetch(`/api/game/card-decks/${selectedDeckId}`, {
+      signal: controller.signal,
+    })
       .then((r) => (r.ok ? r.json() : null))
       .then(
         (data: { cardImages: CardImage[]; cardBack: CardBackImage } | null) => {
-          if (cancelled || !data?.cardImages?.length) return;
+          if (!data?.cardImages?.length) return;
+
+          const nextCardBackUrl = data.cardBack?.url ?? DEFAULT_CARD_BACK_URL;
+          const nextImageMap = buildImageMap(data.cardImages);
+
+          deckCache.set(selectedDeckId, {
+            deckImages: data.cardImages,
+            cardBackUrl: nextCardBackUrl,
+            imageMap: nextImageMap,
+          });
 
           setDeckImages(data.cardImages);
-          setCardBackUrl(data.cardBack?.url ?? DEFAULT_CARD_BACK_URL);
+          setCardBackUrl(nextCardBackUrl);
+          setImageMap(nextImageMap);
 
           // Preload all card images (faces + back) to avoid flash on reveal
           data.cardImages.forEach((img) => {
@@ -49,26 +90,32 @@ export function useDeckImages(selectedDeckId: string | undefined) {
           }
         },
       )
-      .catch(() => {
+      .catch((error: unknown) => {
+        if (
+          typeof error === "object" &&
+          error !== null &&
+          "name" in error &&
+          (error as { name?: string }).name === "AbortError"
+        ) {
+          return;
+        }
         // silently fall back to default deck on error
       });
 
     return () => {
-      cancelled = true;
+      controller.abort();
     };
   }, [selectedDeckId]);
 
   const getCardUrl = useCallback(
     (card: PlayingCard): string => {
-      if (deckImages) {
+      if (imageMap) {
         // Look up by explicit rank+suit — no positional dependency
         // Jokers in the game deck have rank:null; deck images store them as rank:"JOKER"
         const targetRank = card.joker ? "JOKER" : card.rank;
         const targetSuit = card.joker ? card.color : card.suit;
-        const match = deckImages.find(
-          (img) => img.rank === targetRank && img.suit === targetSuit,
-        );
-        if (match) return match.url;
+        const match = imageMap.get(toDeckKey(targetRank, targetSuit));
+        if (match) return match;
       }
 
       // Fall back to local canonical deck
@@ -79,7 +126,7 @@ export function useDeckImages(selectedDeckId: string | undefined) {
       );
       return canonical?.image ?? DEFAULT_CARD_BACK_URL;
     },
-    [deckImages],
+    [imageMap],
   );
 
   return {

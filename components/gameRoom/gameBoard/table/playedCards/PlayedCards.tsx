@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { PlayedCard, RoomUser } from "@/utils/interfaces";
 import styles from "./PlayedCards.module.scss";
-import Image from "next/image";
 import useWindowSize from "@/hooks/useWindowSize";
 import { motion, useAnimation } from "framer-motion";
 import usePlayedCardsStore from "@/store/gamePage/playedCardsStore";
@@ -156,18 +155,20 @@ const PlayedCards: React.FC<PlayedCardsProps> = ({
           }}
         >
           {card.joker ? (
-            <Image
+            <img
               src={getCardUrl(card)}
               alt={`${card.rank} of ${card.suit}` || "joker"}
               width={cardWidth}
               height={cardHeight}
+              style={{ height: "auto" }}
             />
           ) : (
-            <Image
+            <img
               src={getCardUrl(card)}
               alt={`${card.rank} of ${card.suit}` || "card"}
               width={cardWidth}
               height={cardHeight}
+              style={{ height: "auto" }}
             />
           )}
         </div>

@@ -1,7 +1,6 @@
 import { GameInfo } from "@/utils/interfaces";
 import styles from "./CardDeck.module.scss";
 import { motion } from "framer-motion";
-import Image from "next/image";
 import useWindowSize from "@/hooks/useWindowSize";
 import { GiSpades, GiDiamonds, GiHearts, GiClubs } from "react-icons/gi";
 import { TbPlayCardOff } from "react-icons/tb";
@@ -61,7 +60,7 @@ const CardDeck = ({ gameInfo }: CardDeckProps) => {
     >
       <div className={styles.trump_card}>
         {gameInfo?.trumpCard && gameInfo?.currentHand !== 9 ? (
-          <Image
+          <img
             src={trumpCard ?? ""}
             alt="Trump Card"
             width={
@@ -98,6 +97,7 @@ const CardDeck = ({ gameInfo }: CardDeckProps) => {
                           ? 130
                           : 150
             }
+            style={{ height: "auto" }}
           />
         ) : (
           <div className={styles.trump_card_placeholder}>
@@ -106,7 +106,7 @@ const CardDeck = ({ gameInfo }: CardDeckProps) => {
         )}
       </div>
       <div className={styles.deck}>
-        <Image
+        <img
           src={cardBackUrl}
           alt="Card Deck"
           width={
@@ -143,6 +143,7 @@ const CardDeck = ({ gameInfo }: CardDeckProps) => {
                         ? 130
                         : 150
           }
+          style={{ height: "auto" }}
           className={styles.card_deck_image}
         />
       </div>

@@ -8,6 +8,9 @@ import { timeAgoStrict } from "@/utils/misc";
 import useAvatarStore from "@/store/user/avatarStore";
 import useChangeUsernameStore from "@/store/user/changeUsernameStore";
 import { useLocale, useTranslations } from "next-intl";
+import useUserStatsStore from "@/store/user/stats/userStatsStore";
+import LevelBadge from "@/components/common/LevelBadge";
+import { useEffect } from "react";
 
 interface HeaderInfoProps {
   avatar: string;
@@ -38,6 +41,13 @@ const HeaderInfo: React.FC<HeaderInfoProps> = ({
   const { toggleChangeEmailModal } = useUpdateEmailStore();
   const { toggleAvatarGallery } = useAvatarStore();
   const { toggleChangeUsername } = useChangeUsernameStore();
+  const { stats, fetchStats } = useUserStatsStore();
+
+  useEffect(() => {
+    if (!stats) {
+      fetchStats();
+    }
+  }, [stats, fetchStats]);
 
   return (
     <header className={styles.header}>
@@ -48,6 +58,11 @@ const HeaderInfo: React.FC<HeaderInfoProps> = ({
           width={72}
           height={72}
           className={styles.avatar_img}
+        />
+        <LevelBadge
+          level={stats?.level || "novice"}
+          compact
+          className={styles.level_badge}
         />
         <div
           className={styles.edit}

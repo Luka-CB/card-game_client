@@ -1,9 +1,8 @@
 import { motion } from "framer-motion";
-import Image from "next/image";
 import styles from "./DealtCards.module.scss";
 import useWindowSize from "@/hooks/useWindowSize";
 import { useDeckContext } from "@/context/DeckContext";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { soundManager } from "@/utils/sounds";
 
 interface DealtCardsProps {
@@ -25,6 +24,7 @@ const DealtCards = ({
 }: DealtCardsProps) => {
   const windowSize = useWindowSize();
   const { cardBackUrl } = useDeckContext();
+  const [backSrc, setBackSrc] = useState(cardBackUrl);
   const incrementalDealtCount = dealingCards[playerId] || 0;
   const dealtCardCount = baseDealtCards + incrementalDealtCount;
 
@@ -66,6 +66,10 @@ const DealtCards = ({
   const lastDealSoundCountRef = useRef(0);
 
   useEffect(() => {
+    setBackSrc(cardBackUrl);
+  }, [cardBackUrl]);
+
+  useEffect(() => {
     const prevCount = prevIncrementalDealtCountRef.current;
     const hasNewCard = incrementalDealtCount > prevCount;
 
@@ -104,6 +108,8 @@ const DealtCards = ({
     return index * offset;
   };
 
+  // Nines UX: trump chooser "picks up" the first 3 cards while selecting trump.
+  // After trump is chosen, those 3 are shown again and dealing continues.
   if (status === "choosingTrump" && currentPlayerId === playerId) {
     return null;
   }
@@ -133,10 +139,15 @@ const DealtCards = ({
             zIndex: index,
           }}
         >
-          <Image
-            src={cardBackUrl}
+          <img
+            src={backSrc}
             alt="Card Back"
             loading="eager"
+            onError={() => {
+              if (backSrc !== "/cards/card-back.png") {
+                setBackSrc("/cards/card-back.png");
+              }
+            }}
             width={
               windowSize.height <= 350
                 ? 40
@@ -171,6 +182,7 @@ const DealtCards = ({
                           ? 130
                           : 150
             }
+            style={{ height: "auto" }}
           />
         </motion.div>
       ))}

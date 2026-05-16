@@ -29,6 +29,19 @@
     "ka": "Geo",
     "ru": "Rus"
   },
+  "LevelBadge": {
+    "label": "Level",
+    "levels": {
+      "novice": "Novice",
+      "amateur": "Amateur",
+      "competent": "Competent",
+      "promising": "Promising",
+      "professional": "Professional",
+      "diabolical": "Diabolical",
+      "legend": "Legend",
+      "joker": "Joker"
+    }
+  },
   "RoomPage": {
     "error": "Room not found",
     "leave": "Leave Room",
@@ -988,7 +1001,15 @@
         "deck": {
           "label": "Card Deck:",
           "default": "Default",
-          "lockedInfo": "Reach {level} to unlock"
+          "lockedInfo": "Reach {level} to unlock",
+          "previewBtn": "Preview deck",
+          "previewTitle": "{name} deck preview",
+          "previewHint": "Sample cards from this deck",
+          "closePreview": "Close",
+          "prevCard": "Previous card",
+          "nextCard": "Next card",
+          "cardPosition": "Card {current} of {total}",
+          "previewSwipeHint": "Swipe left or right, or use arrows"
         },
         "btn": "Create"
       }

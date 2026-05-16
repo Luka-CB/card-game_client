@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   HandBid,
   GameInfo,
@@ -14,6 +14,8 @@ import { substringText } from "@/utils/misc";
 import UserMetaPopup from "./UserMetaPopup";
 import useUserMetaStore from "@/store/user/userMetaStore";
 import { useTranslations } from "next-intl";
+import useUserLevelStore from "@/store/user/stats/userLevelStore";
+import LevelBadge from "@/components/common/LevelBadge";
 
 interface TimerData {
   duration: number;
@@ -92,6 +94,7 @@ const Players: React.FC<PlayersProps> = ({
 
   const windowSize = useWindowSize();
   const { toggleMetaVisibility } = useUserMetaStore();
+  const { levels, fetchUserLevel } = useUserLevelStore();
 
   const [clickedPlayerId, setClickedPlayerId] = useState<string | null>(null);
 
@@ -101,6 +104,13 @@ const Players: React.FC<PlayersProps> = ({
   const ringColor = interpolateColor(timerProgress);
 
   const choosingTrumpHand = useMemo(() => hand.slice(0, 3), [hand]);
+
+  useEffect(() => {
+    rotatedPlayers.forEach((player) => {
+      if (!player?.id || player.isBot || player.id.startsWith("guest_")) return;
+      void fetchUserLevel(player.id);
+    });
+  }, [rotatedPlayers, fetchUserLevel]);
 
   const getCumulativeRoundSum = (playerId: string) => {
     const playerScore = gameInfo?.scoreBoard?.find(
@@ -150,6 +160,7 @@ const Players: React.FC<PlayersProps> = ({
           isCurrentTurn && secondsLeft !== null && secondsLeft > 0;
         const cumulativeRoundSum = getCumulativeRoundSum(player.id);
         const normalizedRoundSum = normalizeScore(cumulativeRoundSum);
+        const playerLevel = levels[player.id];
 
         return (
           <div
@@ -249,7 +260,7 @@ const Players: React.FC<PlayersProps> = ({
 
                 {isActive ? (
                   <Image
-                    src={player.avatar || "/avatars/avatar-1.jpeg"}
+                    src={player.avatar || "/default-avatar.jpeg"}
                     alt={player.username || "avatar"}
                     width={100}
                     height={100}
@@ -270,6 +281,13 @@ const Players: React.FC<PlayersProps> = ({
                       borderRadius: "50%",
                     }}
                     className={styles.avatar}
+                  />
+                )}
+                {isActive && !player.isBot && (
+                  <LevelBadge
+                    level={playerLevel || "novice"}
+                    compact
+                    className={styles.level_badge}
                   />
                 )}
                 {player.status !== "active" && (

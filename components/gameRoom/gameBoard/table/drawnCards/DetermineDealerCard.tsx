@@ -1,10 +1,9 @@
 import { PlayingCard } from "@/utils/interfaces";
 import styles from "./DrawnCards.module.scss";
-import Image from "next/image";
 import { motion } from "framer-motion";
 import useWindowSize from "@/hooks/useWindowSize";
 import { useDeckContext } from "@/context/DeckContext";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 interface Props {
   card: PlayingCard;
@@ -15,10 +14,20 @@ interface Props {
 const DetermineDealerCard = ({ card, index, playerPositionIndex }: Props) => {
   const windowSize = useWindowSize();
   const { getCardUrl } = useDeckContext();
-  const [isLoaded, setIsLoaded] = useState(false);
 
   const cardUrl = getCardUrl(card);
+  const [imgSrc, setImgSrc] = useState(cardUrl);
   const offset = index * 3;
+
+  useEffect(() => {
+    setImgSrc(cardUrl);
+  }, [cardUrl]);
+
+  const fallbackCardUrl = card.joker
+    ? card.color === "black"
+      ? "/cards/joker-black.png"
+      : "/cards/joker-red.png"
+    : `/cards/${card.suit}-${card.rank?.toLowerCase()}.png`;
 
   const getInitial = () => {
     switch (playerPositionIndex) {
@@ -72,8 +81,6 @@ const DetermineDealerCard = ({ card, index, playerPositionIndex }: Props) => {
   };
 
   const getAnimate = () => {
-    if (!isLoaded) return getInitial();
-
     switch (playerPositionIndex) {
       case 0:
       case 2:
@@ -106,10 +113,14 @@ const DetermineDealerCard = ({ card, index, playerPositionIndex }: Props) => {
         zIndex: index,
       }}
     >
-      <Image
-        src={cardUrl}
+      <img
+        src={imgSrc}
         alt={card.rank || "card"}
-        onLoad={() => setIsLoaded(true)}
+        onError={() => {
+          if (imgSrc !== fallbackCardUrl) {
+            setImgSrc(fallbackCardUrl);
+          }
+        }}
         loading="eager"
         width={
           windowSize.height <= 350
@@ -141,6 +152,7 @@ const DetermineDealerCard = ({ card, index, playerPositionIndex }: Props) => {
                       ? 130
                       : 150
         }
+        style={{ height: "auto" }}
       />
     </motion.div>
   );

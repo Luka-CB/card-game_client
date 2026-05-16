@@ -30,10 +30,24 @@
     "ka": "ქარ",
     "ru": "რუს"
   },
+  "LevelBadge": {
+    "label": "დონე",
+    "levels": {
+      "novice": "დამწყები",
+      "amateur": "მოყვარული",
+      "competent": "გამოცდილი",
+      "promising": "პერსპექტიული",
+      "professional": "პროფესიონალი",
+      "diabolical": "ეშმაკური",
+      "legend": "ლეგენდა",
+      "joker": "ჯოკერი"
+    }
+  },
   "RoomPage": {
     "error": "ოთახი ვერ მოიძებნა",
     "leave": "ოთახის დატოვება",
-    "scoreboard": "ანგარიშის დაფა"
+    "scoreboard": "ანგარიშის დაფა",
+    "chat": "ჩატი"
   },
   "AboutPage": {
     "values": {
@@ -986,9 +1000,17 @@
           "off": "გამორთულია"
         },
         "deck": {
-          "label": "ბანქოს გემბანი:",
-          "default": "ნაგულისხმევი",
-          "lockedInfo": "მიაღწიე {level}-ს განსაკეტად"
+          "label": "აირჩიე კარტი:",
+          "default": "ძირითადი",
+          "lockedInfo": "მიაღწიე {level}-ს ასარჩევად",
+          "previewBtn": "კარტის გადახედვა",
+          "previewTitle": "{name} კარტის ნახვა",
+          "previewHint": "სანიმუშო კარტები",
+          "closePreview": "დახურვა",
+          "prevCard": "წინა კარტი",
+          "nextCard": "შემდეგი კარტი",
+          "cardPosition": "კარტი {current} / {total}",
+          "previewSwipeHint": "გადაფურცვლეთ მარჯვნივ ან მარცხნივ, ან გამოიყენეთ ისრები"
         },
         "btn": "შექმნა"
       }

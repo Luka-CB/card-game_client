@@ -25,6 +25,13 @@
     object-fit: cover;
   }
 
+  .level_badge {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    z-index: 2;
+  }
+
   .edit {
     position: absolute;
     bottom: -4px;

@@ -1,6 +1,5 @@
 import styles from "./GameRounds.module.scss";
 import { GameInfo, PlayingCard, RoomUser } from "@/utils/interfaces";
-import Image from "next/image";
 import { motion } from "framer-motion";
 import useWindowSize from "@/hooks/useWindowSize";
 import React, {
@@ -397,12 +396,13 @@ const GameRounds = ({ hand, gameInfo, user }: GameRoundsProps) => {
               </button>
             )}
 
-            <Image
+            <img
               src={cardUrl}
               alt={card.rank || "card"}
               draggable={false}
               width={cardWidth}
               height={cardHeight}
+              style={{ height: "auto" }}
             />
           </div>
         );

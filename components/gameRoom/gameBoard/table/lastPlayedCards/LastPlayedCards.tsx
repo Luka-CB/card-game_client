@@ -1,6 +1,5 @@
 import { PlayedCard, RoomUser } from "@/utils/interfaces";
 import styles from "./LastPlayedCards.module.scss";
-import Image from "next/image";
 import useWindowSize from "@/hooks/useWindowSize";
 import useLastPlayedCardsStore from "@/store/gamePage/lastPlayedCardsStore";
 import { AnimatePresence, motion } from "framer-motion";
@@ -37,7 +36,7 @@ const LastPlayedCards: React.FC<LastPlayedCardsProps> = ({
       <div className={styles.display_cards} title={t("lastPlayedCards")}>
         {Array.from({ length: 4 }).map((_, index) => (
           <div key={index} className={styles.card}>
-            <Image
+            <img
               src={cardBackUrl}
               alt="card back"
               width={
@@ -58,6 +57,7 @@ const LastPlayedCards: React.FC<LastPlayedCardsProps> = ({
                       ? 30
                       : 50
               }
+              style={{ height: "auto" }}
             />
           </div>
         ))}
@@ -78,18 +78,20 @@ const LastPlayedCards: React.FC<LastPlayedCardsProps> = ({
                 style={{ zIndex: index + 1 }}
               >
                 {card.joker ? (
-                  <Image
+                  <img
                     src={getCardUrl(card)}
                     alt={`${card.rank} of ${card.suit}` || "joker"}
                     width={50}
                     height={80}
+                    style={{ height: "auto" }}
                   />
                 ) : (
-                  <Image
+                  <img
                     src={getCardUrl(card)}
                     alt={`${card.rank} of ${card.suit}` || "card"}
                     width={40}
                     height={60}
+                    style={{ height: "auto" }}
                   />
                 )}
               </div>

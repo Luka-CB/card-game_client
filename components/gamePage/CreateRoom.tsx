@@ -2,7 +2,14 @@
 
 import { createPortal } from "react-dom";
 import styles from "./CreateRoom.module.scss";
-import { FaLock, FaLockOpen, FaTimesCircle } from "react-icons/fa";
+import {
+  FaChevronLeft,
+  FaChevronRight,
+  FaExpand,
+  FaLock,
+  FaLockOpen,
+  FaTimesCircle,
+} from "react-icons/fa";
 import { useEffect, useState } from "react";
 import useCreateRoomStore from "@/store/gamePage/createRoomStore";
 import { AnimatePresence, motion } from "framer-motion";
@@ -47,15 +54,33 @@ const DEFAULT_PREVIEW_CARDS = [
   "/cards/joker-red.png",
 ];
 
+const DEFAULT_DECK_SAMPLE_CARDS = [
+  "/cards/card-back.png",
+  "/cards/joker-red.png",
+  "/cards/joker-black.png",
+  "/cards/hearts-2.png",
+  "/cards/clubs-7.png",
+  "/cards/spades-10.png",
+  "/cards/hearts-j.png",
+  "/cards/diamonds-q.png",
+  "/cards/spades-a.png",
+];
+
+interface DeckPreviewState {
+  name: string;
+  cards: string[];
+}
+
 const DeckFan = ({ cards }: { cards: string[] }) => (
   <div className={styles.deck_fan}>
     {cards.map((src, i) => (
-      <Image
+      <img
         key={i}
         src={src}
         alt=""
         width={36}
         height={50}
+        style={{ height: "auto" }}
         className={`${styles.deck_card} ${styles[`deck_c${i + 1}` as keyof typeof styles]}`}
       />
     ))}
@@ -78,6 +103,9 @@ const CreateRoom = () => {
   const [selectedDeckId, setSelectedDeckId] = useState("default");
   const [decks, setDecks] = useState<DeckOption[]>([]);
   const [decksLoading, setDecksLoading] = useState(false);
+  const [deckPreview, setDeckPreview] = useState<DeckPreviewState | null>(null);
+  const [previewCardIndex, setPreviewCardIndex] = useState(0);
+  const [touchStartX, setTouchStartX] = useState<number | null>(null);
 
   const { toggleCreateRoomModal, setToggleCreateRoom } = useCreateRoomStore();
   const { setMsg } = useFlashMsgStore();
@@ -100,7 +128,65 @@ const CreateRoom = () => {
     setBetError("");
     setSelectedDeckId("default");
     setDecks([]);
+    setDeckPreview(null);
   };
+
+  const getDeckPreviewCards = (deck?: DeckOption) => {
+    if (!deck) {
+      return DEFAULT_DECK_SAMPLE_CARDS;
+    }
+
+    return [deck.cardBack.url, ...(deck.previewImages ?? [])]
+      .filter((card): card is string => Boolean(card))
+      .slice(0, 9);
+  };
+
+  const previewCards = deckPreview?.cards ?? [];
+  const hasMultiplePreviewCards = previewCards.length > 1;
+
+  const goToNextPreviewCard = () => {
+    if (!hasMultiplePreviewCards) return;
+
+    setPreviewCardIndex((prev) => (prev + 1) % previewCards.length);
+  };
+
+  const goToPreviousPreviewCard = () => {
+    if (!hasMultiplePreviewCards) return;
+
+    setPreviewCardIndex(
+      (prev) => (prev - 1 + previewCards.length) % previewCards.length,
+    );
+  };
+
+  const handlePreviewTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
+    if (!hasMultiplePreviewCards) return;
+
+    setTouchStartX(e.touches[0].clientX);
+  };
+
+  const handlePreviewTouchEnd = (e: React.TouchEvent<HTMLDivElement>) => {
+    if (!hasMultiplePreviewCards || touchStartX === null) return;
+
+    const deltaX = e.changedTouches[0].clientX - touchStartX;
+    const SWIPE_THRESHOLD = 40;
+
+    if (Math.abs(deltaX) > SWIPE_THRESHOLD) {
+      if (deltaX < 0) {
+        goToNextPreviewCard();
+      } else {
+        goToPreviousPreviewCard();
+      }
+    }
+
+    setTouchStartX(null);
+  };
+
+  useEffect(() => {
+    if (deckPreview) {
+      setPreviewCardIndex(0);
+      setTouchStartX(null);
+    }
+  }, [deckPreview]);
 
   const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -397,6 +483,32 @@ const CreateRoom = () => {
                           className={`${styles.deck_item} ${selectedDeckId === "default" ? styles.deck_item_active : ""}`}
                           onClick={() => setSelectedDeckId("default")}
                         >
+                          <span
+                            role="button"
+                            tabIndex={0}
+                            className={styles.deck_preview_btn}
+                            title={t("form.deck.previewBtn")}
+                            aria-label={t("form.deck.previewBtn")}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setDeckPreview({
+                                name: t("form.deck.default"),
+                                cards: getDeckPreviewCards(),
+                              });
+                            }}
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter" || e.key === " ") {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                setDeckPreview({
+                                  name: t("form.deck.default"),
+                                  cards: getDeckPreviewCards(),
+                                });
+                              }
+                            }}
+                          >
+                            <FaExpand />
+                          </span>
                           <DeckFan cards={DEFAULT_PREVIEW_CARDS} />
                           <span className={styles.deck_name}>
                             {t("form.deck.default")}
@@ -410,6 +522,32 @@ const CreateRoom = () => {
                             className={`${styles.deck_item} ${selectedDeckId === deck._id ? styles.deck_item_active : ""}`}
                             onClick={() => setSelectedDeckId(deck._id)}
                           >
+                            <span
+                              role="button"
+                              tabIndex={0}
+                              className={styles.deck_preview_btn}
+                              title={t("form.deck.previewBtn")}
+                              aria-label={t("form.deck.previewBtn")}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setDeckPreview({
+                                  name: deck.name,
+                                  cards: getDeckPreviewCards(deck),
+                                });
+                              }}
+                              onKeyDown={(e) => {
+                                if (e.key === "Enter" || e.key === " ") {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  setDeckPreview({
+                                    name: deck.name,
+                                    cards: getDeckPreviewCards(deck),
+                                  });
+                                }
+                              }}
+                            >
+                              <FaExpand />
+                            </span>
                             <DeckFan
                               cards={[
                                 deck.cardBack.url,
@@ -430,6 +568,30 @@ const CreateRoom = () => {
                               level: nextLevel ?? "",
                             })}
                           >
+                            <span
+                              role="button"
+                              tabIndex={0}
+                              className={styles.deck_preview_btn}
+                              title={t("form.deck.previewBtn")}
+                              aria-label={t("form.deck.previewBtn")}
+                              onClick={() =>
+                                setDeckPreview({
+                                  name: deck.name,
+                                  cards: getDeckPreviewCards(deck),
+                                })
+                              }
+                              onKeyDown={(e) => {
+                                if (e.key === "Enter" || e.key === " ") {
+                                  e.preventDefault();
+                                  setDeckPreview({
+                                    name: deck.name,
+                                    cards: getDeckPreviewCards(deck),
+                                  });
+                                }
+                              }}
+                            >
+                              <FaExpand />
+                            </span>
                             <div className={styles.deck_lock_overlay}>
                               <FaLock className={styles.deck_lock_icon} />
                             </div>
@@ -477,6 +639,115 @@ const CreateRoom = () => {
               </button>
             </form>
           </motion.div>
+
+          <AnimatePresence>
+            {deckPreview && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                className={styles.preview_bg}
+                onClick={() => setDeckPreview(null)}
+              >
+                <motion.div
+                  initial={{ opacity: 0, y: 18, scale: 0.96 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: 18, scale: 0.96 }}
+                  transition={{ duration: 0.2 }}
+                  className={styles.preview_modal}
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <div className={styles.preview_header}>
+                    <div>
+                      <h3>
+                        {t("form.deck.previewTitle", {
+                          name: deckPreview.name,
+                        })}
+                      </h3>
+                      <small>{t("form.deck.previewHint")}</small>
+                    </div>
+                    <button
+                      type="button"
+                      className={styles.preview_close_btn}
+                      onClick={() => setDeckPreview(null)}
+                    >
+                      {t("form.deck.closePreview")}
+                    </button>
+                  </div>
+
+                  <div
+                    className={styles.preview_carousel}
+                    onTouchStart={handlePreviewTouchStart}
+                    onTouchEnd={handlePreviewTouchEnd}
+                  >
+                    <button
+                      type="button"
+                      className={styles.preview_nav_btn}
+                      aria-label={t("form.deck.prevCard")}
+                      onClick={goToPreviousPreviewCard}
+                      disabled={!hasMultiplePreviewCards}
+                    >
+                      <FaChevronLeft />
+                    </button>
+
+                    <div className={styles.preview_card_frame}>
+                      <img
+                        src={previewCards[previewCardIndex]}
+                        alt={`${deckPreview.name} card ${previewCardIndex + 1}`}
+                        width={180}
+                        height={252}
+                        style={{ height: "auto" }}
+                        className={styles.preview_card_main}
+                      />
+                    </div>
+
+                    <button
+                      type="button"
+                      className={styles.preview_nav_btn}
+                      aria-label={t("form.deck.nextCard")}
+                      onClick={goToNextPreviewCard}
+                      disabled={!hasMultiplePreviewCards}
+                    >
+                      <FaChevronRight />
+                    </button>
+                  </div>
+
+                  <div className={styles.preview_meta}>
+                    <small>
+                      {t("form.deck.cardPosition", {
+                        current: previewCardIndex + 1,
+                        total: previewCards.length,
+                      })}
+                    </small>
+                    {hasMultiplePreviewCards && (
+                      <small>{t("form.deck.previewSwipeHint")}</small>
+                    )}
+                  </div>
+
+                  <div className={styles.preview_thumbs}>
+                    {previewCards.map((src, idx) => (
+                      <button
+                        key={`${src}-${idx}`}
+                        type="button"
+                        className={`${styles.preview_thumb_btn} ${idx === previewCardIndex ? styles.preview_thumb_btn_active : ""}`}
+                        onClick={() => setPreviewCardIndex(idx)}
+                      >
+                        <img
+                          src={src}
+                          alt={`${deckPreview.name} thumb ${idx + 1}`}
+                          width={56}
+                          height={78}
+                          style={{ height: "auto" }}
+                          className={styles.preview_thumb}
+                        />
+                      </button>
+                    ))}
+                  </div>
+                </motion.div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </motion.div>
       )}
     </AnimatePresence>,

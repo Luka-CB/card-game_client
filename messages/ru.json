@@ -30,6 +30,19 @@
     "ka": "Гру",
     "ru": "Рус"
   },
+  "LevelBadge": {
+    "label": "Уровень",
+    "levels": {
+      "novice": "Новичок",
+      "amateur": "Любитель",
+      "competent": "Опытный",
+      "promising": "Перспективный",
+      "professional": "Профессионал",
+      "diabolical": "Дьявольский",
+      "legend": "Легенда",
+      "joker": "Джокер"
+    }
+  },
   "RoomPage": {
     "error": "Комната не найдена",
     "leave": "Покинуть комнату",
@@ -988,7 +1001,15 @@
         "deck": {
           "label": "Колода карт:",
           "default": "По умолчанию",
-          "lockedInfo": "Достигните {level} для разблокировки"
+          "lockedInfo": "Достигните {level} для разблокировки",
+          "previewBtn": "Просмотр колоды",
+          "previewTitle": "Просмотр колоды {name}",
+          "previewHint": "Примеры карт из этой колоды",
+          "closePreview": "Закрыть",
+          "prevCard": "Предыдущая карта",
+          "nextCard": "Следующая карта",
+          "cardPosition": "Карта {current} из {total}",
+          "previewSwipeHint": "Свайпните влево или вправо, либо используйте стрелки"
         },
         "btn": "Создать"
       }

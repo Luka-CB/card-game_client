@@ -25,6 +25,10 @@ const DrawnCards = ({
   dealingCards,
   gameInfo,
 }: DrawnCardsProps) => {
+  const hasActiveDealing = Object.values(dealingCards).some(
+    (count) => count > 0,
+  );
+
   const playerPosition =
     playerPositionIndex === 0
       ? styles.bottom_drawn_cards
@@ -49,7 +53,8 @@ const DrawnCards = ({
         </div>
       )}
 
-      {(gameInfo?.status === "choosingTrump" ||
+      {(hasActiveDealing ||
+        gameInfo?.status === "choosingTrump" ||
         (gameInfo?.dealerId && gameInfo?.status === "dealing")) && (
         <DealtCards
           dealingCards={dealingCards}

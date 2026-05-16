@@ -139,6 +139,13 @@
           object-fit: cover;
         }
 
+        .level_badge {
+          position: absolute;
+          bottom: -8px;
+          right: -8px;
+          z-index: 102;
+        }
+
         .bot_label {
           position: absolute;
           bottom: 0;
@@ -293,6 +300,13 @@
       transform: translateY(-50%);
     }
 
+    .level_badge {
+      position: absolute;
+      bottom: -8px;
+      left: -8px;
+      z-index: 102;
+    }
+
     .message_popup {
       left: 110%;
       top: 50%;
@@ -336,6 +350,13 @@
       top: 0;
       left: 50%;
       transform: translateX(-50%);
+    }
+
+    .level_badge {
+      position: absolute;
+      top: -8px;
+      right: -8px;
+      z-index: 102;
     }
 
     .message_popup {
