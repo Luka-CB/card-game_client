@@ -1,75 +1,107 @@
 "use client";
 
-import useUserStore from "@/store/user/userStore";
 import styles from "./Header.module.scss";
-import { FaCaretDown } from "react-icons/fa6";
+import { TiThMenu } from "react-icons/ti";
+import useWindowSize from "@/hooks/useWindowSize";
+import MainNav from "./MainNav";
+import { Link } from "@/i18n/navigation";
+import { useTranslations } from "next-intl";
+import Avatar from "./Avatar";
+import useNavStore from "@/store/navStore";
+import useRatingStore from "@/store/user/stats/ratingStore";
+import useJCoinsStore from "@/store/user/stats/jCoinsStore";
+import { useEffect } from "react";
+import useUserStore from "@/store/user/userStore";
+import SideNav from "./SideNav";
 import Image from "next/image";
-import UserOption from "../home/UserOption";
-import useUserOptionStore from "@/store/user/userOptionStore";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useMemo } from "react";
-import { getStoredRandomAvatar } from "@/utils/misc";
+import LanguageSwitcher from "../LanguageSwitcher";
 
 const Header = () => {
-  const { user } = useUserStore();
-  const { setIsOpen, isOpen } = useUserOptionStore();
-  const pathname = usePathname();
+  const t = useTranslations("Header");
 
-  const avatar = useMemo(() => {
-    return user?.avatar || getStoredRandomAvatar();
-  }, [user?.avatar]);
+  const { toggleNav } = useNavStore();
+  const windowSize = useWindowSize();
+  const { user } = useUserStore();
+  const { jCoins, toggleGetMoreModal } = useJCoinsStore();
+  const { fetchRating, rating, clearRating } = useRatingStore();
+
+  useEffect(() => {
+    if (!user || user.isGuest) {
+      clearRating();
+      return;
+    }
+
+    if (!rating) {
+      fetchRating();
+    }
+  }, [user, rating, fetchRating, clearRating]);
+
+  const handleOpenGetMoreModal = () => {
+    toggleGetMoreModal();
+    toggleNav(false);
+  };
 
   return (
-    <header className={styles.header}>
-      <nav>
+    <>
+      <div className={styles.header_container}>
         <div className={styles.logo}>
           <Link href="/">
-            <h1>LOGO</h1>
+            <Image
+              src="/logos/title-logo.png"
+              alt="Joker Clash Logo"
+              width={120}
+              height={70}
+              loading="eager"
+              className={styles.logo_image}
+            />
           </Link>
-        </div>
-        <ul>
-          {pathname !== "/" && (
-            <>
-              <Link
-                href="/games"
-                className={pathname === "/games" ? styles.active : undefined}
-              >
-                Games
-              </Link>
-            </>
-          )}
-          <Link
-            href="/about-us"
-            className={pathname === "/about-us" ? styles.active : undefined}
-          >
-            About Us
-          </Link>
-          <Link
-            href="/about-game"
-            className={pathname === "/about-game" ? styles.active : undefined}
-          >
-            About Game
-          </Link>
-        </ul>
-      </nav>
-      <div className={styles.user}>
-        <p>{user?.username}</p>
-        <div className={styles.avatar} onClick={() => setIsOpen(!isOpen)}>
-          <Image
-            src={avatar}
-            alt="avatar"
-            width={50}
-            height={50}
-            className={styles.avatar_img}
-          />
-          <div className={styles.caret}>
-            <FaCaretDown className={styles.caret_icon} />
+
+          <div className={styles.language_switcher}>
+            <LanguageSwitcher />
           </div>
         </div>
-        <UserOption />
+
+        {windowSize.width <= 800 ? (
+          <nav>
+            {user && user._id ? (
+              <>
+                <Avatar />
+                <button className={styles.menu_btn} onClick={() => toggleNav()}>
+                  <TiThMenu className={styles.menu_icon} />
+                </button>
+              </>
+            ) : (
+              <div className={styles.auth_links}>
+                <Link href="/?auth=signin">{t("signIn")}</Link>
+                <div className={styles.divider}>|</div>
+                <Link href="/?auth=signup">{t("signUp")}</Link>
+              </div>
+            )}
+          </nav>
+        ) : (
+          <MainNav
+            jCoins={jCoins as { value: string; raw: number } | null}
+            rating={
+              rating as {
+                value: number;
+                trend: "up" | "down" | "stable";
+              } | null
+            }
+            onOpenGetMoreModal={handleOpenGetMoreModal}
+          />
+        )}
       </div>
-    </header>
+      <SideNav
+        jCoins={jCoins as { value: string; raw: number } | null}
+        rating={
+          rating as {
+            value: number;
+            trend: "up" | "down" | "stable";
+          } | null
+        }
+        onOpenGetMoreModal={handleOpenGetMoreModal}
+      />
+    </>
   );
 };
 

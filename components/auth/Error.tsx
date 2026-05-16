@@ -3,9 +3,12 @@ import { FaFaceSadTear } from "react-icons/fa6";
 import { IoMdArrowRoundBack } from "react-icons/io";
 import { CiWarning } from "react-icons/ci";
 import { motion } from "framer-motion";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
+import { useTranslations } from "next-intl";
 
 const Error = () => {
+  const t = useTranslations("Auth.error");
+
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0 }}
@@ -15,20 +18,17 @@ const Error = () => {
     >
       <div className={styles.text_one}>
         <FaFaceSadTear className={styles.icon} />
-        <h1>Ooops! Something went wrong.</h1>
+        <h1>{t("title")}</h1>
       </div>
       <div className={styles.text_two}>
         <p>
           <CiWarning className={styles.icon} />
-          Please make sure that this google account email is not already
-          registered with us!
+          {t("message")}
         </p>
-        <small>
-          We will try to fix this error, if it's coming from our end!
-        </small>
+        <small>{t("small")}</small>
         <div className={styles.go_back}>
           <IoMdArrowRoundBack className={styles.icon} />
-          <Link href="?auth=signin">back to sign in</Link>
+          <Link href="?auth=signin">{t("link")}</Link>
         </div>
       </div>
     </motion.div>

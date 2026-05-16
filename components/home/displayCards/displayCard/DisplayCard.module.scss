@@ -1,0 +1,426 @@
+@use "mixins" as *;
+
+.room_card {
+  @include bgColor();
+  width: 350px;
+  height: 225px;
+  border-radius: 10px;
+  box-shadow: 2px 3px 15px rgba(0, 0, 0, 0.302);
+  transition: all 0.2s ease-in-out;
+  border: 1.5px solid var(--clr-light-faded);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+
+  .leave_warning {
+    position: absolute;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.72);
+    backdrop-filter: blur(8px);
+    border-radius: 10px;
+    z-index: 20;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+
+    p {
+      color: var(--clr-warning-600);
+      text-shadow: 1px 1px 2px black;
+      font-size: 1rem;
+      margin-bottom: 10px;
+      text-align: center;
+    }
+
+    small {
+      color: var(--clr-warning-400);
+      margin-bottom: 16px;
+      text-align: center;
+      font-size: 0.72rem;
+    }
+
+    .leave_warning_btns {
+      display: flex;
+      gap: 12px;
+
+      button {
+        @include btn();
+        padding: 4px 10px;
+        height: auto;
+        font-size: 0.7rem;
+      }
+
+      .confirm_btn {
+        background-color: var(--clr-danger-faded);
+        border-color: var(--clr-danger-600);
+        color: var(--clr-danger-600);
+      }
+
+      .cancel_btn {
+        background-color: var(--clr-light-faded);
+        border-color: var(--clr-light);
+        color: var(--clr-light);
+      }
+    }
+  }
+
+  .card_header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid rgba(128, 128, 128, 0.388);
+    padding: 10px;
+
+    h4 {
+      color: var(--clr-primary-200);
+      font-size: 0.7rem;
+    }
+
+    .game_type {
+      border: 1px solid var(--clr-light-faded);
+      border-radius: 5px;
+      padding: 5px 10px;
+      box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.302);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: rgb(158, 151, 141);
+      font-size: 0.6rem;
+      margin-top: 5px;
+      margin-left: 5px;
+
+      .dash {
+        margin: 0 5px;
+      }
+
+      .bet {
+        display: flex;
+        align-items: center;
+
+        span {
+          font-size: 0.5rem;
+          margin-top: 1px;
+        }
+
+        .coin_img {
+          margin-left: 3px;
+        }
+      }
+    }
+
+    .status {
+      display: flex;
+      align-items: center;
+
+      .icon {
+        color: var(--clr-primary-600);
+      }
+
+      span {
+        color: rgb(160, 160, 160);
+        font-size: 0.7rem;
+        margin-top: 5px;
+        margin-left: 5px;
+      }
+    }
+  }
+
+  .card_body {
+    padding: 20px 10px;
+    display: flex;
+    justify-content: space-around;
+
+    .user {
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      box-shadow: inset 2px 2px 8px black;
+      background-color: var(--clr-light-faded);
+
+      img {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        object-fit: cover;
+      }
+    }
+  }
+
+  .card_footer {
+    flex: 1;
+    padding: 10px;
+    border-top: 1px solid rgba(128, 128, 128, 0.388);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .left {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      color: var(--clr-primary-800);
+      font-size: 0.7rem;
+
+      .chat {
+        display: flex;
+        align-items: center;
+        margin-top: 5px;
+
+        .chat_icon {
+          color: var(--clr-primary-600);
+          margin-right: 5px;
+        }
+      }
+    }
+
+    .leave_btn {
+      @include btn();
+      padding: 5px 10px;
+      height: auto;
+      background-color: transparent;
+      border-color: var(--clr-danger-800);
+      color: var(--clr-danger-800);
+      font-size: small;
+      z-index: 1;
+
+      &:hover {
+        background-color: var(--clr-danger-faded);
+        color: var(--clr-danger-600);
+        border-color: var(--clr-danger-600);
+      }
+    }
+
+    .join_btn {
+      @include btn();
+      padding: 5px 10px;
+      height: auto;
+      background-color: transparent;
+      border-color: var(--clr-primary-800);
+      color: var(--clr-primary-800);
+      font-size: small;
+
+      &:hover:not(:disabled) {
+        background-color: var(--clr-primary-faded);
+        color: var(--clr-primary-600);
+        border-color: var(--clr-primary-600);
+      }
+
+      &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        border-color: var(--clr-dark);
+        color: rgb(90, 90, 90);
+      }
+    }
+  }
+
+  @media (max-width: 1720px) {
+    width: 300px;
+    height: 180px;
+
+    .card_header {
+      padding: 5px;
+
+      h4 {
+        color: var(--clr-primary-200);
+        font-size: 0.7rem;
+      }
+
+      .game_type {
+        margin-top: 0;
+        margin-left: 0;
+      }
+
+      .status {
+        .icon {
+          font-size: 0.8rem;
+        }
+
+        span {
+          font-size: 0.6rem;
+          margin-top: 3px;
+          margin-left: 3px;
+        }
+      }
+    }
+
+    .card_body {
+      padding: 15px 10px;
+
+      .user {
+        width: 60px;
+        height: 60px;
+      }
+    }
+  }
+
+  @media (max-width: 1550px) {
+    width: 220px;
+    height: 150px;
+
+    .card_header {
+      padding: 5px;
+
+      h4 {
+        font-size: 0.6rem;
+      }
+
+      .game_type {
+        padding: 3px;
+      }
+
+      .status {
+        .icon {
+          font-size: 0.7rem;
+        }
+
+        span {
+          font-size: 0.5rem;
+        }
+      }
+    }
+
+    .card_body {
+      padding: 15px 10px;
+
+      .user {
+        width: 45px;
+        height: 45px;
+      }
+    }
+
+    .card_footer {
+      padding: 5px 10px;
+
+      .left {
+        font-size: 0.6rem;
+      }
+
+      .leave_btn {
+        padding: 3px 10px;
+        border-radius: 5px;
+        font-size: 0.6rem;
+      }
+
+      .join_btn {
+        padding: 3px 10px;
+        border-radius: 5px;
+        font-size: 0.6rem;
+      }
+    }
+  }
+
+  @media (max-width: 1200px) {
+    width: 350px;
+    height: 200px;
+
+    .card_header {
+      padding: 10px;
+
+      h4 {
+        font-size: 0.8rem;
+      }
+
+      .game_type {
+        padding: 3px 5px;
+        font-size: 0.7rem;
+      }
+
+      .status {
+        .icon {
+          font-size: 1rem;
+        }
+
+        span {
+          font-size: 0.7rem;
+        }
+      }
+    }
+
+    .card_body {
+      padding: 15px 10px;
+
+      .user {
+        width: 70px;
+        height: 70px;
+      }
+    }
+
+    .card_footer {
+      padding: 5px 10px;
+
+      .left {
+        font-size: 0.8rem;
+      }
+
+      .leave_btn {
+        padding: 5px 10px;
+        border-radius: 10px;
+        font-size: 0.8rem;
+      }
+
+      .join_btn {
+        padding: 5px 10px;
+        border-radius: 10px;
+        font-size: 0.8rem;
+      }
+    }
+  }
+
+  @media (max-width: 400px) {
+    width: 90%;
+    height: 200px;
+
+    .card_header {
+      padding: 10px;
+
+      h4 {
+        font-size: 0.6rem;
+      }
+
+      .status {
+        .icon {
+          font-size: 0.8rem;
+        }
+
+        span {
+          font-size: 0.6rem;
+        }
+      }
+    }
+
+    .card_body {
+      padding: 15px 10px;
+
+      .user {
+        width: 50px;
+        height: 50px;
+      }
+    }
+
+    .card_footer {
+      padding: 5px 10px;
+
+      .left {
+        font-size: 0.6rem;
+      }
+
+      .leave_btn {
+        padding: 3px 10px;
+        border-radius: 5px;
+        font-size: 0.6rem;
+      }
+
+      .join_btn {
+        padding: 3px 10px;
+        border-radius: 5px;
+        font-size: 0.6rem;
+      }
+    }
+  }
+}
