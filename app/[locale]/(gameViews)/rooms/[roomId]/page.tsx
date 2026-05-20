@@ -625,6 +625,10 @@ const GameRoom: React.FC = () => {
         .catch(() => {})
         .finally(() => {
           dealingLockRef.current = false;
+          // Clear dealing cards now that animation is done. The status cleanup
+          // effect skips clearing while the lock is held, so if the game status
+          // advanced (e.g. "bid") during the animation it would never clear.
+          setDealingCards({});
         });
     };
 
