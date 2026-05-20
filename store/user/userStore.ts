@@ -2,6 +2,7 @@
 
 import api from "@/utils/axios";
 import { create } from "zustand";
+import { reconnectSocket } from "@/hooks/useSocket";
 
 export interface userIFace {
   _id: string;
@@ -41,6 +42,7 @@ const useUserStore = create<UserStore>((set) => ({
       // No active session — auto sign in as guest
       try {
         const { data: guestData } = await api.post("/auth/guest");
+        reconnectSocket();
         set({ user: guestData || null, loading: false });
       } catch {
         set({ user: null, loading: false });
