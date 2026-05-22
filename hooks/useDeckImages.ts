@@ -24,6 +24,19 @@ type DeckCacheEntry = {
 
 const deckCache = new Map<string, DeckCacheEntry>();
 
+let defaultDeckPreloaded = false;
+
+function preloadDefaultDeck() {
+  if (defaultDeckPreloaded || typeof window === "undefined") return;
+  defaultDeckPreloaded = true;
+  CANONICAL_DECK.forEach((card) => {
+    const el = new window.Image();
+    el.src = card.image;
+  });
+  const back = new window.Image();
+  back.src = DEFAULT_CARD_BACK_URL;
+}
+
 const toDeckKey = (rank: string | undefined, suit: string | undefined) =>
   `${rank ?? ""}|${suit ?? ""}`;
 
@@ -42,6 +55,7 @@ export function useDeckImages(selectedDeckId: string | undefined) {
 
   useEffect(() => {
     if (!selectedDeckId || selectedDeckId === "default") {
+      preloadDefaultDeck();
       setDeckImages(null);
       setCardBackUrl(DEFAULT_CARD_BACK_URL);
       setImageMap(null);
