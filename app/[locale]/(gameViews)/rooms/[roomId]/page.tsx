@@ -527,6 +527,11 @@ const GameRoom: React.FC = () => {
     rotatedPlayersRef.current = rotatedPlayers;
   }, [rotatedPlayers]);
 
+  const roomRef = useRef(room);
+  useEffect(() => {
+    roomRef.current = room;
+  }, [room]);
+
   // Effect to handle dealing card socket events
   useEffect(() => {
     if (!socket) return;
@@ -612,7 +617,12 @@ const GameRoom: React.FC = () => {
       // yet). In that case we must NOT clear dealingCards after the animation
       // because the dealt card stacks need to stay visible for all non-chooser
       // players during the choosingTrump phase.
-      const isNinesFirstDeal = (gi?.currentHand ?? 0) === 9 && !gi?.trumpCard;
+      // NOTE: use roomRef (not gi.currentHand) — the server emits dealCards
+      // *before* getGameInfo, so gameInfoRef.currentHand may not be 9 yet
+      // when this handler fires. data.round === 3 is the reliable signal for
+      // the first nines deal (server always emits round=3 for the 3-card phase).
+      const isNinesFirstDeal =
+        roomRef.current?.type === "nines" && data.round === 3;
 
       animateDealing(playerIds, data.round, dealerId)
         .then(() => {
