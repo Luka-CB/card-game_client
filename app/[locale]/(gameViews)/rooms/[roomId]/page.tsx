@@ -608,6 +608,12 @@ const GameRoom: React.FC = () => {
       setCurrentDealingRound(0);
       setDealingCards({});
 
+      // Capture whether this is the nines first-deal phase (3 cards, no trump
+      // yet). In that case we must NOT clear dealingCards after the animation
+      // because the dealt card stacks need to stay visible for all non-chooser
+      // players during the choosingTrump phase.
+      const isNinesFirstDeal = (gi?.currentHand ?? 0) === 9 && !gi?.trumpCard;
+
       animateDealing(playerIds, data.round, dealerId)
         .then(() => {
           if (pendingMyHandRef.current) {
@@ -628,7 +634,12 @@ const GameRoom: React.FC = () => {
           // Clear dealing cards now that animation is done. The status cleanup
           // effect skips clearing while the lock is held, so if the game status
           // advanced (e.g. "bid") during the animation it would never clear.
-          setDealingCards({});
+          // Exception: nines first deal transitions to choosingTrump, where
+          // the stacks must stay visible — the status effect handles cleanup
+          // once status moves past choosingTrump.
+          if (!isNinesFirstDeal) {
+            setDealingCards({});
+          }
         });
     };
 
