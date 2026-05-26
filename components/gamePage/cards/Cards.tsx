@@ -22,8 +22,6 @@ const Cards = () => {
 
   const socket = useSocket();
 
-  console.log(rooms);
-
   useEffect(() => {
     if (!socket) return;
 

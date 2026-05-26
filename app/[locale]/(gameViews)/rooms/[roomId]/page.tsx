@@ -762,8 +762,6 @@ const GameRoom: React.FC = () => {
     }
   };
 
-  console.log("gameInfo", gameInfo);
-
   return (
     <div
       className={styles.game_room}
