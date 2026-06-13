@@ -18,7 +18,22 @@
   "Header": {
     "signIn": "Sign In",
     "signUp": "Sign Up",
-    "close": "Close"
+    "close": "Close",
+    "bot": {
+      "title": "Bot Simulation",
+      "description": {
+        "p1": "Since the platform is still growing, bot rooms are created to keep the lobby lively while few real players are online.",
+        "p2": "You can <strong>join bot rooms</strong> and play right away, or <strong>create your own room</strong> — bots will fill empty seats if real users don't join in time.",
+        "p3": "<strong>Private rooms</strong> are bot-free: no simulations will join, so you can share the link or password with friends.",
+        "p4": "Bot activity <strong>slows down automatically</strong> as more real users come online. You can also toggle it off at any time below."
+      },
+      "toggle": {
+        "on": "Simulation active",
+        "off": "Simulation off",
+        "onSub": "Bot rooms are shown in the lobby",
+        "offSub": "Bot rooms are hidden from view"
+      }
+    }
   },
   "Footer": {
     "rights": "© 2026 Joker Clash. All rights reserved."

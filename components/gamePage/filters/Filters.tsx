@@ -200,6 +200,7 @@ const Filters = () => {
                   "500": false,
                   "900": false,
                 },
+                hideDummyRooms: checkedFilters.hideDummyRooms,
               })
             }
           >

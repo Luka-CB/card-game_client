@@ -15,6 +15,7 @@ import useUserStore from "@/store/user/userStore";
 import SideNav from "./SideNav";
 import Image from "next/image";
 import LanguageSwitcher from "../LanguageSwitcher";
+import Bot from "./Bot";
 
 const Header = () => {
   const t = useTranslations("Header");
@@ -59,6 +60,8 @@ const Header = () => {
           <div className={styles.language_switcher}>
             <LanguageSwitcher />
           </div>
+
+          <Bot />
         </div>
 
         {windowSize.width <= 800 ? (

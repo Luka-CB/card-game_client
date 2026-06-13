@@ -2,7 +2,6 @@ import useUserOptionStore from "@/store/user/userOptionStore";
 import styles from "./Avatar.module.scss";
 import useUserStore from "@/store/user/userStore";
 import Image from "next/image";
-// import { FaCaretDown } from "react-icons/fa6";
 import useWindowSize from "@/hooks/useWindowSize";
 import useUserStatsStore from "@/store/user/stats/userStatsStore";
 import { useEffect } from "react";
@@ -40,9 +39,6 @@ const Avatar = () => {
             className={styles.level_badge}
           />
         )}
-        {/* <div className={styles.caret}>
-          <FaCaretDown className={styles.caret_icon} />
-        </div> */}
       </div>
     </>
   );
