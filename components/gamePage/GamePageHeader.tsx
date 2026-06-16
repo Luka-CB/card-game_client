@@ -9,6 +9,8 @@ import useFilterStore from "@/store/gamePage/filterStore";
 import useRoomStore from "@/store/gamePage/roomStore";
 import Search from "./cards/search/Search";
 import useUserStore from "@/store/user/userStore";
+import useGuestModalStore from "@/store/gamePage/guestModalStore";
+import GuestModal from "./GuestModal";
 import { useTranslations } from "next-intl";
 
 interface propsIFace {
@@ -23,6 +25,7 @@ const GamePageHeader: React.FC<propsIFace> = ({ type }) => {
   const { rooms, totalRoomsCount } = useRoomStore();
   const { usersOnline } = useUserStore();
   const { user } = useUserStore();
+  const { openGuestModal } = useGuestModalStore();
 
   const hasActiveFilters =
     checkedFilters.classic ||
@@ -35,59 +38,65 @@ const GamePageHeader: React.FC<propsIFace> = ({ type }) => {
 
   const isFilterDisabled = totalRoomsCount <= 5 && !hasActiveFilters;
 
-  return (
-    <header className={styles.header}>
-      <div className={styles.col1}>
-        {(usersOnline?.length > 500 || user?.isAdmin) && (
-          <>
-            <div className={styles.item}>
-              <div className={styles.indicator} />
-              <FaUsers className={styles.icon} />
-              <small>{t("players")}</small>
-              <b>{usersOnline?.length || 0}</b>
-            </div>
+  const handleCreateRoom = () => {
+    if (user?.isGuest) {
+      openGuestModal();
+      return;
+    }
+    setToggleCreateRoom(true, type);
+  };
 
-            <div className={styles.divider}></div>
-          </>
-        )}
-        <div className={styles.item}>
-          <SiAirtable className={styles.icon} />
-          <small>{t("rooms")}</small>
-          <b>{rooms?.length || 0}</b>
+  return (
+    <>
+      <GuestModal />
+      <header className={styles.header}>
+        <div className={styles.col1}>
+          {(usersOnline?.length > 500 || user?.isAdmin) && (
+            <>
+              <div className={styles.item}>
+                <div className={styles.indicator} />
+                <FaUsers className={styles.icon} />
+                <small>{t("players")}</small>
+                <b>{usersOnline?.length || 0}</b>
+              </div>
+
+              <div className={styles.divider}></div>
+            </>
+          )}
+          <div className={styles.item}>
+            <SiAirtable className={styles.icon} />
+            <small>{t("rooms")}</small>
+            <b>{rooms?.length || 0}</b>
+          </div>
         </div>
-      </div>
-      <div className={styles.col2}>
-        <div
-          className={isFilterDisabled ? styles.disabled : styles.filter}
-          onClick={(e) => {
-            e.stopPropagation();
-          }}
-          title={isFilterDisabled ? t("filter.disabled") : ""}
-        >
-          <span>{t("filter.label")}</span>
-          <button
-            className={styles.filter_btn}
-            disabled={isFilterDisabled}
-            onClick={toggleFilterOptions}
+        <div className={styles.col2}>
+          <div
+            className={isFilterDisabled ? styles.disabled : styles.filter}
+            onClick={(e) => {
+              e.stopPropagation();
+            }}
+            title={isFilterDisabled ? t("filter.disabled") : ""}
           >
-            <FaFilter className={styles.icon} />
-          </button>
-          <Filters />
+            <span>{t("filter.label")}</span>
+            <button
+              className={styles.filter_btn}
+              disabled={isFilterDisabled}
+              onClick={toggleFilterOptions}
+            >
+              <FaFilter className={styles.icon} />
+            </button>
+            <Filters />
+          </div>
+          <div className={styles.col}>
+            <Search roomsLength={totalRoomsCount || 0} />
+            <button className={styles.create_btn} onClick={handleCreateRoom}>
+              <FaPlus className={styles.icon} />
+              <span>{t("btn")}</span>
+            </button>
+          </div>
         </div>
-        <div className={styles.col}>
-          <Search roomsLength={totalRoomsCount || 0} />
-          <button
-            className={styles.create_btn}
-            disabled={user?.isGuest}
-            title={user?.isGuest ? "Guests cannot create rooms" : ""}
-            onClick={() => setToggleCreateRoom(true, type)}
-          >
-            <FaPlus className={styles.icon} />
-            <span>{t("btn")}</span>
-          </button>
-        </div>
-      </div>
-    </header>
+      </header>
+    </>
   );
 };
 

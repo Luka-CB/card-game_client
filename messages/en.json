@@ -983,6 +983,21 @@
       },
       "btn": "Create Room"
     },
+    "guestModal": {
+      "title": "Sign in to unlock all features",
+      "description": "As a <strong>guest</strong>, you have limited access. Create an account to enjoy the full experience!",
+      "restrictions": {
+        "label": "As a guest you can only:",
+        "liOne": "Join Classic and Nines rooms without a bet",
+        "liTwo": "Cannot create rooms or use other features",
+        "liThree": "Your progress won't be saved after you leave"
+      },
+      "benefits": "With a registered account you can <strong>create public or private rooms</strong> with various options, join all game modes, and save your progress!",
+      "or": "or",
+      "signin": "Sign In",
+      "signup": "Sign Up",
+      "google": "Continue with Google"
+    },
     "createRoom": {
       "msgs": {
         "roomUser": "You can't be in more than one room at the same time",

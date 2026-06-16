@@ -12,6 +12,8 @@ import useSocket from "@/hooks/useSocket";
 import useDisplayRoomStore from "@/store/displayRoomStore";
 import { useLocale, useTranslations } from "next-intl";
 import { buildJoinRoomUserPayload } from "@/utils/roomJoin";
+import useGuestModalStore from "@/store/gamePage/guestModalStore";
+import GuestModal from "@/components/gamePage/GuestModal";
 
 interface DisplayCardProps {
   room: Room;
@@ -41,6 +43,7 @@ const DisplayCard: React.FC<DisplayCardProps> = ({
   const isLeavingRef = useRef(false);
   const hasNavigatedRef = useRef(false);
   const [isWarningVisible, setIsWarningVisible] = useState(false);
+  const { openGuestModal } = useGuestModalStore();
 
   const isPrivateCreatorLeaveWarning = Boolean(
     room &&
@@ -119,7 +122,7 @@ const DisplayCard: React.FC<DisplayCardProps> = ({
       }
 
       if (user.isGuest && room.bet) {
-        setMsg(t("msgs.guestNoBet"), "error");
+        openGuestModal();
         return;
       }
 
@@ -176,89 +179,95 @@ const DisplayCard: React.FC<DisplayCardProps> = ({
   };
 
   return (
-    <div className={styles.room_card}>
-      {isWarningVisible && (
-        <LeaveWarning onConfirm={onConfirmWarning} onCancel={onCancelWarning} />
-      )}
-      <div className={styles.card_header}>
-        <h4
-          title={room?.name && room.name?.length > 10 ? room.name : undefined}
-        >
-          {room?.name ? substringText(room.name, 10) : ""}
-        </h4>
-        <div
-          className={styles.game_type}
-          title={
-            room?.bet
-              ? `Type: ${room?.type} - Bet: ${room?.bet}`
-              : `Type: ${room?.type}`
-          }
-        >
-          <span>
-            {room?.type === "classic" ? t("types.classic") : t("types.nines")}
-          </span>
-          {room?.bet && <span className={styles.dash}>--</span>}
-          {room?.bet && (
-            <div className={styles.bet}>
-              <span>
-                {t("bet")}: {room?.bet}
-              </span>
-              <Image
-                src="/coinIco.ico"
-                alt="coin"
-                width={15}
-                height={15}
-                className={styles.coin_img}
-              />
-            </div>
-          )}
-        </div>
-        <div className={styles.status}>
-          {room?.status === "private" ? (
-            <FaLock className={styles.icon} />
-          ) : (
-            <FaLockOpen className={styles.icon} />
-          )}
-          <span>
-            {room?.status === "private"
-              ? t("status.private")
-              : t("status.public")}
-          </span>
-        </div>
-      </div>
-      <div className={styles.card_body}>
-        <User user={room?.users && room.users[0] ? room.users[0] : null} />
-        <User user={room?.users && room?.users[1] ? room.users[1] : null} />
-        <User user={room?.users && room?.users[2] ? room.users[2] : null} />
-        <User user={room?.users && room?.users[3] ? room.users[3] : null} />
-      </div>
-      <div className={styles.card_footer}>
-        <div className={styles.left}>
-          <span className={styles.hisht}>
-            {t("hisht")} <b>{room?.hisht}</b>
-          </span>
-          <div className={styles.chat}>
-            <FaRocketchat className={styles.chat_icon} />
-            <small>
-              {t("chat.label")}{" "}
-              <b>{room?.hasChat ? t("chat.on") : t("chat.off")}</b>
-            </small>
+    <>
+      <GuestModal />
+      <div className={styles.room_card}>
+        {isWarningVisible && (
+          <LeaveWarning
+            onConfirm={onConfirmWarning}
+            onCancel={onCancelWarning}
+          />
+        )}
+        <div className={styles.card_header}>
+          <h4
+            title={room?.name && room.name?.length > 10 ? room.name : undefined}
+          >
+            {room?.name ? substringText(room.name, 10) : ""}
+          </h4>
+          <div
+            className={styles.game_type}
+            title={
+              room?.bet
+                ? `Type: ${room?.type} - Bet: ${room?.bet}`
+                : `Type: ${room?.type}`
+            }
+          >
+            <span>
+              {room?.type === "classic" ? t("types.classic") : t("types.nines")}
+            </span>
+            {room?.bet && <span className={styles.dash}>--</span>}
+            {room?.bet && (
+              <div className={styles.bet}>
+                <span>
+                  {t("bet")}: {room?.bet}
+                </span>
+                <Image
+                  src="/coinIco.ico"
+                  alt="coin"
+                  width={15}
+                  height={15}
+                  className={styles.coin_img}
+                />
+              </div>
+            )}
+          </div>
+          <div className={styles.status}>
+            {room?.status === "private" ? (
+              <FaLock className={styles.icon} />
+            ) : (
+              <FaLockOpen className={styles.icon} />
+            )}
+            <span>
+              {room?.status === "private"
+                ? t("status.private")
+                : t("status.public")}
+            </span>
           </div>
         </div>
+        <div className={styles.card_body}>
+          <User user={room?.users && room.users[0] ? room.users[0] : null} />
+          <User user={room?.users && room?.users[1] ? room.users[1] : null} />
+          <User user={room?.users && room?.users[2] ? room.users[2] : null} />
+          <User user={room?.users && room?.users[3] ? room.users[3] : null} />
+        </div>
+        <div className={styles.card_footer}>
+          <div className={styles.left}>
+            <span className={styles.hisht}>
+              {t("hisht")} <b>{room?.hisht}</b>
+            </span>
+            <div className={styles.chat}>
+              <FaRocketchat className={styles.chat_icon} />
+              <small>
+                {t("chat.label")}{" "}
+                <b>{room?.hasChat ? t("chat.on") : t("chat.off")}</b>
+              </small>
+            </div>
+          </div>
 
-        {!room?.isActive && roomUser?.status === "active" && (
-          <button className={styles.leave_btn} onClick={handleLeave}>
-            {t("btns.leave")}
-          </button>
-        )}
+          {!room?.isActive && roomUser?.status === "active" && (
+            <button className={styles.leave_btn} onClick={handleLeave}>
+              {t("btns.leave")}
+            </button>
+          )}
 
-        {!roomUser && !room?.isActive && (
-          <button className={styles.join_btn} onClick={handleJoin}>
-            {t("btns.join")}
-          </button>
-        )}
+          {!roomUser && !room?.isActive && (
+            <button className={styles.join_btn} onClick={handleJoin}>
+              {t("btns.join")}
+            </button>
+          )}
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 

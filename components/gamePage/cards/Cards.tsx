@@ -8,6 +8,7 @@ import useRoomStore from "@/store/gamePage/roomStore";
 import useFilterStore from "@/store/gamePage/filterStore";
 import { Room } from "@/utils/interfaces";
 import { useTranslations } from "next-intl";
+import GuestModal from "@/components/gamePage/GuestModal";
 
 interface GetRoomsPayload {
   rooms: Room[];
@@ -47,15 +48,18 @@ const Cards = () => {
   }, [socket, checkedFilters]);
 
   return (
-    <div className={styles.room_cards}>
-      {rooms?.length > 0 ? (
-        rooms
-          .filter((room) => room && room.id)
-          .map((room) => <Card key={room.id} room={room} />)
-      ) : (
-        <p className={styles.empty_message}>{t("msg")}</p>
-      )}
-    </div>
+    <>
+      <GuestModal />
+      <div className={styles.room_cards}>
+        {rooms?.length > 0 ? (
+          rooms
+            .filter((room) => room && room.id)
+            .map((room) => <Card key={room.id} room={room} />)
+        ) : (
+          <p className={styles.empty_message}>{t("msg")}</p>
+        )}
+      </div>
+    </>
   );
 };
 

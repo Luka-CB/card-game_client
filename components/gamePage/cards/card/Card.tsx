@@ -14,6 +14,7 @@ import { usePathname } from "@/i18n/navigation";
 import Image from "next/image";
 import useJCoinsStore from "@/store/user/stats/jCoinsStore";
 import useDisplayRoomStore from "@/store/displayRoomStore";
+import useGuestModalStore from "@/store/gamePage/guestModalStore";
 import { useLocale, useTranslations } from "next-intl";
 import api from "@/utils/axios";
 import { buildJoinRoomUserPayload } from "@/utils/roomJoin";
@@ -39,6 +40,7 @@ const Card: React.FC<CardProps> = ({ room }) => {
 
   const [isWarningVisible, setIsWarningVisible] = useState(false);
   const [isGeneratingInvite, setIsGeneratingInvite] = useState(false);
+  const { openGuestModal } = useGuestModalStore();
 
   const isPrivateCreatorLeaveWarning = Boolean(
     room &&
@@ -176,7 +178,7 @@ const Card: React.FC<CardProps> = ({ room }) => {
       }
 
       if (user.isGuest && room.bet) {
-        setMsg(t("msgs.guestNoBet"), "error");
+        openGuestModal();
         return;
       }
 
