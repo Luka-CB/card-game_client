@@ -17,9 +17,10 @@ const Bot = () => {
 
   const simulationOn = !checkedFilters.hideDummyRooms;
 
-  // Sync persisted filter to server on socket connect (page reload)
+  // Sync persisted filter/preference to server on socket connect (page reload)
   useEffect(() => {
     if (!socket) return;
+    socket.emit("setSimulationPreference", !checkedFilters.hideDummyRooms);
     if (checkedFilters.hideDummyRooms) {
       socket.emit("getRooms", checkedFilters);
     }
@@ -43,6 +44,7 @@ const Bot = () => {
     };
     setCheckedFilters(next);
     socket?.emit("getRooms", next);
+    socket?.emit("setSimulationPreference", !next.hideDummyRooms);
   };
 
   const richStrong = (chunks: React.ReactNode) => <strong>{chunks}</strong>;
