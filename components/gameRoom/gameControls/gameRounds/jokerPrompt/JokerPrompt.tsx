@@ -3,6 +3,7 @@ import styles from "./JokerPrompt.module.scss";
 import { motion } from "framer-motion";
 import { IoCloseCircle } from "react-icons/io5";
 import { GiSpades, GiDiamonds, GiHearts, GiClubs } from "react-icons/gi";
+import { useTranslations } from "next-intl";
 
 interface JokerPromptProps {
   jokerCard: PlayingCard;
@@ -17,9 +18,11 @@ const JokerPrompt = ({
   playedCardHandler,
   isPlayedCardsEmpty,
 }: JokerPromptProps) => {
+  const t = useTranslations("GameRoom.GameControls.jokerPrompt");
+
   const handleJokerClick = (
     type: "need" | "pass" | "takes",
-    requestedSuit: string = ""
+    requestedSuit: string = "",
   ) => {
     playedCardHandler({ ...jokerCard, type, requestedSuit });
     clearJokerCard();
@@ -29,7 +32,7 @@ const JokerPrompt = ({
     <motion.div
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3, typepe: "spring" }}
+      transition={{ duration: 0.3, type: "spring" }}
       className={styles.joker_prompt}
     >
       <div className={styles.close_btn} onClick={clearJokerCard}>
@@ -38,7 +41,7 @@ const JokerPrompt = ({
       {isPlayedCardsEmpty ? (
         <div className={styles.suits}>
           <div className={styles.need}>
-            <p>Need highest:</p>
+            <p>{t("needHighest")}:</p>
             <div className={styles.suit_btns}>
               <button
                 className={styles.suit_btn_spades}
@@ -67,7 +70,7 @@ const JokerPrompt = ({
             </div>
           </div>
           <div className={styles.takes}>
-            <p>Takes highest:</p>
+            <p>{t("takesHighest")}:</p>
             <div className={styles.suit_btns}>
               <button
                 className={styles.suit_btn_spades}
@@ -102,13 +105,13 @@ const JokerPrompt = ({
             className={styles.take_btn}
             onClick={() => handleJokerClick("need")}
           >
-            I'll take it
+            {t("need")}
           </button>
           <button
             className={styles.no_btn}
             onClick={() => handleJokerClick("pass")}
           >
-            Don't need it
+            {t("pass")}
           </button>
         </div>
       )}

@@ -1,0 +1,188 @@
+@use "mixins" as *;
+
+.bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  .modal {
+    @include bgColor(light);
+    position: relative;
+    padding: 40px;
+    border-radius: 8px;
+    max-width: 600px;
+    min-width: 450px;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 2px 2px 12px rgba(0, 0, 0, 0.5);
+
+    @media (max-width: 500px) {
+      min-width: auto;
+      width: 100%;
+      border-radius: unset;
+      padding: 20px;
+    }
+
+    .success {
+      position: absolute;
+      top: 10px;
+      color: var(--clr-success-800);
+    }
+
+    .error {
+      position: absolute;
+      top: 10px;
+      color: var(--clr-danger-800);
+      text-align: center;
+      padding: 0 30px;
+    }
+
+    .close_icon {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      cursor: pointer;
+      font-size: large;
+      transition: all 0.1s ease;
+
+      &:hover {
+        color: var(--clr-danger-800);
+      }
+    }
+
+    h2 {
+      margin-top: 10px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .new_email,
+    .confirmation {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 10px;
+      border: 1.5px solid rgba(69, 69, 69, 0.503);
+      border-radius: 4px;
+      font-size: 14px;
+    }
+
+    .error_input {
+      border-color: var(--clr-danger-400);
+      border-width: 2px;
+
+      &::placeholder {
+        color: var(--clr-danger-400);
+      }
+    }
+
+    button {
+      padding: 5px 0;
+      height: 30px;
+      width: 200px;
+      background-color: var(--clr-primary-800);
+      color: white;
+      overflow: hidden;
+      border: none;
+      border-radius: 4px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 14px;
+      margin-bottom: 30px;
+      cursor: pointer;
+      transition: background-color 0.1s ease;
+
+      &:hover {
+        background-color: var(--clr-primary-600);
+      }
+
+      &:disabled {
+        background-color: rgba(128, 128, 128, 0.386);
+        color: rgba(128, 128, 128, 0.927);
+        cursor: not-allowed;
+      }
+    }
+
+    .retry {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+
+      .resend_btn {
+        background-color: var(--clr-danger-800);
+        width: 100px;
+
+        &:hover {
+          background-color: var(--clr-danger-600);
+        }
+      }
+    }
+
+    .code {
+      display: flex;
+      align-items: center;
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
+      color: rgb(54, 54, 54);
+      transition: all 0.2s ease;
+      cursor: pointer;
+
+      .arrow_icon {
+        transition: all 0.2s ease;
+        opacity: 0;
+      }
+
+      &:hover {
+        color: var(--clr-darker);
+
+        .arrow_icon {
+          transform: translateX(5px);
+          opacity: 1;
+        }
+      }
+    }
+    .request {
+      display: flex;
+      align-items: center;
+      position: absolute;
+      bottom: 10px;
+      left: 10px;
+      color: rgb(54, 54, 54);
+      transition: all 0.2s ease;
+      cursor: pointer;
+
+      .arrow_icon {
+        transition: all 0.2s ease;
+        opacity: 0;
+      }
+
+      &:hover {
+        color: var(--clr-darker);
+
+        .arrow_icon {
+          transform: translateX(-5px);
+          opacity: 1;
+        }
+      }
+    }
+  }
+}

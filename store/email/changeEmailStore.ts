@@ -18,7 +18,8 @@ const useChangeEmailStore = create<ChangeEmailStore>((set) => ({
       if (data) {
         set({ status: "success" });
       }
-    } catch (error) {
+    } catch (error: unknown) {
+      console.error(error);
       set({ status: "failed" });
     }
   },

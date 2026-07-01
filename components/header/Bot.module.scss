@@ -1,0 +1,269 @@
+.bot_container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: 10px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.trigger {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 8px;
+  border-radius: 8px;
+  transition: background 0.2s ease;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.06);
+  }
+}
+
+.bot_icon_wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+}
+
+.bot_icon {
+  width: 22px;
+  height: 22px;
+  color: #09d5a5;
+  transition: color 0.3s ease;
+}
+
+.bot_icon_off {
+  color: #555;
+}
+
+/* ── Radiating indicator ── */
+.indicator {
+  position: absolute;
+  top: 0;
+  right: -2px;
+  width: 10px;
+  height: 10px;
+  background-color: #26e02c;
+  border-radius: 50%;
+  z-index: 1;
+}
+
+.indicator_off {
+  background-color: #555;
+  box-shadow: none;
+}
+
+/* Radiating rings */
+.indicator::before,
+.indicator::after {
+  content: "";
+  position: absolute;
+  inset: -3px;
+  border-radius: 50%;
+  border: 2px solid #26e02c;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.indicator::before {
+  animation: ripple 2.4s ease-out infinite;
+}
+
+.indicator::after {
+  animation: ripple 2.4s ease-out 0.8s infinite;
+}
+
+.indicator_off::before,
+.indicator_off::after {
+  display: none;
+}
+
+@keyframes ripple {
+  0% {
+    transform: scale(0.6);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(2.8);
+    opacity: 0;
+  }
+}
+
+.caret {
+  display: flex;
+  align-items: center;
+  color: #888;
+  transition:
+    transform 0.25s ease,
+    color 0.2s;
+}
+
+.caret_open {
+  transform: rotate(180deg);
+  color: #09d5a5;
+}
+
+/* ── Dropdown / Modal ── */
+.dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 340px;
+  max-width: calc(100vw - 24px);
+  background: #1a1d23;
+  border: 1px solid #2a2d35;
+  border-radius: 12px;
+  padding: 20px;
+  z-index: 1000;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  animation: fadeIn 0.2s ease;
+
+  @media (max-width: 1100px) {
+    right: auto;
+    left: 50%;
+    transform: translateX(-50%);
+    animation: fadeInCentered 0.2s ease;
+  }
+
+  @media (max-width: 500px) {
+    position: fixed;
+    top: 70px;
+    left: 10px;
+    right: 10px;
+    width: auto;
+    transform: none;
+    animation: fadeIn 0.2s ease;
+    border-radius: 12px;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    margin-top: -6px;
+  }
+  to {
+    opacity: 1;
+    margin-top: 0;
+  }
+}
+
+@keyframes fadeInCentered {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+.dropdown_header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+
+  h3 {
+    font-size: 15px;
+    font-weight: 600;
+    color: #e0e0e0;
+    margin: 0;
+  }
+}
+
+.dropdown_icon {
+  width: 20px;
+  height: 20px;
+  color: #09d5a5;
+}
+
+.body_text {
+  font-size: 13px;
+  line-height: 1.6;
+  color: #aaa;
+  margin: 0 0 18px;
+
+  strong {
+    color: #ccc;
+    font-weight: 600;
+  }
+}
+
+.body_text p {
+  margin: 0 0 8px;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+/* ── Toggle row ── */
+.toggle_row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 14px;
+  border-top: 1px solid #2a2d35;
+}
+
+.toggle_label {
+  font-size: 13px;
+  color: #ccc;
+  font-weight: 500;
+}
+
+.toggle_label_muted {
+  font-size: 11px;
+  color: #888;
+  margin-top: 2px;
+}
+
+/* iOS-style toggle */
+.toggle {
+  position: relative;
+  width: 44px;
+  height: 24px;
+  flex-shrink: 0;
+}
+
+.toggle input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.toggle_slider {
+  position: absolute;
+  inset: 0;
+  background: #3a3d45;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background 0.25s ease;
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 18px;
+    height: 18px;
+    background: #fff;
+    border-radius: 50%;
+    transition: transform 0.25s ease;
+  }
+}
+
+.toggle input:checked + .toggle_slider {
+  background: #09d5a5;
+}
+
+.toggle input:checked + .toggle_slider::before {
+  transform: translateX(20px);
+}

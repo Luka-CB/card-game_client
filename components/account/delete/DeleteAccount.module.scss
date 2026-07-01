@@ -1,0 +1,25 @@
+.deleteWrap {
+  margin-top: 22px;
+  padding: 14px;
+  border-radius: 10px;
+  background: #fff7f7;
+  border: 1px solid #ffe4e6;
+}
+
+.deleteNote {
+  color: #7f1d1d;
+}
+
+.deleteBtn {
+  margin-top: 8px;
+  background: #dc2626;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+
+  &:hover {
+    background: #ef4444;
+  }
+}

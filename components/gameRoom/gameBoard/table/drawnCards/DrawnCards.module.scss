@@ -1,8 +1,10 @@
 .drawn_cards {
   position: absolute;
+  z-index: 10;
   width: 100px;
   height: 150px;
   border-radius: 10px;
+  pointer-events: none;
 
   .determine_dealer_cards {
     position: absolute;

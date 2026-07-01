@@ -3,11 +3,11 @@
 import { create } from "zustand";
 import api from "../../utils/axios";
 import useUserStore from "../user/userStore";
-import { clearStoredRandomAvatar } from "../../utils/misc";
 
 interface LogoutStore {
   status: "idle" | "loading" | "success" | "failed";
-  logout: () => void;
+  logout: () => Promise<boolean>;
+  reset: () => void;
 }
 
 const useLogoutStore = create<LogoutStore>((set) => ({
@@ -15,20 +15,17 @@ const useLogoutStore = create<LogoutStore>((set) => ({
   logout: async () => {
     set({ status: "loading" });
     try {
-      const { data } = await api.get(`/auth/logout`);
-
-      if (data) {
-        // Clear user state
-        useUserStore.getState().setUser(null);
-        // Clear random avatar from localStorage
-        clearStoredRandomAvatar();
-        set({ status: "success" });
-      }
+      await api.get(`/auth/logout`);
+      useUserStore.getState().setUser(null);
+      set({ status: "idle" });
+      return true;
     } catch (error) {
       console.log(error);
       set({ status: "failed" });
+      return false;
     }
   },
+  reset: () => set({ status: "idle" }),
 }));
 
 export default useLogoutStore;

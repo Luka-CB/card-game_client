@@ -1,0 +1,110 @@
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border-radius: 999px;
+  white-space: nowrap;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.28);
+  overflow: hidden;
+}
+
+.compact {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 1px solid rgba(15, 23, 42, 0.25);
+  padding: 2px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+}
+
+.badge_img {
+  display: block;
+  width: auto;
+  height: auto;
+}
+
+.compact .badge_img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.badge_text {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 8px;
+  font-size: 0.62rem;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.02em;
+  text-transform: capitalize;
+  color: #1f2937;
+  background: #e2e8f0;
+  border: 1px solid #94a3b8;
+  border-radius: 999px;
+}
+
+.compact .badge_text {
+  font-size: 0.42rem;
+  padding: 1px 3px;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.novice {
+  color: #1f2937;
+  background: #e5e7eb;
+  border-color: #9ca3af;
+}
+
+.amateur {
+  color: #0f172a;
+  background: #cbd5e1;
+  border-color: #64748b;
+}
+
+.competent {
+  color: #064e3b;
+  background: #a7f3d0;
+  border-color: #10b981;
+}
+
+.promising {
+  color: #1e3a8a;
+  background: #bfdbfe;
+  border-color: #3b82f6;
+}
+
+.professional {
+  color: #5b21b6;
+  background: #ddd6fe;
+  border-color: #8b5cf6;
+}
+
+.diabolical {
+  color: #7f1d1d;
+  background: #fecaca;
+  border-color: #ef4444;
+}
+
+.legend {
+  color: #78350f;
+  background: #fde68a;
+  border-color: #f59e0b;
+}
+
+.joker {
+  color: #052e16;
+  background: #86efac;
+  border-color: #22c55e;
+}
+
+.unknown {
+  color: #1f2937;
+  background: #e2e8f0;
+  border-color: #94a3b8;
+}

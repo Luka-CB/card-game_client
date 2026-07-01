@@ -9,16 +9,13 @@ interface DrawnCardsProps {
   playerPositionIndex: number;
   playerId: string;
   dealingCards: Record<string, number>;
-  user: {
-    _id: string;
-  };
   gameInfo: {
     dealerId: string | null;
     status: string;
     currentPlayerId: string;
+    currentHand: number | null;
+    trumpCard?: PlayingCard | null;
   };
-  isChoosingTrump: boolean;
-  nextPlayerId: string | null;
 }
 
 const DrawnCards = ({
@@ -26,19 +23,20 @@ const DrawnCards = ({
   playerPositionIndex,
   playerId,
   dealingCards,
-  user,
   gameInfo,
-  isChoosingTrump,
-  nextPlayerId,
 }: DrawnCardsProps) => {
+  const hasActiveDealing = Object.values(dealingCards).some(
+    (count) => count > 0,
+  );
+
   const playerPosition =
     playerPositionIndex === 0
       ? styles.bottom_drawn_cards
       : playerPositionIndex === 1
-      ? styles.left_drawn_cards
-      : playerPositionIndex === 2
-      ? styles.top_drawn_cards
-      : styles.right_drawn_cards;
+        ? styles.left_drawn_cards
+        : playerPositionIndex === 2
+          ? styles.top_drawn_cards
+          : styles.right_drawn_cards;
 
   return (
     <motion.div className={`${styles.drawn_cards} ${playerPosition}`}>
@@ -55,23 +53,24 @@ const DrawnCards = ({
         </div>
       )}
 
-      {isChoosingTrump && nextPlayerId !== user._id && (
+      {(hasActiveDealing ||
+        gameInfo?.status === "choosingTrump" ||
+        (gameInfo?.dealerId && gameInfo?.status === "dealing")) && (
         <DealtCards
           dealingCards={dealingCards}
           playerPositionIndex={playerPositionIndex}
           playerId={playerId}
+          currentPlayerId={gameInfo.currentPlayerId}
+          status={gameInfo.status}
+          baseDealtCards={
+            gameInfo.status === "dealing" &&
+            gameInfo.currentHand === 9 &&
+            Boolean(gameInfo.trumpCard)
+              ? 3
+              : 0
+          }
         />
       )}
-
-      {gameInfo?.dealerId &&
-        gameInfo?.status === "dealing" &&
-        !isChoosingTrump && (
-          <DealtCards
-            dealingCards={dealingCards}
-            playerPositionIndex={playerPositionIndex}
-            playerId={playerId}
-          />
-        )}
     </motion.div>
   );
 };

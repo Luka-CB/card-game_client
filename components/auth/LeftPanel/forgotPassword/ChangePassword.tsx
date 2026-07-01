@@ -1,15 +1,19 @@
 "use client";
 
-import { FormEvent, useEffect, useState } from "react";
+import { SubmitEvent, useEffect, useState } from "react";
 import RouteLink from "../../../RouteLink";
 import styles from "./ChangePassword.module.scss";
 import { IoMdEye, IoIosEyeOff } from "react-icons/io";
 import { motion } from "framer-motion";
 import useChangePasswordStore from "@/store/auth/changePasswordStore";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 import BtnLoader from "@/components/loaders/BtnLoader";
+import { useTranslations } from "next-intl";
 
 const ChangePassword = () => {
+  const t = useTranslations("Auth.leftPanel.changePassword");
+
   const { status, changePassword, reset, error, setError } =
     useChangePasswordStore();
 
@@ -24,7 +28,7 @@ const ChangePassword = () => {
   const token = searchParams.get("token");
 
   useEffect(() => {
-    let timeout: any;
+    let timeout: NodeJS.Timeout;
 
     if (error) {
       timeout = setTimeout(() => {
@@ -40,13 +44,18 @@ const ChangePassword = () => {
     }
 
     return () => clearTimeout(timeout);
-  }, [status, error]);
+  }, [status, error, router, setError, reset]);
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
 
+    if (password.length < 6) {
+      setError(t("msgs.passwordLength"));
+      return;
+    }
+
     if (password !== confirmPassword) {
-      setError("Passwords don't match!");
+      setError(t("msgs.passwordMatch"));
       return;
     }
 
@@ -61,20 +70,20 @@ const ChangePassword = () => {
       className={styles.container}
     >
       {status === "success" ? (
-        <p className={styles.success}>Password changed successfully!</p>
+        <p className={styles.success}>{t("msgs.success")}</p>
       ) : null}
       {error ? <p className={styles.error}>{error}</p> : null}
-      <h2>Change Password</h2>
+      <h2>{t("title")}</h2>
       <form onSubmit={handleSubmit}>
         <div className={styles.input_box}>
-          <label htmlFor="password">New Password</label>
+          <label htmlFor="password">{t("form.password.label")}</label>
           <div className={styles.input_wrapper}>
             <input
               type={visiblePassword ? "text" : "password"}
               name="password"
               id="password"
               className={styles.password_input}
-              placeholder="Input password"
+              placeholder={t("form.password.placeholder")}
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -83,7 +92,7 @@ const ChangePassword = () => {
               <div
                 onClick={() => setVisiblePassword(false)}
                 className={styles.icon}
-                title="hide password"
+                title={t("form.hide")}
               >
                 <IoMdEye />
               </div>
@@ -91,7 +100,7 @@ const ChangePassword = () => {
               <div
                 onClick={() => setVisiblePassword(true)}
                 className={styles.icon}
-                title="show password"
+                title={t("form.show")}
               >
                 <IoIosEyeOff />
               </div>
@@ -99,14 +108,16 @@ const ChangePassword = () => {
           </div>
         </div>
         <div className={styles.input_box}>
-          <label htmlFor="confirmPassword">Confirm Password</label>
+          <label htmlFor="confirmPassword">
+            {t("form.confirmPassword.label")}
+          </label>
           <div className={styles.input_wrapper}>
             <input
               type={visibleConfirmPassword ? "text" : "password"}
               name="confirmPassword"
               id="confirmPassword"
               className={styles.password_input}
-              placeholder="Retype password"
+              placeholder={t("form.confirmPassword.placeholder")}
               required
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
@@ -115,7 +126,7 @@ const ChangePassword = () => {
               <div
                 onClick={() => setVisibleConfirmPassword(false)}
                 className={styles.icon}
-                title="hide password"
+                title={t("form.hide")}
               >
                 <IoMdEye />
               </div>
@@ -123,7 +134,7 @@ const ChangePassword = () => {
               <div
                 onClick={() => setVisibleConfirmPassword(true)}
                 className={styles.icon}
-                title="show password"
+                title={t("form.show")}
               >
                 <IoIosEyeOff />
               </div>
@@ -131,10 +142,10 @@ const ChangePassword = () => {
           </div>
         </div>
         <button type="submit" disabled={status === "loading"}>
-          {status === "loading" ? <BtnLoader /> : "Submit"}
+          {status === "loading" ? <BtnLoader /> : t("form.btn")}
         </button>
       </form>
-      <RouteLink route="/?auth=signin" text="back to sign in" />
+      <RouteLink route="/?auth=signin" text={t("link")} />
     </motion.div>
   );
 };

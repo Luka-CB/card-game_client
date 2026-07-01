@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import styles from "./RouteLink.module.scss";
 import { IoMdArrowRoundBack } from "react-icons/io";
 
