@@ -2,7 +2,7 @@ import { Room, RoomUser } from "@/utils/interfaces";
 import styles from "./DisplayCard.module.scss";
 import useUserStore from "@/store/user/userStore";
 import useJCoinsStore from "@/store/user/stats/jCoinsStore";
-import { FaLock, FaLockOpen, FaRocketchat } from "react-icons/fa";
+import { FaLock, FaLockOpen, FaRocketchat, FaRobot } from "react-icons/fa";
 import useFlashMsgStore from "@/store/flashMsgStore";
 import { useRef, useState } from "react";
 import useRoomStore from "@/store/gamePage/roomStore";
@@ -307,16 +307,23 @@ const User: React.FC<UserProps> = ({ user }) => {
   return (
     <div className={styles.user} title={user?.username}>
       {user ? (
-        <Image
-          src={
-            user.status === "left"
-              ? user.botAvatar || "/bots/bot-1.jpeg"
-              : user.avatar || "/default-avatar.jpeg"
-          }
-          alt={user.username || "User"}
-          width={200}
-          height={200}
-        />
+        <>
+          <Image
+            src={
+              user.status === "left"
+                ? user.botAvatar || "/bots/bot-1.jpeg"
+                : user.avatar || "/default-avatar.jpeg"
+            }
+            alt={user.username || "User"}
+            width={200}
+            height={200}
+          />
+          {user.isBot && (
+            <div className={styles.bot_badge} title="Bot" aria-label="Bot">
+              <FaRobot size={10} />
+            </div>
+          )}
+        </>
       ) : (
         <div className={styles.user_placeholder}></div>
       )}

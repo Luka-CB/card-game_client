@@ -4,6 +4,7 @@ import { RoomUser } from "@/utils/interfaces";
 import { useEffect } from "react";
 import useUserLevelStore from "@/store/user/stats/userLevelStore";
 import LevelBadge from "@/components/common/LevelBadge";
+import { FaRobot } from "react-icons/fa";
 
 interface UserProps {
   user: RoomUser | null;
@@ -35,6 +36,11 @@ const User: React.FC<UserProps> = ({ user }) => {
             height={200}
             loading="eager"
           />
+          {user.isBot && (
+            <div className={styles.bot_badge} title="Bot" aria-label="Bot">
+              <FaRobot size={10} />
+            </div>
+          )}
           {user.status !== "left" && !user.isBot && (
             <LevelBadge
               level={userLevel || "novice"}

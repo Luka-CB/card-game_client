@@ -6,6 +6,8 @@
   margin-left: 10px;
   cursor: pointer;
   user-select: none;
+  isolation: isolate;
+  z-index: 3000;
 }
 
 .trigger {
@@ -119,7 +121,7 @@
   border: 1px solid #2a2d35;
   border-radius: 12px;
   padding: 20px;
-  z-index: 1000;
+  z-index: 4000;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
   animation: fadeIn 0.2s ease;
 

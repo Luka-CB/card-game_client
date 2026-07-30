@@ -16,6 +16,7 @@ import useUserMetaStore from "@/store/user/userMetaStore";
 import { useTranslations } from "next-intl";
 import useUserLevelStore from "@/store/user/stats/userLevelStore";
 import LevelBadge from "@/components/common/LevelBadge";
+import { FaRobot } from "react-icons/fa";
 
 interface TimerData {
   duration: number;
@@ -282,6 +283,15 @@ const Players: React.FC<PlayersProps> = ({
                     }}
                     className={styles.avatar}
                   />
+                )}
+                {player.isBot && (
+                  <div
+                    className={styles.bot_badge}
+                    title={t("bot")}
+                    aria-label={t("bot")}
+                  >
+                    <FaRobot size={10} />
+                  </div>
                 )}
                 {isActive && !player.isBot && (
                   <LevelBadge

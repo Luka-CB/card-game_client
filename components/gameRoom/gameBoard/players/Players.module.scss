@@ -146,6 +146,23 @@
           z-index: 102;
         }
 
+        .bot_badge {
+          position: absolute;
+          bottom: -4px;
+          right: -4px;
+          z-index: 102;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 20px;
+          height: 20px;
+          border-radius: 50%;
+          background-color: var(--clr-primary-800);
+          color: var(--clr-light);
+          border: 2px solid rgba(255, 255, 255, 0.95);
+          box-shadow: 0 0 4px rgba(0, 0, 0, 0.35);
+        }
+
         .bot_label {
           position: absolute;
           bottom: 0;
@@ -307,6 +324,11 @@
       z-index: 102;
     }
 
+    .bot_badge {
+      left: -4px;
+      bottom: -4px;
+    }
+
     .message_popup {
       left: 110%;
       top: 50%;
@@ -357,6 +379,11 @@
       top: -8px;
       right: -8px;
       z-index: 102;
+    }
+
+    .bot_badge {
+      top: -4px;
+      right: -4px;
     }
 
     .message_popup {
