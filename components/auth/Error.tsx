@@ -5,9 +5,12 @@ import { CiWarning } from "react-icons/ci";
 import { motion } from "framer-motion";
 import { Link } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
+import { useSearchParams } from "next/navigation";
 
 const Error = () => {
   const t = useTranslations("Auth.error");
+  const searchParams = useSearchParams();
+  const serverErrorMessage = searchParams.get("error")?.trim();
 
   return (
     <motion.div
@@ -23,7 +26,7 @@ const Error = () => {
       <div className={styles.text_two}>
         <p>
           <CiWarning className={styles.icon} />
-          {t("message")}
+          {serverErrorMessage || t("message")}
         </p>
         <small>{t("small")}</small>
         <div className={styles.go_back}>
