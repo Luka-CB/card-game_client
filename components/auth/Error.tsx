@@ -16,6 +16,11 @@ const Error = () => {
   const errorCode = searchParams.get("errorCode")?.trim();
   const serverErrorMessage = searchParams.get("error")?.trim();
   const translatedError = errorCode ? t(errorCode) : "";
+  const localizedFallbackError =
+    serverErrorMessage ===
+    "This email is already registered with a password account. Please sign in with your username/password."
+      ? t("googleEmailAlreadyRegistered")
+      : "";
 
   const handleClose = () => {
     const nextParams = new URLSearchParams(searchParams.toString());
@@ -46,7 +51,10 @@ const Error = () => {
       <div className={styles.text_two}>
         <p>
           <CiWarning className={styles.icon} />
-          {translatedError || serverErrorMessage || t("paragraph")}
+          {translatedError ||
+            localizedFallbackError ||
+            serverErrorMessage ||
+            t("paragraph")}
         </p>
         <small>{t("small")}</small>
         <div className={styles.go_back}>
