@@ -11,6 +11,12 @@ interface SendChangePasswordEmailStore {
   reset: () => void;
 }
 
+const buildChangePasswordRedirectUri = () => {
+  if (typeof window === "undefined") return undefined;
+
+  return `${window.location.origin}${window.location.pathname}?auth=change-password`;
+};
+
 const useSendChangePasswordEmailStore = create<SendChangePasswordEmailStore>(
   (set) => ({
     status: "idle",
@@ -18,8 +24,10 @@ const useSendChangePasswordEmailStore = create<SendChangePasswordEmailStore>(
     sendChangePasswordEmail: async (email: string) => {
       set({ status: "loading", error: null });
       try {
+        const redirectUri = buildChangePasswordRedirectUri();
         const { data } = await api.post("/emails/send-email/change-password", {
           email,
+          redirectUri,
         });
 
         if (data) {
