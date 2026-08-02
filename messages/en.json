@@ -762,6 +762,7 @@
       "paragraph": "Please make sure that this google account email is not already registered with us!",
       "small": "We will try to fix this error, if it's coming from our end!",
       "close": "Close",
+      "googleEmailAlreadyRegistered": "This email is already registered with a password account. Please sign in with your username/password.",
       "link": "back to sign in"
     },
     "leftPanel": {

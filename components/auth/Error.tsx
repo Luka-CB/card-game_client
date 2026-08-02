@@ -13,7 +13,9 @@ const Error = () => {
   const t = useTranslations("Auth.error");
   const searchParams = useSearchParams();
   const router = useRouter();
+  const errorCode = searchParams.get("errorCode")?.trim();
   const serverErrorMessage = searchParams.get("error")?.trim();
+  const translatedError = errorCode ? t(errorCode) : "";
 
   const handleClose = () => {
     const nextParams = new URLSearchParams(searchParams.toString());
@@ -44,7 +46,7 @@ const Error = () => {
       <div className={styles.text_two}>
         <p>
           <CiWarning className={styles.icon} />
-          {serverErrorMessage || t("message")}
+          {translatedError || serverErrorMessage || t("paragraph")}
         </p>
         <small>{t("small")}</small>
         <div className={styles.go_back}>
