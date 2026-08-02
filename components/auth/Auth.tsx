@@ -39,6 +39,11 @@ const Auth = () => {
   const auth = searchParams.get("auth");
   const { loading, user } = useUserStore();
   const windowWidth = useWindowSize().width;
+  const shouldShowAuthOverlay =
+    auth === "error" ||
+    (!!auth && !user) ||
+    (!!user && !user.isGuest && !user.isVerified) ||
+    auth === "redirecting";
 
   const buildUrlWithAuth = (value: string) => {
     const nextParams = new URLSearchParams(searchParams.toString());
@@ -72,11 +77,7 @@ const Auth = () => {
   }, [auth, pathname, router, searchParams, user]);
 
   useEffect(() => {
-    if (
-      (!user && auth) ||
-      (!user?.isGuest && !user?.isVerified && user) ||
-      auth === "redirecting"
-    ) {
+    if (shouldShowAuthOverlay) {
       document.body.style.overflow = "hidden";
     } else {
       document.body.style.overflow = "auto";
@@ -85,13 +86,9 @@ const Auth = () => {
     return () => {
       document.body.style.overflow = "auto";
     };
-  }, [user, auth]);
+  }, [shouldShowAuthOverlay]);
 
-  if (
-    (!user && auth) ||
-    (!user?.isGuest && !user?.isVerified && user) ||
-    auth === "redirecting"
-  ) {
+  if (shouldShowAuthOverlay) {
     return (
       <motion.main
         initial={{ backdropFilter: "blur(0)" }}
