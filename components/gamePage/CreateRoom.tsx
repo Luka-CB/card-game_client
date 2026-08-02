@@ -616,24 +616,22 @@ const CreateRoom = () => {
                 return null;
               })()}
 
-              {(usersOnline?.length > 100 || currentStatus === "private") && (
-                <div className={styles.toggle_box}>
-                  <span>{t("form.chat.label")}</span>
-                  <label htmlFor="toggleChat" className={styles.toggle_switch}>
-                    <input
-                      type="checkbox"
-                      name="toggleChat"
-                      id="toggleChat"
-                      checked={toggleChat}
-                      onChange={(e) => setToggleChat(e.target.checked)}
-                    />
-                    <span className={styles.slider}></span>
-                  </label>
-                  <small>
-                    {toggleChat ? t("form.chat.on") : t("form.chat.off")}
-                  </small>
-                </div>
-              )}
+              <div className={styles.toggle_box}>
+                <span>{t("form.chat.label")}</span>
+                <label htmlFor="toggleChat" className={styles.toggle_switch}>
+                  <input
+                    type="checkbox"
+                    name="toggleChat"
+                    id="toggleChat"
+                    checked={toggleChat}
+                    onChange={(e) => setToggleChat(e.target.checked)}
+                  />
+                  <span className={styles.slider}></span>
+                </label>
+                <small>
+                  {toggleChat ? t("form.chat.on") : t("form.chat.off")}
+                </small>
+              </div>
               <button type="submit" className={styles.submit_btn}>
                 {t("form.btn")}
               </button>

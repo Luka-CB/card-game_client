@@ -361,14 +361,13 @@ const Card: React.FC<CardProps> = ({ room }) => {
           <span className={styles.hisht}>
             {t("hisht")}: <b>{room?.hisht}</b>
           </span>
-          {usersOnline?.length > 100 && (
-            <div className={styles.chat}>
-              <FaRocketchat className={styles.chat_icon} />
-              <small>
-                {t("chat")}: <b>{room?.hasChat ? t("on") : t("off")}</b>
-              </small>
-            </div>
-          )}
+          <div className={styles.chat}>
+            <FaRocketchat className={styles.chat_icon} />
+            <small>
+              {t("chat.label")}:{" "}
+              <b>{room?.hasChat ? t("chat.on") : t("chat.off")}</b>
+            </small>
+          </div>
         </div>
 
         {room?.isActive &&
