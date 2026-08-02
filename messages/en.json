@@ -761,6 +761,7 @@
       "title": "Ooops! Something went wrong.",
       "paragraph": "Please make sure that this google account email is not already registered with us!",
       "small": "We will try to fix this error, if it's coming from our end!",
+      "close": "Close",
       "link": "back to sign in"
     },
     "leftPanel": {
