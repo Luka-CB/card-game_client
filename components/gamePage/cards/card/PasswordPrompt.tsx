@@ -2,16 +2,26 @@ import { useState } from "react";
 import { FaTimesCircle } from "react-icons/fa";
 import styles from "../Cards.module.scss";
 import useSocket from "@/hooks/useSocket";
-import useUserStore from "@/store/user/userStore";
 import useFlashMsgStore from "@/store/flashMsgStore";
 import { Room } from "@/utils/interfaces";
 import useRoomStore from "@/store/gamePage/roomStore";
+import { useTranslations } from "next-intl";
+import { userIFace } from "@/store/user/userStore";
+import { buildJoinRoomUserPayload } from "@/utils/roomJoin";
+
 interface PasswordPromptProps {
   room: Room;
-  user: { id: string; username: string; avatar: string | null } | null;
+  clickedRoomId: string | null;
+  user: userIFace | null;
 }
 
-const PasswordPrompt: React.FC<PasswordPromptProps> = ({ room, user }) => {
+const PasswordPrompt: React.FC<PasswordPromptProps> = ({
+  room,
+  clickedRoomId,
+  user,
+}) => {
+  const t = useTranslations("GamePage.cards.card.passwordPrompt");
+
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const socket = useSocket();
@@ -22,22 +32,18 @@ const PasswordPrompt: React.FC<PasswordPromptProps> = ({ room, user }) => {
     if (!room || !socket || !user) return;
 
     if (!password.trim()) {
-      setError("Password is required");
-      setMsg("Please enter a password", "error");
+      setError(t("msgs.localErrors.passwordRequired"));
+      setMsg(t("msgs.flashErrors.passwordRequired"), "error");
       return;
     }
 
-    if (password !== room.password) {
-      setError("Incorrect password");
-      setMsg("Incorrect password", "error");
-      return;
-    }
-
-    socket.emit("joinRoom", room.id, user.id, {
-      id: user.id,
-      username: user.username,
-      avatar: user.avatar,
-    });
+    socket.emit(
+      "joinRoom",
+      room.id,
+      user._id,
+      buildJoinRoomUserPayload(user),
+      { password },
+    );
 
     setTogglePasswordPrompt(false);
   };
@@ -46,25 +52,24 @@ const PasswordPrompt: React.FC<PasswordPromptProps> = ({ room, user }) => {
     const newPassword = e.target.value;
     setPassword(newPassword);
 
-    // Clear error if user starts typing
     if (newPassword.trim()) {
       setError("");
     }
   };
 
-  if (!togglePasswordPrompt) return null;
+  if (!togglePasswordPrompt || clickedRoomId !== room.id) return null;
 
   return (
     <div className={styles.password_prompt}>
       <input
         type="password"
-        placeholder="Enter password"
+        placeholder={t("placeholder")}
         value={password}
         onChange={handlePasswordChange}
         className={error ? styles.error : ""}
       />
       {error && <span className={styles.error_message}>{error}</span>}
-      <button onClick={handleJoin}>Join</button>
+      <button onClick={handleJoin}>{t("btn")}</button>
       <FaTimesCircle
         className={styles.close_btn}
         onClick={() => setTogglePasswordPrompt(false)}

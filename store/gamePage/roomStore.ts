@@ -1,23 +1,25 @@
 "use client";
 
-import { Room, RoomUser } from "@/utils/interfaces";
+import { Room } from "@/utils/interfaces";
 import { create } from "zustand";
 
 interface RoomStore {
   rooms: Room[];
+  totalRoomsCount: number;
   isCreatingRoom: boolean;
   togglePasswordPrompt: boolean;
-  setRooms: (rooms: Room[]) => void;
+  setRooms: (rooms: Room[], totalRoomsCount?: number) => void;
   setIsCreatingRoom: (isCreatingRoom: boolean) => void;
   setTogglePasswordPrompt: (togglePasswordPrompt: boolean) => void;
 }
 
 const useRoomStore = create<RoomStore>((set) => ({
   rooms: [],
-  roomUsers: [],
+  totalRoomsCount: 0,
   isCreatingRoom: false,
   togglePasswordPrompt: false,
-  setRooms: (rooms: Room[]) => set({ rooms }),
+  setRooms: (rooms: Room[], totalRoomsCount?: number) =>
+    set({ rooms, totalRoomsCount: totalRoomsCount ?? rooms.length }),
   setIsCreatingRoom: (isCreatingRoom: boolean) => set({ isCreatingRoom }),
   setTogglePasswordPrompt: (togglePasswordPrompt: boolean) =>
     set({ togglePasswordPrompt }),
