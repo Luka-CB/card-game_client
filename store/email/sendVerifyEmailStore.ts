@@ -11,6 +11,12 @@ interface SendVerifyEmailStore {
   sendEmail: () => void;
 }
 
+const buildVerificationRedirectUri = () => {
+  if (typeof window === "undefined") return undefined;
+
+  return `${window.location.origin}${window.location.pathname}?auth=verified`;
+};
+
 const useSendVerifyEmailStore = create<SendVerifyEmailStore>((set) => ({
   email: null,
   status: "idle",
@@ -18,7 +24,10 @@ const useSendVerifyEmailStore = create<SendVerifyEmailStore>((set) => ({
   sendEmail: async () => {
     set({ status: "loading", error: null });
     try {
-      const { data } = await api.post("/emails/send-email/verify-email");
+      const redirectUri = buildVerificationRedirectUri();
+      const { data } = await api.post("/emails/send-email/verify-email", {
+        redirectUri,
+      });
 
       if (data) {
         set({ email: data.email, status: "success" });
