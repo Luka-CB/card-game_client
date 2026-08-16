@@ -51,7 +51,7 @@ const Card: React.FC<CardProps> = ({ room }) => {
   );
 
   const roomUser = room?.users.find(
-    (u) => u.id === user?._id && u.status !== "left",
+    (u) => u.id === user?._id && u.status !== "left" && !u.isBot,
   );
 
   const occupiedSeats = (() => {
@@ -281,7 +281,9 @@ const Card: React.FC<CardProps> = ({ room }) => {
   return (
     <div
       className={
-        room?.users?.some((ru) => ru.id === user?._id && ru.status !== "left")
+        room?.users?.some(
+          (ru) => ru.id === user?._id && ru.status !== "left" && !ru.isBot,
+        )
           ? styles.room_card_joined
           : room?.isActive || room?.isDummyRoomActive
             ? styles.room_card_active

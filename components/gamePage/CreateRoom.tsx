@@ -203,7 +203,7 @@ const CreateRoom = () => {
     const latestJCoins = useJCoinsStore.getState().jCoins ?? jCoins;
 
     const roomUser = rooms.find((room) =>
-      room?.users.some((u) => u.id === user._id),
+      room?.users.some((u) => u.id === user._id && !u.isBot),
     );
     if (roomUser) {
       setMsg(t("msgs.roomUser"), "error");

@@ -38,7 +38,7 @@ const DisplayRoomCards = () => {
     if (hasNavigatedRef.current) return;
 
     const roomUser = roomImIn.users?.find(
-      (u) => u.id === user._id && u.status !== "left",
+      (u) => u.id === user._id && u.status !== "left" && !u.isBot,
     );
 
     const occupiedSeats = (() => {
@@ -78,7 +78,7 @@ const DisplayRoomCards = () => {
       if (!user?._id) return;
 
       const isCurrentUsersRoom = roomData.users?.some(
-        (u) => u.id === user._id && u.status !== "left",
+        (u) => u.id === user._id && u.status !== "left" && !u.isBot,
       );
 
       if (isCurrentUsersRoom) {
@@ -143,7 +143,9 @@ const DisplayRoomCards = () => {
     pathname === "/" &&
     displayRoomType.withUser &&
     roomImIn &&
-    roomImIn.users?.some((u) => u.id === user?._id && u.status !== "left");
+    roomImIn.users?.some(
+      (u) => u.id === user?._id && u.status !== "left" && !u.isBot,
+    );
 
   const handleOptimisticJoin = (
     room: Room,

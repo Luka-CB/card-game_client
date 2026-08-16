@@ -144,7 +144,10 @@ export default function InvitePage() {
       if (room.id !== invite.room.id) return;
 
       const joined = room.users.some(
-        (roomUser) => roomUser.id === user._id && roomUser.status !== "left",
+        (roomUser) =>
+          roomUser.id === user._id &&
+          roomUser.status !== "left" &&
+          !roomUser.isBot,
       );
 
       if (joined) {

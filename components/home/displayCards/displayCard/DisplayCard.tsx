@@ -54,7 +54,7 @@ const DisplayCard: React.FC<DisplayCardProps> = ({
   );
 
   const roomUser = room?.users?.find(
-    (u) => u.id === user?._id && u.status !== "left",
+    (u) => u.id === user?._id && u.status !== "left" && !u.isBot,
   );
 
   const occupiedSeats = (() => {
