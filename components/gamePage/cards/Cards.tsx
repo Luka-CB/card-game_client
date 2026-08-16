@@ -26,6 +26,11 @@ const Cards = () => {
   useEffect(() => {
     if (!socket) return;
 
+    const requestRooms = () => {
+      const latestFilters = useFilterStore.getState().checkedFilters;
+      socket.emit("getRooms", latestFilters);
+    };
+
     socket.emit("getRooms");
 
     socket.on("getRooms", (data: Room[] | GetRoomsPayload) => {
@@ -37,8 +42,11 @@ const Cards = () => {
       setRooms(data.rooms, data.totalRoomsCount);
     });
 
+    socket.io.on("reconnect", requestRooms);
+
     return () => {
       socket.off("getRooms");
+      socket.io.off("reconnect", requestRooms);
     };
   }, [socket, setRooms]);
 
