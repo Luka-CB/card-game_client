@@ -1,5 +1,5 @@
 import { userIFace } from "@/store/user/userStore";
-import { getRandomBotAvatar, getRandomColor } from "@/utils/misc";
+import { getRandomColor } from "@/utils/misc";
 
 export interface JoinRoomAccessPayload {
   password?: string | null;
@@ -12,6 +12,6 @@ export const buildJoinRoomUserPayload = (user: userIFace) => ({
   status: "active" as const,
   isGuest: user.isGuest,
   avatar: user.avatar || "/default-avatar.jpeg",
-  botAvatar: getRandomBotAvatar(),
+  botAvatar: null,
   color: getRandomColor(),
 });

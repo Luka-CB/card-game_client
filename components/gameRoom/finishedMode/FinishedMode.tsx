@@ -156,7 +156,8 @@ const FinishedMode: React.FC<FinishedModeProps> = ({
                 {user.avatar ? (
                   <Image
                     src={
-                      (user.status !== "active"
+                      (user.status !== "active" ||
+                      (user.isBot && user.botAvatar)
                         ? user.botAvatar
                         : user.avatar) ?? "/default-avatar.jpeg"
                     }

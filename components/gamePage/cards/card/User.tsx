@@ -27,7 +27,7 @@ const User: React.FC<UserProps> = ({ user }) => {
         <>
           <Image
             src={
-              user.status === "left"
+              user.status === "left" || (user.isBot && user.botAvatar)
                 ? user.botAvatar || "/bots/bot-1.jpeg"
                 : user.avatar || "/default-avatar.jpeg"
             }

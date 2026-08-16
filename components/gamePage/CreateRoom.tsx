@@ -17,7 +17,7 @@ import { v4 as uuidv4 } from "uuid";
 import useSocket from "@/hooks/useSocket";
 import useUserStore from "@/store/user/userStore";
 import useFlashMsgStore from "@/store/flashMsgStore";
-import { getRandomBotAvatar, getRandomColor } from "@/utils/misc";
+import { getRandomColor } from "@/utils/misc";
 import useRoomStore from "@/store/gamePage/roomStore";
 import Image from "next/image";
 import useJCoinsStore from "@/store/user/stats/jCoinsStore";
@@ -247,7 +247,7 @@ const CreateRoom = () => {
           status: "active",
           isGuest: user.isGuest,
           avatar: user.avatar || "/default-avatar.jpeg",
-          botAvatar: getRandomBotAvatar(),
+          botAvatar: null,
           color: getRandomColor(),
         },
       ],

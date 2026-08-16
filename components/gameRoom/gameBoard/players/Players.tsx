@@ -259,7 +259,7 @@ const Players: React.FC<PlayersProps> = ({
                   </div>
                 )}
 
-                {!player.botAvatar && isActive ? (
+                {isActive && !(player.isBot && player.botAvatar) ? (
                   <Image
                     src={player.avatar || "/default-avatar.jpeg"}
                     alt={player.username || "avatar"}
