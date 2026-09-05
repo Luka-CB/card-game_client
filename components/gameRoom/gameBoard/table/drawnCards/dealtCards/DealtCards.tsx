@@ -82,7 +82,7 @@ const DealtCards = ({
 
       // Avoid audible "double hit" artifacts when updates arrive back-to-back
       // at cycle boundaries (e.g. card 4 then immediate next cycle event).
-      if (!isSameCountReplay && now - lastDealSoundAtRef.current >= 110) {
+      if (!isSameCountReplay && now - lastDealSoundAtRef.current >= 70) {
         soundManager.play("dealCard");
         lastDealSoundAtRef.current = now;
         lastDealSoundCountRef.current = incrementalDealtCount;

@@ -566,7 +566,7 @@ const GameRoom: React.FC = () => {
       );
 
       // Let the initial 0-state commit before starting step updates.
-      await new Promise((res) => setTimeout(res, 50));
+      await new Promise((res) => setTimeout(res, 20));
 
       for (let round = 1; round <= targetPerPlayer; round++) {
         for (const playerId of dealingOrder) {
@@ -577,7 +577,7 @@ const GameRoom: React.FC = () => {
             [playerId]: (prev[playerId] || 0) + 1,
           }));
 
-          await new Promise((res) => setTimeout(res, 400));
+          await new Promise((res) => setTimeout(res, 180));
         }
         setCurrentDealingRound(round);
       }
