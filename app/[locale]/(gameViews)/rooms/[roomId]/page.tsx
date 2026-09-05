@@ -744,6 +744,23 @@ const GameRoom: React.FC = () => {
     return foundUser;
   };
 
+  const syncStatus = !gameInfo
+    ? {
+        title: "Waiting for players to sync",
+        subtitle: "The game will start when everyone is connected.",
+      }
+    : revealInProgress
+      ? {
+          title: "Starting game",
+          subtitle: "Dealing cards to everyone...",
+        }
+      : gameInfo.status === "dealing" && !gameInfo.dealerId
+        ? {
+            title: "Waiting for players to sync",
+            subtitle: "The game will start when everyone is connected.",
+          }
+        : null;
+
   const handleOpenChat = () => {
     if (!socket || !roomId || !user) return;
 
@@ -902,6 +919,14 @@ const GameRoom: React.FC = () => {
           onConfirm={handleLeaveRoom}
           onCancel={handleCancelLeave}
         />
+      )}
+
+      {syncStatus && (
+        <div className={styles.sync_overlay}>
+          <div className={styles.sync_spinner} aria-hidden="true" />
+          <strong>{syncStatus.title}</strong>
+          <span>{syncStatus.subtitle}</span>
+        </div>
       )}
 
       {gameInfo?.status === "choosingTrump" &&
