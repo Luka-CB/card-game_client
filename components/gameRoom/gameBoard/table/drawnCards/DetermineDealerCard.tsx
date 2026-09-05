@@ -1,9 +1,9 @@
 import { PlayingCard } from "@/utils/interfaces";
-import { CardDeck } from "../../../cardDeck";
 import styles from "./DrawnCards.module.scss";
-import Image from "next/image";
 import { motion } from "framer-motion";
 import useWindowSize from "@/hooks/useWindowSize";
+import { useDeckContext } from "@/context/DeckContext";
+import { useEffect, useState } from "react";
 
 interface Props {
   card: PlayingCard;
@@ -13,91 +13,89 @@ interface Props {
 
 const DetermineDealerCard = ({ card, index, playerPositionIndex }: Props) => {
   const windowSize = useWindowSize();
+  const { getCardUrl } = useDeckContext();
 
-  const cardImage = CardDeck.find(
-    (c: { suit: string; rank: string; image: string; color?: string }) =>
-      c.suit === card.suit && c.rank === card.rank
-  )?.image;
-
-  const jokerImageBlack = CardDeck.find(
-    (c: { suit: string; rank: string; image: string; color?: string }) =>
-      c.rank === "JOKER" && c.color === "black"
-  )?.image;
-
-  const jokerImageRed = CardDeck.find(
-    (c: { suit: string; rank: string; image: string; color?: string }) =>
-      c.rank === "JOKER" && c.color === "red"
-  )?.image;
-
+  const cardUrl = getCardUrl(card);
+  const [imgSrc, setImgSrc] = useState(cardUrl);
   const offset = index * 3;
+
+  useEffect(() => {
+    setImgSrc(cardUrl);
+  }, [cardUrl]);
+
+  const fallbackCardUrl = card.joker
+    ? card.color === "black"
+      ? "/cards/joker-black.png"
+      : "/cards/joker-red.png"
+    : `/cards/${card.suit}-${card.rank?.toLowerCase()}.png`;
 
   const getInitial = () => {
     switch (playerPositionIndex) {
-      case 0: // bottom
+      case 0:
         return {
-          opacity: 0.5,
+          opacity: 0,
           translateY:
             windowSize.width <= 600
               ? 30
               : (windowSize.width < 1000 && windowSize.width > 600) ||
-                windowSize.height <= 800
-              ? 50
-              : 100,
+                  windowSize.height <= 800
+                ? 50
+                : 100,
         };
-      case 1: // left
+      case 1:
         return {
-          opacity: 0.5,
+          opacity: 0,
           translateX:
             windowSize.width <= 600
               ? -30
               : (windowSize.width < 1000 && windowSize.width > 600) ||
-                windowSize.height <= 800
-              ? -50
-              : -100,
+                  windowSize.height <= 800
+                ? -50
+                : -100,
         };
-      case 2: // top
+      case 2:
         return {
-          opacity: 0.5,
+          opacity: 0,
           translateY:
             windowSize.width <= 600
               ? -30
               : (windowSize.width < 1000 && windowSize.width > 600) ||
-                windowSize.height <= 800
-              ? -50
-              : -100,
+                  windowSize.height <= 800
+                ? -50
+                : -100,
         };
-      case 3: // right
+      case 3:
         return {
-          opacity: 0.5,
+          opacity: 0,
           translateX:
             windowSize.width <= 600
               ? 30
               : (windowSize.width < 1000 && windowSize.width > 600) ||
-                windowSize.height <= 800
-              ? 50
-              : 100,
+                  windowSize.height <= 800
+                ? 50
+                : 100,
         };
       default:
-        return {};
+        return { opacity: 0 };
     }
   };
 
   const getAnimate = () => {
     switch (playerPositionIndex) {
-      case 0: // bottom
-      case 2: // top
+      case 0:
+      case 2:
         return {
           opacity: 1,
           translateY: 0,
         };
-      case 1: // left
-      case 3: // right
+      case 1:
+      case 3:
         return {
           opacity: 1,
           translateX: 0,
         };
       default:
-        return {};
+        return { opacity: 0 };
     }
   };
 
@@ -106,9 +104,8 @@ const DetermineDealerCard = ({ card, index, playerPositionIndex }: Props) => {
       initial={getInitial()}
       animate={getAnimate()}
       transition={{
-        duration: 0.2,
-        damping: 15,
-        type: "spring",
+        duration: 0.04,
+        ease: "linear",
       }}
       className={styles.card}
       style={{
@@ -116,81 +113,47 @@ const DetermineDealerCard = ({ card, index, playerPositionIndex }: Props) => {
         zIndex: index,
       }}
     >
-      {cardImage ? (
-        <Image
-          src={cardImage}
-          alt={card.rank}
-          width={
-            windowSize.height <= 350
-              ? 40
-              : windowSize.height <= 600 && windowSize.height > 350
+      <img
+        src={imgSrc}
+        alt={card.rank || "card"}
+        onError={() => {
+          if (imgSrc !== fallbackCardUrl) {
+            setImgSrc(fallbackCardUrl);
+          }
+        }}
+        loading="eager"
+        width={
+          windowSize.height <= 350
+            ? 40
+            : windowSize.height <= 600 && windowSize.height > 350
               ? 50
               : windowSize.height <= 800 && windowSize.height > 600
-              ? 70
-              : windowSize.width <= 600
-              ? 50
-              : windowSize.width <= 900 && windowSize.width > 600
-              ? 70
-              : windowSize.width < 1300 && windowSize.width > 900
-              ? 90
-              : 100
-          }
-          height={
-            windowSize.height <= 350
-              ? 60
-              : windowSize.height <= 600 && windowSize.height > 350
-              ? 70
-              : windowSize.height <= 800 && windowSize.height > 600
-              ? 100
-              : windowSize.width <= 600
-              ? 70
-              : windowSize.width <= 900 && windowSize.width > 600
-              ? 100
-              : windowSize.width < 1300 && windowSize.width > 900
-              ? 130
-              : 150
-          }
-        />
-      ) : (
-        <Image
-          src={
-            card.color === "black"
-              ? jokerImageBlack || "/cards/joker-black.png"
-              : jokerImageRed || "/cards/joker-red.png"
-          }
-          alt="Joker"
-          width={
-            windowSize.height <= 350
-              ? 40
-              : windowSize.height <= 600 && windowSize.height > 350
-              ? 50
-              : windowSize.height <= 800 && windowSize.height > 600
-              ? 70
-              : windowSize.width <= 600
-              ? 50
-              : windowSize.width <= 900 && windowSize.width > 600
-              ? 70
-              : windowSize.width < 1300 && windowSize.width > 900
-              ? 90
-              : 100
-          }
-          height={
-            windowSize.height <= 350
-              ? 60
-              : windowSize.height <= 600 && windowSize.height > 350
+                ? 70
+                : windowSize.width <= 600
+                  ? 50
+                  : windowSize.width <= 900 && windowSize.width > 600
+                    ? 70
+                    : windowSize.width < 1300 && windowSize.width > 900
+                      ? 90
+                      : 100
+        }
+        height={
+          windowSize.height <= 350
+            ? 60
+            : windowSize.height <= 600 && windowSize.height > 350
               ? 70
               : windowSize.height <= 800 && windowSize.height > 600
-              ? 100
-              : windowSize.width <= 600
-              ? 70
-              : windowSize.width <= 900 && windowSize.width > 600
-              ? 100
-              : windowSize.width < 1300 && windowSize.width > 900
-              ? 130
-              : 150
-          }
-        />
-      )}
+                ? 100
+                : windowSize.width <= 600
+                  ? 70
+                  : windowSize.width <= 900 && windowSize.width > 600
+                    ? 100
+                    : windowSize.width < 1300 && windowSize.width > 900
+                      ? 130
+                      : 150
+        }
+        style={{ height: "auto" }}
+      />
     </motion.div>
   );
 };

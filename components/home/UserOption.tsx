@@ -1,29 +1,19 @@
 "use client";
 
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import styles from "./UserOption.module.scss";
 import { AnimatePresence, motion } from "framer-motion";
 import useUserOptionStore from "@/store/user/userOptionStore";
 import useLogoutStore from "@/store/auth/logoutStore";
 import BtnLoader from "../loaders/BtnLoader";
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
-import useSocket from "@/hooks/useSocket";
+import useWindowSize from "@/hooks/useWindowSize";
 import useUserStore from "@/store/user/userStore";
 
 const UserOption = () => {
-  const { isOpen, setIsOpen } = useUserOptionStore();
+  const { isOpen } = useUserOptionStore();
   const { status, logout } = useLogoutStore();
   const { user } = useUserStore();
-  const socket = useSocket();
-  const router = useRouter();
-
-  useEffect(() => {
-    if (status === "success") {
-      router.push("/");
-      setIsOpen(false);
-    }
-  }, [status, router]);
+  const windowSize = useWindowSize();
 
   const handleLogout = () => {
     logout();
@@ -37,12 +27,16 @@ const UserOption = () => {
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: 50 }}
           transition={{ duration: 0.6, type: "spring" }}
-          className={styles.container}
+          className={
+            windowSize.width <= 800 ? styles.container_sm : styles.container
+          }
           onClick={(e) => e.stopPropagation()}
         >
-          <Link href="/account" className={styles.link}>
-            Your Account
-          </Link>
+          {!user?.isGuest && (
+            <Link href="/account" className={styles.link}>
+              Your Account
+            </Link>
+          )}
           <Link href="#" className={styles.link}>
             Something Else
           </Link>

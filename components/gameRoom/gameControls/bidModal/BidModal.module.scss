@@ -1,4 +1,4 @@
-@use "../../../../styles/mixins" as *;
+@use "mixins" as *;
 
 .modal_bg {
   position: fixed;
@@ -6,23 +6,23 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.343);
+  background-color: rgba(0, 0, 0, 0.36);
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1;
+  z-index: 1000;
 
   .modal {
     @include bgColor(light);
-    border-radius: 8px;
-    padding: 5px;
-    padding: 20px 5;
+    border-radius: 12px;
+    padding: 20px 5px;
     width: 420px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.32);
+    border: 1px solid rgba(255, 255, 255, 0.2);
     display: flex;
     flex-direction: column;
     position: relative;
-    transition: all 0.3s ease;
+    will-change: transform, opacity;
 
     .count_down {
       position: absolute;
@@ -51,12 +51,27 @@
         height: 50px;
         color: var(--clr-light);
         font-size: 1.8rem;
+        transition:
+          transform 0.14s ease,
+          filter 0.14s ease,
+          box-shadow 0.14s ease;
+
+        &:not(:disabled) {
+          box-shadow: 0 6px 12px rgba(0, 0, 0, 0.28);
+        }
+
+        &.submitting {
+          pointer-events: none;
+          opacity: 0.85;
+          filter: grayscale(0.2);
+        }
 
         &:disabled {
           background-color: rgba(152, 152, 152, 0.668);
           border-color: rgba(122, 117, 117, 0.485);
           cursor: not-allowed;
           color: rgba(90, 90, 90, 0.452);
+          box-shadow: none;
           transition: all 0.1s ease;
         }
       }
