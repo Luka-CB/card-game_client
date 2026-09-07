@@ -1,4 +1,4 @@
-@use "../../../styles/mixins" as *;
+@use "mixins" as *;
 
 .social_auth {
   width: 80%;
@@ -21,6 +21,59 @@
       font-size: 1.5rem;
       margin-right: 10px;
       color: rgb(55, 132, 221);
+    }
+  }
+
+  @media (max-width: 900px) {
+    width: 100%;
+
+    button {
+      width: 350px;
+    }
+  }
+
+  @media (max-width: 600px) {
+    width: 100%;
+
+    button {
+      width: 240px;
+      height: 35px;
+      margin: 6px 0;
+
+      .icon {
+        font-size: 1.2rem;
+      }
+
+      span {
+        font-size: 0.8rem;
+      }
+    }
+  }
+
+  @media (max-width: 330px) {
+    button {
+      width: 200px;
+      height: 35px;
+      margin: 6px 0;
+
+      .icon {
+        font-size: 1rem;
+      }
+
+      span {
+        font-size: 0.6rem;
+      }
+    }
+  }
+}
+
+.social_auth[data-locale="ka"],
+.social_auth[data-locale="ru"] {
+  button {
+    font-size: 0.9rem;
+
+    .icon {
+      font-size: 1.2rem;
     }
   }
 }

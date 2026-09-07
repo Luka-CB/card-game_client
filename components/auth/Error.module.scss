@@ -1,10 +1,37 @@
-@use "../../styles/mixins" as *;
+@use "mixins" as *;
 
 .container {
   @include bgColor();
+  position: relative;
   padding: 50px;
   border-radius: 20px;
   box-shadow: 0 0 15px black;
+
+  .close_btn {
+    position: absolute;
+    top: 18px;
+    right: 18px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border: 0;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--clr-light);
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+
+    .close_icon {
+      font-size: 1.3rem;
+    }
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.16);
+      transform: scale(1.04);
+    }
+  }
 
   .text_one {
     display: flex;

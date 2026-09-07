@@ -1,4 +1,4 @@
-@use "../../styles/mixins" as *;
+@use "mixins" as *;
 
 .your_turn_popup {
   @include bgColor(light);
@@ -6,7 +6,7 @@
   top: 20px;
   left: 5%;
   padding: 10px;
-  z-index: 100;
+  z-index: 1000;
   border-radius: 6px;
   box-shadow: 0 0 10px rgba(132, 127, 127, 0.739);
   border: 4px solid var(--clr-primary-faded);

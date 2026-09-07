@@ -1,0 +1,74 @@
+@use "mixins" as *;
+
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 90vh;
+}
+
+.error_wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 90vh;
+
+  .error {
+    background: #fee2e2;
+    color: #b91c1c;
+    padding: 24px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(185, 28, 28, 0.1);
+    text-align: center;
+
+    h2 {
+      margin: 0 0 12px;
+      font-size: 24px;
+    }
+
+    p {
+      margin: 0;
+      font-size: 16px;
+    }
+  }
+}
+
+.container {
+  @include bgColor(light);
+  width: 100%;
+  max-width: 1200px;
+  margin: 32px auto;
+  padding: 24px;
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(16, 24, 40, 0.08);
+  color: var(--text, #0f172a);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 24px;
+}
+
+.divider {
+  display: none;
+}
+
+@media (max-width: 1000px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .divider {
+    display: block;
+    height: 1.5px;
+    background: #23232370;
+    margin: 50px 0;
+  }
+}
+
+@media (max-width: 500px) {
+  .grid {
+    display: block;
+  }
+}
