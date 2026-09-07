@@ -1,12 +1,21 @@
 import type { Metadata } from "next";
 import { useTranslations } from "next-intl";
 import styles from "./page.module.scss";
+import { localizedMetadata } from "../metadata";
 
-export const metadata: Metadata = {
-  title: "Rules | Joker Clash",
-  description:
-    "Learn how to play Joker Clash – rules for Classic, Nines, and Betting game modes.",
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+
+  return localizedMetadata(locale, "/rules", {
+    title: "Rules | Joker Clash",
+    description:
+      "Learn how to play Joker Clash – rules for Classic, Nines, and Betting game modes.",
+  });
+}
 
 const classicRounds = ["roundOne", "roundTwo", "roundThree", "roundFour"];
 

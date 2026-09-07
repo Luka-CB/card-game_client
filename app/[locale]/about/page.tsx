@@ -2,12 +2,21 @@ import type { Metadata } from "next";
 import { Link } from "@/i18n/navigation";
 import styles from "./page.module.scss";
 import { useTranslations } from "next-intl";
+import { localizedMetadata } from "../metadata";
 
-export const metadata: Metadata = {
-  title: "About | Joker Clash",
-  description:
-    "Learn about Joker Clash – the online multiplayer card game built for real-time play with friends.",
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+
+  return localizedMetadata(locale, "/about", {
+    title: "About | Joker Clash",
+    description:
+      "Learn about Joker Clash – the online multiplayer card game built for real-time play with friends.",
+  });
+}
 
 const values = ["fairPlay", "fastMatches", "communityDriven"] as const;
 

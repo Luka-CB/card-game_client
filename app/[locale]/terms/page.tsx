@@ -1,10 +1,19 @@
 import type { Metadata } from "next";
 import styles from "./page.module.scss";
 import { useTranslations } from "next-intl";
+import { localizedMetadata } from "../metadata";
 
-export const metadata: Metadata = {
-  title: "Terms of Service | Joker Clash",
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+
+  return localizedMetadata(locale, "/terms", {
+    title: "Terms of Service | Joker Clash",
+  });
+}
 
 export default function TermsPage() {
   const t = useTranslations("TermsPage");

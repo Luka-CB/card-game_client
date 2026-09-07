@@ -2,11 +2,20 @@ import type { Metadata } from "next";
 import { Link } from "@/i18n/navigation";
 import styles from "./page.module.scss";
 import { useTranslations } from "next-intl";
+import { localizedMetadata } from "../metadata";
 
-export const metadata: Metadata = {
-  title: "Data Deletion | Joker Clash",
-  description: "Request deletion of your Joker Clash account data.",
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+
+  return localizedMetadata(locale, "/data-deletion", {
+    title: "Data Deletion | Joker Clash",
+    description: "Request deletion of your Joker Clash account data.",
+  });
+}
 
 export default function Page() {
   const t = useTranslations("DataDeletionPage");

@@ -2,10 +2,19 @@ import type { Metadata } from "next";
 import styles from "./page.module.scss";
 import { Link } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
+import { localizedMetadata } from "../metadata";
 
-export const metadata: Metadata = {
-  title: "Privacy Policy | Joker Clash",
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+
+  return localizedMetadata(locale, "/privacy", {
+    title: "Privacy Policy | Joker Clash",
+  });
+}
 
 export default function PrivacyPolicyPage() {
   const t = useTranslations("PrivacyPage");

@@ -36,14 +36,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: metadata.title || "Joker Clash",
     description: metadata.description || "Joker Card Game",
-    alternates: {
-      canonical: `/${locale}`,
-      languages: {
-        en: "/en",
-        ka: "/ka",
-        ru: "/ru",
-      },
-    },
     openGraph: {
       title: metadata.title || "Joker Clash",
       description: metadata.description || "Joker Card Game",
