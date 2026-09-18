@@ -40,6 +40,7 @@ const Auth = () => {
   const { loading, user } = useUserStore();
   const windowWidth = useWindowSize().width;
   const shouldShowAuthOverlay =
+    auth === "change-password" ||
     auth === "error" ||
     (!!auth && !user) ||
     (!!user && !user.isGuest && !user.isVerified) ||
