@@ -1,300 +1,174 @@
-import { PlayedCard, PlayingCard, RoomUser, HandWin } from "@/utils/interfaces";
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import { PlayedCard, RoomUser } from "@/utils/interfaces";
 import styles from "./PlayedCards.module.scss";
-import Image from "next/image";
 import useWindowSize from "@/hooks/useWindowSize";
-import { useEffect, useRef, useState } from "react";
-import { motion } from "framer-motion";
-import useSocket from "@/hooks/useSocket";
+import { motion, useAnimation } from "framer-motion";
+import usePlayedCardsStore from "@/store/gamePage/playedCardsStore";
+import { soundManager } from "@/utils/sounds";
+import { useDeckContext } from "@/context/DeckContext";
 
 interface PlayedCardsProps {
   playedCards: PlayedCard[];
-  trumpCard: PlayingCard;
-  roomId: string;
-  currentHand: number;
-  handCount: number;
-  HandWins: HandWin[] | null;
-  players: string[];
-  dealerId: string;
+  currentPlayerId: string;
   rotatedPlayers: RoomUser[];
 }
 
+const getPlayerIndex = (playerId: string, rotatedPlayers: RoomUser[]) => {
+  const playerIndex = rotatedPlayers.findIndex((p) => p.id === playerId);
+  return playerIndex;
+};
+
 const PlayedCards: React.FC<PlayedCardsProps> = ({
   playedCards,
-  trumpCard,
-  roomId,
-  currentHand,
-  handCount,
-  HandWins,
-  players,
-  dealerId,
   rotatedPlayers,
 }) => {
-  const [winnerIndex, setWinnerIndex] = useState<number | null>(null);
-  const roundCountRef = useRef(0);
-  const winnerCardRef = useRef<PlayedCard | null>(null);
-
   const windowSize = useWindowSize();
-  const socket = useSocket();
+  const { getCardUrl } = useDeckContext();
+  const isSmallScreen = windowSize.width <= 600;
 
-  const getPlayerIndex = (playerId: string) => {
-    const playerIndex = rotatedPlayers.findIndex((p) => p.id === playerId);
-    return playerIndex;
-  };
+  // Played cards are slightly smaller than hand cards (~85% of hand size).
+  // Around mobile widths, scale them up with the hand cards while avoiding overflow.
+  const cardWidth = Math.round(
+    Math.max(
+      isSmallScreen ? 36 : 32,
+      Math.min(
+        isSmallScreen ? 98 : 86,
+        Math.min(
+          windowSize.width * (isSmallScreen ? 0.108 : 0.088),
+          windowSize.height * (isSmallScreen ? 0.112 : 0.095),
+        ),
+      ),
+    ),
+  );
+  const cardHeight = Math.round(cardWidth * 1.5);
 
+  const { roundWinnerId, setRoundWinnerId } = usePlayedCardsStore();
+  const [cardsToAnimate, setCardsToAnimate] = useState<PlayedCard[] | null>(
+    null,
+  );
+  const controls = useAnimation();
+  const animationTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const isMountedRef = useRef(true);
   useEffect(() => {
-    if (!socket || !roomId) return;
-
-    socket.emit("getRoundCount", roomId);
-    socket.on(
-      "getRoundCount",
-      (roundCount: { roomId: string; count: number }) => {
-        roundCountRef.current = roundCount.count;
-      }
-    );
-
+    isMountedRef.current = true;
     return () => {
-      socket.off("getRoundCount");
+      isMountedRef.current = false;
+      if (animationTimerRef.current) {
+        clearTimeout(animationTimerRef.current);
+        animationTimerRef.current = null;
+      }
     };
-  }, [socket, roomId]);
+  }, []);
+  // Tracks whether we're in the post-animation hidden state waiting for the
+  // server to confirm the round cleared. Using state (not a ref) so the restore
+  // effect re-runs when this flips true, handling the race where the server
+  // responds before the animation .then() fires.
+  const [isHidden, setIsHidden] = useState(false);
 
+  const winnerIndex = useMemo(() => {
+    if (!roundWinnerId) return null;
+    const index = getPlayerIndex(roundWinnerId as string, rotatedPlayers);
+    return index === -1 ? null : index;
+  }, [roundWinnerId, rotatedPlayers]);
+
+  // Restore visibility as soon as both: animation has finished (isHidden=true)
+  // AND the server has moved on (playedCards.length < 4).
+  // Using isHidden as a dependency means this fires immediately when .then()
+  // sets it, even if the server already responded during the animation.
   useEffect(() => {
-    if (!socket || !roomId || playedCards.length !== 4) return;
-
-    const jokers = playedCards.filter((c) => c.card.joker);
-    const trumps = playedCards.filter((c) => c.card.suit === trumpCard.suit);
-    const leadSuit = playedCards[0].card.suit;
-    const sameSuit = playedCards.filter((c) => c.card.suit === leadSuit);
-
-    if (jokers.length > 0 && jokers.some((j) => j.card.type === "need")) {
-      if (jokers.length === 1 && jokers[0].card.type === "need") {
-        winnerCardRef.current = jokers[0];
-      } else if (jokers.length === 2 && jokers[1].card.type === "need") {
-        winnerCardRef.current = jokers[1];
-      } else {
-        winnerCardRef.current = jokers[0];
-      }
-    } else if (jokers.length > 0 && jokers[0].card.type === "takes") {
-      const requestedSuit = jokers[0].card.requestedSuit;
-      const existingRequestedSuits = playedCards.filter(
-        (c) => c.card.suit === requestedSuit
-      );
-
-      if (jokers.length === 2 && jokers[1].card.type === "need") {
-        winnerCardRef.current = jokers[1];
-      } else if (trumps.length > 0) {
-        winnerCardRef.current = trumps.reduce((max, c) =>
-          c.card.strength > max.card.strength ? c : max
-        );
-      } else if (existingRequestedSuits.length > 0) {
-        winnerCardRef.current = existingRequestedSuits.reduce((max, c) =>
-          c.card.strength > max.card.strength ? c : max
-        );
-      } else {
-        winnerCardRef.current = jokers[0];
-      }
-    } else if (trumps.length > 0) {
-      winnerCardRef.current = trumps.reduce((max, c) =>
-        c.card.strength > max.card.strength ? c : max
-      );
-    } else {
-      winnerCardRef.current = sameSuit.reduce((max, c) =>
-        c.card.strength > max.card.strength ? c : max
-      );
+    if (isHidden && playedCards.length < 4) {
+      setIsHidden(false);
+      controls.set({ opacity: 1 });
     }
-
-    setWinnerIndex(getPlayerIndex(winnerCardRef.current.playerId));
-
-    const winCount =
-      HandWins?.find(
-        (w) => w.playerId === winnerCardRef.current?.playerId
-      )?.wins.find((w) => w.handNumber === handCount)?.win || 0;
-
-    const timeout1 = setTimeout(() => {
-      socket.emit("updateWins", roomId, {
-        gameHand: currentHand,
-        playerId: winnerCardRef.current?.playerId,
-        win: winCount + 1,
-      });
-    }, 500);
-
-    const timeout2 = setTimeout(() => {
-      socket.emit("setLastPlayedCards", roomId, playedCards);
-    }, 700);
-
-    const timeout3 = setTimeout(() => {
-      socket.emit("updateGameInfo", roomId, {
-        currentPlayerId: winnerCardRef.current?.playerId,
-        playedCards: null,
-      });
-
-      setWinnerIndex(null);
-      winnerCardRef.current = null;
-    }, 1000);
-
-    if (roundCountRef.current < currentHand) {
-      socket.emit("setRoundCount", roomId, roundCountRef.current + 1);
-    }
-
-    return () => {
-      clearTimeout(timeout1);
-      clearTimeout(timeout2);
-      clearTimeout(timeout3);
-      setWinnerIndex(null);
-      winnerCardRef.current = null;
-      socket.off("updateWins");
-      socket.off("updateGameInfo");
-      socket.off("setRoundCount");
-    };
-  }, [playedCards.length, socket, roomId, currentHand]);
+  }, [isHidden, playedCards.length, controls]);
 
   useEffect(() => {
-    if (
-      !socket ||
-      !roomId ||
-      roundCountRef.current !== currentHand ||
-      playedCards.length
-    )
-      return;
+    if (winnerIndex !== null && playedCards.length === 4) {
+      setCardsToAnimate(playedCards);
 
-    const nextDealer = players[(players.indexOf(dealerId) + 1) % 4];
-    const nextDealerIndex = getPlayerIndex(nextDealer);
-    const nextPlayer = players[(nextDealerIndex + 1) % 4];
+      const targetY =
+        winnerIndex === 0 ? "30vh" : winnerIndex === 2 ? "-30vh" : 0;
+      const targetX =
+        winnerIndex === 1 ? "-50vh" : winnerIndex === 3 ? "50vh" : 0;
 
-    const timeout = setTimeout(() => {
-      socket.emit("calculatePoints", roomId);
-    }, 1000);
+      // Small delay so the browser has time to paint the 4th card image
+      // (custom decks load from the network and may not be cached yet).
+      // No cleanup here — cancelling on deps change would abort the animation
+      // when the server clears playedCards mid-delay. Unmount cleanup is handled
+      // by the dedicated effect above.
+      if (animationTimerRef.current) clearTimeout(animationTimerRef.current);
+      animationTimerRef.current = setTimeout(() => {
+        animationTimerRef.current = null;
+        if (!isMountedRef.current) return;
+        soundManager.play("winCards");
+        controls
+          .start({
+            x: targetX,
+            y: targetY,
+            opacity: 0,
+            transition: { duration: 0.8, ease: "easeInOut" },
+          })
+          .then(() => {
+            if (!isMountedRef.current) return;
+            controls.set({ x: 0, y: 0, opacity: 0 });
+            setIsHidden(true);
+            setRoundWinnerId(null);
+            setCardsToAnimate(null);
+          });
+      }, 700);
+    }
+  }, [winnerIndex, playedCards, controls, setRoundWinnerId]);
 
-    const timeout2 = setTimeout(() => {
-      socket.emit("updateGameInfo", roomId, {
-        handCount: !handCount ? 1 : handCount + 1,
-        status: "waiting",
-        trumpCard: null,
-        dealerId: nextDealer,
-        currentPlayerId: (currentHand === 8 || currentHand === 9) && nextPlayer,
-        hands: null,
-      });
+  useEffect(() => {
+    if (playedCards.length > 0) {
+      const lastPlayedCard = playedCards[playedCards.length - 1];
 
-      roundCountRef.current = 0;
-      socket.emit("setRoundCount", roomId, 0);
-    }, 2000);
+      // Small delay to let React render the card visually first
+      setTimeout(() => {
+        if (lastPlayedCard.card.joker && lastPlayedCard.card.type) {
+          if (lastPlayedCard.card.type === "pass") {
+            soundManager.play("slideUnder");
+          } else {
+            soundManager.play("playJoker");
+          }
+        } else {
+          soundManager.play("playCard");
+        }
+      }, 50);
+    }
+  }, [playedCards]);
 
-    return () => {
-      socket.off("updateGameInfo");
-      socket.off("setRoundCount");
-      clearTimeout(timeout);
-      clearTimeout(timeout2);
-    };
-  }, [socket, roundCountRef.current, roomId, currentHand, playedCards.length]);
+  const cardsForRender = cardsToAnimate || playedCards;
 
   return (
     <motion.div
-      animate={{
-        opacity: 1,
-        y: winnerIndex === 0 ? 150 : winnerIndex === 2 ? -150 : 0,
-        x: winnerIndex === 1 ? -200 : winnerIndex === 3 ? 200 : 0,
-      }}
-      transition={{ duration: 0.8, ease: "easeInOut" }}
+      animate={controls}
       className={styles.played_cards}
+      style={{ width: cardHeight * 2, height: cardHeight * 2 }}
     >
-      {playedCards.map(({ playerId, card }, index) => (
+      {cardsForRender.map(({ playerId, card }, index) => (
         <div
-          key={playerId}
-          className={`${styles.card} ${styles.card}_${getPlayerIndex(
-            playerId
-          )}`}
+          key={card.id ?? `${playerId}-${index}`}
+          className={`${styles.card} ${styles[`card_${getPlayerIndex(playerId, rotatedPlayers)}`]}`}
           style={{
-            zIndex: index + 1,
+            zIndex: card.type === "pass" ? 0 : index + 1,
           }}
         >
           {card.joker ? (
-            <Image
-              src={
-                card.color === "black"
-                  ? "/cards/joker-black.png"
-                  : "/cards/joker-red.png"
-              }
-              alt={`${card.rank} of ${card.suit}`}
-              width={
-                windowSize.height <= 450
-                  ? 30
-                  : windowSize.height <= 550 && windowSize.height > 450
-                  ? 40
-                  : windowSize.height <= 900 &&
-                    windowSize.height > 600 &&
-                    windowSize.width > 600
-                  ? 50
-                  : windowSize.width <= 600
-                  ? 40
-                  : windowSize.width <= 990 && windowSize.width > 600
-                  ? 50
-                  : windowSize.width <= 1150 && windowSize.width > 990
-                  ? 70
-                  : windowSize.width < 1300 && windowSize.width > 1150
-                  ? 90
-                  : 100
-              }
-              height={
-                windowSize.height <= 450
-                  ? 45
-                  : windowSize.height <= 600 && windowSize.height > 450
-                  ? 60
-                  : windowSize.height <= 900 &&
-                    windowSize.height > 600 &&
-                    windowSize.width > 600
-                  ? 8
-                  : windowSize.width <= 600
-                  ? 55
-                  : windowSize.width <= 990 && windowSize.width > 600
-                  ? 70
-                  : windowSize.width <= 1150 && windowSize.width > 990
-                  ? 100
-                  : windowSize.width < 1300 && windowSize.width > 1150
-                  ? 130
-                  : 150
-              }
+            <img
+              src={getCardUrl(card)}
+              alt={`${card.rank} of ${card.suit}` || "joker"}
+              width={cardWidth}
+              height={cardHeight}
+              style={{ height: "auto" }}
             />
           ) : (
-            <Image
-              src={`/cards/${card.suit}-${card.rank?.toLowerCase()}.png`}
-              alt={`${card.rank} of ${card.suit}`}
-              width={
-                windowSize.height <= 450
-                  ? 30
-                  : windowSize.height <= 600 && windowSize.height > 450
-                  ? 40
-                  : windowSize.height <= 900 &&
-                    windowSize.height > 600 &&
-                    windowSize.width > 600
-                  ? 50
-                  : windowSize.width <= 600
-                  ? 40
-                  : windowSize.width <= 990 && windowSize.width > 600
-                  ? 50
-                  : windowSize.width <= 1150 && windowSize.width > 990
-                  ? 70
-                  : windowSize.width < 1300 && windowSize.width > 1150
-                  ? 90
-                  : 100
-              }
-              height={
-                windowSize.height <= 450
-                  ? 45
-                  : windowSize.height <= 600 && windowSize.height > 450
-                  ? 60
-                  : windowSize.height <= 900 &&
-                    windowSize.height > 600 &&
-                    windowSize.width > 600
-                  ? 80
-                  : windowSize.width <= 600
-                  ? 55
-                  : windowSize.width <= 990 && windowSize.width > 600
-                  ? 70
-                  : windowSize.width <= 1150 && windowSize.width > 990
-                  ? 100
-                  : windowSize.width < 1300 && windowSize.width > 1150
-                  ? 130
-                  : 150
-              }
+            <img
+              src={getCardUrl(card)}
+              alt={`${card.rank} of ${card.suit}` || "card"}
+              width={cardWidth}
+              height={cardHeight}
+              style={{ height: "auto" }}
             />
           )}
         </div>
@@ -303,4 +177,4 @@ const PlayedCards: React.FC<PlayedCardsProps> = ({
   );
 };
 
-export default PlayedCards;
+export default React.memo(PlayedCards);

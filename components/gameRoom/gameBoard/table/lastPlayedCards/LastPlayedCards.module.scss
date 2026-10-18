@@ -1,4 +1,4 @@
-@use "../../../../../styles/mixins" as *;
+@use "mixins" as *;
 
 .container {
   position: absolute;
@@ -14,21 +14,20 @@
     .card {
       position: absolute;
 
-      &:first-child {
-        transform: translateY(-40%);
-        rotate: 5deg;
+      &:nth-child(1) {
+        transform: translateX(-60%) rotate(95deg);
       }
+
       &:nth-child(2) {
-        rotate: 85deg;
-        transform: translateY(40%);
+        transform: translateY(-40%) rotate(0);
       }
+
       &:nth-child(3) {
-        transform: translateY(-40%);
-        rotate: 95deg;
+        transform: translateX(60%) rotate(95deg);
       }
-      &:last-child {
-        transform: translateY(40%);
-        rotate: -5deg;
+
+      &:nth-child(4) {
+        transform: translateY(40%) rotate(0);
       }
     }
 

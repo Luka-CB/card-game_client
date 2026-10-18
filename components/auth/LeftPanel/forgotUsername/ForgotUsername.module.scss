@@ -1,0 +1,128 @@
+@use "mixins" as *;
+
+.container {
+  width: 100%;
+  height: 100%;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+
+  .success {
+    width: 80%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: 20%;
+
+    p {
+      width: 100%;
+      color: var(--clr-light);
+      background-color: var(--clr-success-800);
+      box-shadow: 0 0 8px var(--clr-success-600);
+      padding: 10px;
+      border-radius: 4px;
+      text-align: center;
+    }
+
+    small {
+      display: block;
+      color: var(--clr-light);
+      width: 350px;
+      margin-top: 20px;
+    }
+  }
+
+  .error {
+    width: 80%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: 20%;
+    background-color: rgba(175, 73, 73, 0.863);
+    padding: 10px;
+    color: var(--clr-light);
+    font-weight: bold;
+    box-shadow: 1px 1px 8px rgba(175, 73, 73, 0.534);
+    border-radius: 5px;
+  }
+
+  h2 {
+    color: var(--clr-light);
+    margin-top: 30px;
+    text-align: center;
+
+    @media (max-width: 600px) {
+      font-size: 1.2rem;
+    }
+  }
+
+  small {
+    color: var(--clr-light);
+    margin-top: 20px;
+    text-align: center;
+  }
+
+  form {
+    width: 80%;
+    margin-top: 30px;
+    display: flex;
+    flex-direction: column;
+
+    label {
+      color: var(--clr-light);
+      padding: 10px 0;
+      font-size: small;
+    }
+
+    input {
+      @include input();
+    }
+
+    button {
+      @include btn();
+      margin-top: 20px;
+      background-color: transparent;
+      border-color: var(--clr-primary-800);
+      color: var(--clr-light);
+      border-width: 1px;
+
+      &:hover {
+        background-color: var(--clr-primary-faded);
+        color: var(--clr-lighter);
+      }
+
+      &:disabled {
+        background-color: var(--clr-dark-faded);
+        color: var(--clr-light-faded);
+        border-color: var(--clr-light-faded);
+        cursor: not-allowed;
+      }
+    }
+
+    @media (max-width: 600px) {
+      width: 100%;
+      margin-top: 10px;
+
+      input {
+        height: 35px;
+        font-size: 0.6rem;
+        border-width: 1px;
+      }
+
+      button {
+        height: 35px;
+        width: 200px;
+        font-size: 0.8rem;
+        align-self: center;
+        margin-top: 20px;
+      }
+    }
+  }
+}

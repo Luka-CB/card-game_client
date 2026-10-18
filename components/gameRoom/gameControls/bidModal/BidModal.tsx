@@ -1,56 +1,107 @@
 import useSocket from "@/hooks/useSocket";
 import styles from "./BidModal.module.scss";
-import { motion } from "framer-motion";
-import { HandBid, PlayingCard, RoomUser, ScoreBoard } from "@/utils/interfaces";
-import { useEffect, useState, useRef } from "react";
-import CountDownClock from "../../gameBoard/timer/CountDownClock";
-import { calculateBotBid } from "@/utils/gameRoom";
+import { AnimatePresence, motion, type Variants } from "framer-motion";
+import { HandBid, RoomUser } from "@/utils/interfaces";
+import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
+import { useTranslations } from "next-intl";
 
 interface BidModalProps {
-  rotatedPlayers: RoomUser[];
   data: {
     currentHand: number;
     handCount: number;
     roomId: string;
     currentPlayerId: string;
     dealerId: string;
-    players: string[];
     handBids: HandBid[] | null;
-    roomUsers: RoomUser[];
-    hands: { hand: PlayingCard[]; playerId: string }[] | null;
-    trumpCard: PlayingCard | null;
+    rotatedPlayers: RoomUser[];
   };
 }
 
-const BidModal = ({ data, rotatedPlayers }: BidModalProps) => {
+const BidModal: React.FC<BidModalProps> = ({ data }) => {
+  const t = useTranslations("GameRoom.GameControls.bidModal");
+
   const [choosingBid, setChoosingBid] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
 
   const socket = useSocket();
 
-  const botTimeout1Ref = useRef<NodeJS.Timeout | null>(null);
-  const botTimeout2Ref = useRef<NodeJS.Timeout | null>(null);
+  const overlayVariants: Variants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        duration: 0.14,
+        ease: "easeOut",
+      },
+    },
+    exit: {
+      opacity: 0,
+      transition: {
+        duration: 0.1,
+        ease: "easeIn",
+      },
+    },
+  };
+
+  const modalVariants: Variants = {
+    hidden: {
+      opacity: 0,
+      y: 22,
+      scale: 0.96,
+      filter: "blur(2px)",
+    },
+    visible: {
+      opacity: 1,
+      y: 0,
+      scale: 1,
+      filter: "blur(0px)",
+      transition: {
+        type: "spring",
+        stiffness: 420,
+        damping: 30,
+        mass: 0.7,
+        staggerChildren: 0.015,
+        delayChildren: 0.03,
+      },
+    },
+    exit: {
+      opacity: 0,
+      y: 12,
+      scale: 0.98,
+      transition: {
+        duration: 0.12,
+        ease: "easeIn",
+      },
+    },
+  };
+
+  const bidItemVariants: Variants = {
+    hidden: { opacity: 0, y: 8, scale: 0.95 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      scale: 1,
+      transition: {
+        type: "spring",
+        stiffness: 500,
+        damping: 28,
+      },
+    },
+  };
 
   const bids =
     data.handBids
       ?.map((bid) =>
-        bid.bids?.map((b) => (data.handCount === b.handNumber ? b.bid : null))
+        bid.bids?.map((b) => (data.handCount === b.handNumber ? b.bid : null)),
       )
       .flat()
       .filter((s) => s !== undefined) || [];
 
-  const bidSum = bids.reduce((acc: any, bid) => acc + (bid as number), 0);
-
-  const playerIndex = rotatedPlayers?.findIndex(
-    (p) => p.id === data.currentPlayerId
-  );
-  const nextPlayerId =
-    rotatedPlayers[(playerIndex + 1) % rotatedPlayers.length].id;
+  const bidSum = bids.reduce((acc: number, bid) => acc + (bid as number), 0);
 
   const handleBidClick = (bid: number) => {
     if (!socket) return;
-
-    if (botTimeout1Ref.current) clearTimeout(botTimeout1Ref.current);
-    if (botTimeout2Ref.current) clearTimeout(botTimeout2Ref.current);
 
     setChoosingBid(true);
 
@@ -59,109 +110,60 @@ const BidModal = ({ data, rotatedPlayers }: BidModalProps) => {
       gameHand: data.currentHand,
       bid,
     });
-
-    setTimeout(() => {
-      socket.emit("updateGameInfo", data.roomId, {
-        currentPlayerId: nextPlayerId,
-        status: data.dealerId === data.currentPlayerId ? "playing" : "bid",
-      });
-      setChoosingBid(false);
-    }, 1000);
   };
 
   useEffect(() => {
+    setChoosingBid(false);
+  }, [data.currentPlayerId]);
+
+  useEffect(() => {
+    setIsMounted(true);
+
     return () => {
-      if (botTimeout1Ref.current) clearTimeout(botTimeout1Ref.current);
-      if (botTimeout2Ref.current) clearTimeout(botTimeout2Ref.current);
+      setIsMounted(false);
     };
   }, []);
 
-  const onComplete = () => {
-    if (!socket) return;
+  if (!isMounted) return null;
 
-    if (botTimeout1Ref.current || botTimeout2Ref.current) {
-      return;
-    }
-
-    setChoosingBid(true);
-
-    const playerOrder = rotatedPlayers.map((p) => p.id);
-
-    const currentBids: { [playerId: string]: number } =
-      Object.fromEntries(
-        data?.handBids
-          ?.filter((bid) => bid.playerId !== data.currentPlayerId)
-          ?.map((bid) => {
-            const currentHandScore = bid.bids.find(
-              (b) => b.handNumber === data.handCount
-            );
-            return [bid.playerId, currentHandScore?.bid || 0];
-          }) || []
-      ) || {};
-
-    botTimeout1Ref.current = setTimeout(() => {
-      socket.emit("setBotBid", {
-        roomId: data.roomId,
-        playerId: data.currentPlayerId,
-        hand:
-          data.hands?.find((h) => h.playerId === data.currentPlayerId)?.hand ||
-          [],
-        playerOrder,
-        currentBids,
-        nextPlayerId,
-      });
-
-      setChoosingBid(false);
-      botTimeout1Ref.current = null;
-    }, 1000);
-  };
-
-  return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{
-        opacity: 1,
-        transition: { duration: 0.2 },
-      }}
-      exit={{ opacity: 0, transition: { duration: 0.2 } }}
-      className={styles.modal_bg}
-    >
+  return createPortal(
+    <AnimatePresence mode="wait" initial={false}>
       <motion.div
-        initial={{ opacity: 0, y: 100 }}
-        animate={{
-          opacity: 1,
-          y: 0,
-          transition: { duration: 0.4 },
-        }}
-        exit={{ opacity: 0, y: 100, transition: { duration: 0.4 } }}
-        className={styles.modal}
+        key={`${data.currentPlayerId}-${data.handCount}-${data.currentHand}`}
+        variants={overlayVariants}
+        initial="hidden"
+        animate="visible"
+        exit="exit"
+        className={styles.modal_bg}
       >
-        <div className={styles.count_down}>
-          <CountDownClock
-            onComplete={onComplete}
-            textColor="black"
-            duration={15}
-          />
-        </div>
-        <h4>Choose a Bid</h4>
-        <div className={styles.bids}>
-          {Array.from({ length: data.currentHand + 1 }).map((_, index) => (
-            <button
-              key={index}
-              className={styles.bid_btn}
-              onClick={() => handleBidClick(index)}
-              disabled={
+        <motion.div variants={modalVariants} className={styles.modal}>
+          <h4>{t("title")}</h4>
+          <div className={styles.bids}>
+            {Array.from({ length: data.currentHand + 1 }).map((_, index) => {
+              const isDisabled =
                 choosingBid ||
                 (data.currentPlayerId === data.dealerId &&
-                  bidSum + index === data.currentHand)
-              }
-            >
-              {index === 0 ? "-" : index}
-            </button>
-          ))}
-        </div>
+                  bidSum + index === data.currentHand);
+
+              return (
+                <motion.button
+                  key={index}
+                  variants={bidItemVariants}
+                  className={`${styles.bid_btn} ${choosingBid ? styles.submitting : ""}`}
+                  onClick={() => handleBidClick(index)}
+                  whileHover={!isDisabled ? { scale: 1.06, y: -2 } : undefined}
+                  whileTap={!isDisabled ? { scale: 0.95 } : undefined}
+                  disabled={isDisabled}
+                >
+                  {index === 0 ? "-" : index}
+                </motion.button>
+              );
+            })}
+          </div>
+        </motion.div>
       </motion.div>
-    </motion.div>
+    </AnimatePresence>,
+    document.body,
   );
 };
 

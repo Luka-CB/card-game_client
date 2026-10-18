@@ -1,6 +1,7 @@
 import useSocket from "@/hooks/useSocket";
 import styles from "./BusyBg.module.scss";
 import { motion } from "framer-motion";
+import { useTranslations } from "next-intl";
 
 interface BusyBgProps {
   roomId: string;
@@ -13,6 +14,8 @@ const BusyBg: React.FC<BusyBgProps> = ({
   userId,
   setShowLeaveModal,
 }) => {
+  const t = useTranslations("GameRoom.busyBg");
+
   const socket = useSocket();
 
   const handleRejoin = () => {
@@ -47,13 +50,13 @@ const BusyBg: React.FC<BusyBgProps> = ({
         }}
         className={styles.content}
       >
-        <p>You're out of the game. The bot is playing instead of you.</p>
+        <p>{t("paragraph")}</p>
         <div className={styles.btns}>
           <button className={styles.btn_play} onClick={handleRejoin}>
-            Continue Playing
+            {t("btns.continue")}
           </button>
           <button className={styles.btn_leave} onClick={handleLeave}>
-            Leave Room
+            {t("btns.leave")}
           </button>
         </div>
       </motion.div>

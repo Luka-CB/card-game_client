@@ -1,9 +1,10 @@
 import { PlayedCard, RoomUser } from "@/utils/interfaces";
 import styles from "./LastPlayedCards.module.scss";
-import Image from "next/image";
 import useWindowSize from "@/hooks/useWindowSize";
 import useLastPlayedCardsStore from "@/store/gamePage/lastPlayedCardsStore";
 import { AnimatePresence, motion } from "framer-motion";
+import { useTranslations } from "next-intl";
+import { useDeckContext } from "@/context/DeckContext";
 
 interface LastPlayedCardsProps {
   lastPlayedCards: PlayedCard[];
@@ -14,6 +15,9 @@ const LastPlayedCards: React.FC<LastPlayedCardsProps> = ({
   lastPlayedCards,
   rotatedPlayers,
 }) => {
+  const t = useTranslations("GameRoom.gameBoard");
+  const { getCardUrl, cardBackUrl } = useDeckContext();
+
   const { toggleLastPlayedCardsModal, setToggleLastPlayedCards } =
     useLastPlayedCardsStore();
 
@@ -29,30 +33,31 @@ const LastPlayedCards: React.FC<LastPlayedCardsProps> = ({
       className={styles.container}
       onClick={() => setToggleLastPlayedCards(true)}
     >
-      <div className={styles.display_cards} title="last played cards">
+      <div className={styles.display_cards} title={t("lastPlayedCards")}>
         {Array.from({ length: 4 }).map((_, index) => (
           <div key={index} className={styles.card}>
-            <Image
-              src="/cards/card-back.png"
+            <img
+              src={cardBackUrl}
               alt="card back"
               width={
                 height < 800
                   ? 20
                   : width < 1000 && width > 600
-                  ? 25
-                  : width < 600
-                  ? 20
-                  : 35
+                    ? 25
+                    : width < 600
+                      ? 20
+                      : 35
               }
               height={
                 height < 800
                   ? 30
                   : width < 1000 && width > 600
-                  ? 40
-                  : width < 600
-                  ? 30
-                  : 50
+                    ? 40
+                    : width < 600
+                      ? 30
+                      : 50
               }
+              style={{ height: "auto" }}
             />
           </div>
         ))}
@@ -69,28 +74,24 @@ const LastPlayedCards: React.FC<LastPlayedCardsProps> = ({
             {lastPlayedCards.map(({ playerId, card }, index) => (
               <div
                 key={playerId}
-                className={`${styles.card} ${styles.card}_${getPlayerIndex(
-                  playerId
-                )}`}
+                className={`${styles.card} ${styles[`card_${getPlayerIndex(playerId)}`]}`}
                 style={{ zIndex: index + 1 }}
               >
                 {card.joker ? (
-                  <Image
-                    src={
-                      card.color === "black"
-                        ? "/cards/joker-black.png"
-                        : "/cards/joker-red.png"
-                    }
-                    alt={`${card.rank} of ${card.suit}`}
+                  <img
+                    src={getCardUrl(card)}
+                    alt={`${card.rank} of ${card.suit}` || "joker"}
                     width={50}
                     height={80}
+                    style={{ height: "auto" }}
                   />
                 ) : (
-                  <Image
-                    src={`/cards/${card.suit}-${card.rank?.toLowerCase()}.png`}
-                    alt={`${card.rank} of ${card.suit}`}
+                  <img
+                    src={getCardUrl(card)}
+                    alt={`${card.rank} of ${card.suit}` || "card"}
                     width={40}
                     height={60}
+                    style={{ height: "auto" }}
                   />
                 )}
               </div>

@@ -2,13 +2,15 @@ import styles from "./TrumpModal.module.scss";
 import { GiSpades, GiDiamonds, GiHearts, GiClubs } from "react-icons/gi";
 import { motion } from "framer-motion";
 import useSocket from "@/hooks/useSocket";
+import { useTranslations } from "next-intl";
 
 interface Props {
   roomId: string;
-  onClose: () => void;
 }
 
-const TrumpModal = ({ onClose, roomId }: Props) => {
+const TrumpModal = ({ roomId }: Props) => {
+  const t = useTranslations("GameRoom.GameControls.trumpModal");
+
   const socket = useSocket();
 
   const handleChooseTrump = (suit: string) => {
@@ -18,9 +20,8 @@ const TrumpModal = ({ onClose, roomId }: Props) => {
       id: "none",
       suit,
       rank: "none",
-      Strength: "none",
+      strength: "none",
     });
-    onClose();
   };
 
   return (
@@ -31,7 +32,7 @@ const TrumpModal = ({ onClose, roomId }: Props) => {
         transition={{ duration: 0.5, type: "spring" }}
         className={styles.container}
       >
-        <p>Choose a Trump</p>
+        <p>{t("choose")}</p>
         <div className={styles.suits}>
           <button
             className={styles.btn_spades}
@@ -62,7 +63,7 @@ const TrumpModal = ({ onClose, roomId }: Props) => {
           className={styles.btn_pass}
           onClick={() => handleChooseTrump("pass")}
         >
-          No Trump
+          {t("noTrump")}
         </button>
       </motion.div>
     </div>
