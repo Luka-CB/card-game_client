@@ -18,6 +18,7 @@ import AvatarGallery from "@/components/auth/LeftPanel/AvatarGallery";
 import LevelUpNotification from "@/components/levelUp/LevelUpNotification";
 import useLevelUpStore from "@/store/levelUpStore";
 import JCoinsSync from "@/components/jCoinst/JCoinsSync";
+import AppAvailability from "@/components/AppAvailability";
 
 export default function ClientLayout({
   children,
@@ -35,7 +36,10 @@ export default function ClientLayout({
   const pathname = usePathname();
   const socket = useSocket(!loading);
 
-  const isGameRoom = pathname?.includes("/rooms/");
+  const pathSegments = pathname?.split("/").filter(Boolean) ?? [];
+  const roomsSegmentIndex = pathSegments.indexOf("rooms");
+  const isGameRoom =
+    roomsSegmentIndex !== -1 && pathSegments.length > roomsSegmentIndex + 1;
 
   const handleClosePopup = () => {
     if (isOpen) setIsOpen(false);
@@ -89,6 +93,7 @@ export default function ClientLayout({
       ) : (
         <>
           {!isGameRoom && <Header />}
+          {!isGameRoom && <AppAvailability />}
           {msg ? <FlashMsg /> : null}
           <main>{children}</main>
         </>

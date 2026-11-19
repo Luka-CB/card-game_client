@@ -2,6 +2,10 @@ import axios from "axios";
 
 const supportedLocales = ["en", "ka", "ru"] as const;
 type Locale = (typeof supportedLocales)[number];
+const apiBaseUrl =
+  process.env.NODE_ENV === "development"
+    ? "/api/proxy"
+    : `${process.env.NEXT_PUBLIC_API_URL || "https://api.jokerclash.com"}/api`;
 
 const resolveLocaleFromPath = (): Locale => {
   if (typeof window === "undefined") return "en";
@@ -13,10 +17,10 @@ const resolveLocaleFromPath = (): Locale => {
   }
 
   return "en";
-}
+};
 
 const api = axios.create({
-  baseURL: `${process.env.NEXT_PUBLIC_API_URL}/api`,
+  baseURL: apiBaseUrl,
   headers: {
     "Content-Type": "application/json",
   },
@@ -29,6 +33,6 @@ api.interceptors.request.use((config) => {
   config.headers["x-locale"] = locale;
 
   return config;
-})
+});
 
 export default api;

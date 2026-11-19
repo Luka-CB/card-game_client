@@ -45,23 +45,24 @@ const Header = () => {
   return (
     <>
       <div className={styles.header_container}>
-        <div className={styles.logo}>
-          <Link href="/">
-            <Image
-              src="/logos/title-logo.png"
-              alt="Joker Clash Logo"
-              width={120}
-              height={70}
-              loading="eager"
-              className={styles.logo_image}
-            />
-          </Link>
-
-          <div className={styles.language_switcher}>
-            <LanguageSwitcher />
+        <div className={styles.brand_group}>
+          <div className={styles.logo}>
+            <Link href="/">
+              <Image
+                src="/logos/title-logo.png"
+                alt="Joker Clash Logo"
+                width={120}
+                height={70}
+                loading="eager"
+                className={styles.logo_image}
+              />
+            </Link>
           </div>
 
-          <Bot />
+          <div className={styles.controls_row}>
+            <LanguageSwitcher />
+            <Bot />
+          </div>
         </div>
 
         {windowSize.width <= 800 ? (

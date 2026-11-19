@@ -48,6 +48,48 @@
     }
   }
 
+  .app_link {
+    position: absolute;
+    bottom: -5px;
+    right: clamp(16px, 4vw, 56px);
+    z-index: 3;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    box-sizing: border-box;
+    height: 36px;
+    padding: 0 0.75rem;
+    color: #fff;
+    background: #176b3a;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 4px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-decoration: none;
+    transition:
+      background-color 140ms ease,
+      transform 140ms ease;
+
+    &:hover {
+      background: #10552d;
+      transform: translateY(-2px);
+    }
+
+    &:focus-visible {
+      outline: 3px solid #9de0b2;
+      outline-offset: 3px;
+    }
+
+    @media (max-width: 650px) {
+      right: 12px;
+      bottom: 0;
+      height: 32px;
+      padding: 0 0.6rem;
+      font-size: 0.7rem;
+    }
+  }
+
   .user_count {
     position: absolute;
     bottom: 5px;

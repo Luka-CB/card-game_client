@@ -11,26 +11,29 @@
   display: flex;
   justify-content: space-between;
   box-shadow: 0 14px 16px -4px rgba(0, 0, 0, 0.659);
-  z-index: 2500;
+  z-index: 1000;
+
+  .brand_group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
 
   .logo {
     display: flex;
     align-items: center;
     padding: 0 10px;
-    gap: 10px;
 
     a {
       color: var(--clr-primary-400);
       text-decoration: none;
     }
+  }
 
-    @media (max-width: 400px) {
-      flex-direction: column;
-
-      .language_switcher {
-        padding-bottom: 5px;
-      }
-    }
+  .controls_row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
   }
 
   @media (max-width: 1100px) {
@@ -38,6 +41,43 @@
 
     .logo {
       padding: 0 5px;
+    }
+  }
+
+  @media (max-width: 400px) {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 4px 8px;
+    padding: 7px 8px;
+
+    .brand_group {
+      display: contents;
+    }
+
+    .logo {
+      grid-column: 1;
+      grid-row: 1;
+      padding: 0;
+    }
+
+    .logo_image {
+      width: 100px;
+      height: auto;
+    }
+
+    .controls_row {
+      grid-column: 1 / -1;
+      grid-row: 2;
+      justify-content: space-between;
+      min-height: 38px;
+      padding: 0 4px;
+    }
+
+    nav {
+      grid-column: 2;
+      grid-row: 1;
+      justify-self: end;
     }
   }
 

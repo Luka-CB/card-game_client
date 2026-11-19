@@ -39,6 +39,13 @@
   "Footer": {
     "rights": "© 2026 Joker Clash. Все права защищены."
   },
+  "AppAvailability": {
+    "title": "Joker Clash теперь на Android",
+    "description": "Играйте с телефона, где бы вы ни были.",
+    "cta": "Скачать в Google Play",
+    "launcher": "Приложение Android",
+    "dismiss": "Закрыть объявление"
+  },
   "LanguageSwitcher": {
     "label": "Язык",
     "en": "Анг",

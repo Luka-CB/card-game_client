@@ -5,15 +5,19 @@ import styles from "./Banner.module.scss";
 import useUserStore from "@/store/user/userStore";
 import localFont from "next/font/local";
 import { useTranslations } from "next-intl";
+import { FaGooglePlay } from "react-icons/fa";
 
 const bytesized = localFont({
   src: "../../public/fonts/Bytesized-Regular.ttf",
   variable: "--font-bytesized",
   display: "swap",
 });
+const PLAY_STORE_URL =
+  "https://play.google.com/store/apps/details?id=com.luka_cb.joker_native";
 
 const Banner = () => {
   const t = useTranslations("HomePage.banner");
+  const appT = useTranslations("AppAvailability");
 
   const { user, usersOnline } = useUserStore();
 
@@ -27,6 +31,15 @@ const Banner = () => {
         className={styles.image}
       />
       <div className={styles.border}></div>
+      <a
+        className={styles.app_link}
+        href={PLAY_STORE_URL}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <FaGooglePlay aria-hidden="true" />
+        <span>{appT("launcher")}</span>
+      </a>
       <div className={styles.user_count}>
         {usersOnline.length > 500 && user?.isAdmin && (
           <div className={styles.online}>

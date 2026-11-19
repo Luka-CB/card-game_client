@@ -1,0 +1,159 @@
+.notice {
+  position: relative;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.25rem;
+  width: 100%;
+  min-height: 72px;
+  padding: 0.8rem 3.5rem;
+  color: #17231d;
+  background: #e7f5eb;
+  border-bottom: 1px solid #b6d8c0;
+  animation: reveal 280ms ease-out both;
+}
+
+.message {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.icon {
+  display: grid;
+  flex: 0 0 38px;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  color: #fff;
+  background: #23834a;
+  border-radius: 50%;
+  font-size: 1rem;
+}
+
+.title,
+.description {
+  margin: 0;
+}
+
+.title {
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.description {
+  margin-top: 0.2rem;
+  color: #46564b;
+  font-size: 0.82rem;
+}
+
+.link {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  min-height: 38px;
+  padding: 0.5rem 0.9rem;
+  color: #fff;
+  background: #176b3a;
+  border-radius: 4px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: background-color 140ms ease;
+
+  &:hover {
+    background: #10552d;
+  }
+
+  &:focus-visible {
+    outline: 3px solid #1d5f37;
+    outline-offset: 3px;
+  }
+}
+
+.close {
+  position: absolute;
+  top: 50%;
+  right: 0.75rem;
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  color: #3e5144;
+  background: transparent;
+  border: 0;
+  border-radius: 4px;
+  cursor: pointer;
+  transform: translateY(-50%);
+
+  &:hover {
+    color: #111;
+    background: rgba(23, 107, 58, 0.1);
+  }
+
+  &:focus-visible {
+    outline: 2px solid #176b3a;
+    outline-offset: 2px;
+  }
+}
+
+@keyframes reveal {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 640px) {
+  .notice {
+    justify-content: flex-start;
+    gap: 0.75rem;
+    padding: 0.75rem 2.8rem 0.75rem 0.75rem;
+  }
+
+  .message {
+    min-width: 0;
+    gap: 0.55rem;
+  }
+
+  .icon {
+    flex-basis: 32px;
+    width: 32px;
+    height: 32px;
+    font-size: 0.9rem;
+  }
+
+  .title {
+    font-size: 0.85rem;
+  }
+
+  .description {
+    font-size: 0.72rem;
+  }
+
+  .link {
+    max-width: 112px;
+    min-height: 36px;
+    padding: 0.4rem 0.55rem;
+    font-size: 0.72rem;
+    text-align: center;
+  }
+
+  .close {
+    right: 0.35rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .notice {
+    animation: none;
+  }
+}

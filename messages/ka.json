@@ -39,6 +39,13 @@
   "Footer": {
     "rights": "© 2026 Joker Clash. ყველა უფლება დაცულია."
   },
+  "AppAvailability": {
+    "title": "Joker Clash უკვე Android-ზეა",
+    "description": "ითამაშე ტელეფონზეც.",
+    "cta": "Google Play-ზე ჩამოტვირთვა",
+    "launcher": "Android აპი",
+    "dismiss": "განცხადების დახურვა"
+  },
   "LanguageSwitcher": {
     "label": "ენა",
     "en": "ინგ",

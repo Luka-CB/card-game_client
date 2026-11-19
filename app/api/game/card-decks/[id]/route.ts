@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-
-const SERVER_URL =
-  process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+import { fetchServerApi } from "@/app/api/_lib/serverApi";
 
 export async function GET(
   _req: NextRequest,
@@ -9,8 +7,8 @@ export async function GET(
 ) {
   try {
     const { id } = await params;
-    const res = await fetch(`${SERVER_URL}/api/card-decks/${id}`, {
-      next: { revalidate: 3600 },
+    const res = await fetchServerApi(`card-decks/${encodeURIComponent(id)}`, {
+      cache: "no-store",
     });
     const data = await res.json();
     return NextResponse.json(data, { status: res.status });
