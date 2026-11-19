@@ -34,6 +34,7 @@ const GetMoreModal = () => {
     hasWarning,
     dailyClaim,
     dailyClaimStatus,
+    jCoins,
     fetchDailyClaimStatus,
     claimDailyFreeJCoins,
   } = useJCoinsStore();
@@ -115,7 +116,11 @@ const GetMoreModal = () => {
                   />
                 </div>
 
-                {dailyClaim?.canClaim ? (
+                {jCoins && jCoins.raw >= 100 ? (
+                  <small>
+                    Available only when your balance is below 100 JCoins.
+                  </small>
+                ) : dailyClaim?.canClaim ? (
                   <small>Ready to claim now</small>
                 ) : (
                   <small>
