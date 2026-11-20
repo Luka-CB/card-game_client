@@ -24,6 +24,24 @@ interface GameRoundsProps {
   roomUsers: RoomUser[];
 }
 
+const sortHand = (hand: PlayingCard[]) =>
+  [...hand].sort((a, b) => {
+    if (a.suit === b.suit) {
+      if (a.rank === "A") return 1;
+      if (b.rank === "A") return -1;
+      if (a.rank === "K") return 1;
+      if (b.rank === "K") return -1;
+      if (a.rank === "Q") return 1;
+      if (b.rank === "Q") return -1;
+      if (a.rank === "J") return 1;
+      if (b.rank === "J") return -1;
+      return parseInt(a.rank) - parseInt(b.rank);
+    }
+
+    const suitOrder = ["hearts", "diamonds", "clubs", "spades"];
+    return suitOrder.indexOf(a.suit) - suitOrder.indexOf(b.suit);
+  });
+
 const GameRounds = ({ hand, gameInfo, user }: GameRoundsProps) => {
   const t = useTranslations("GameRoom.GameControls.gameRounds");
   const { getCardUrl } = useDeckContext();
@@ -49,24 +67,7 @@ const GameRounds = ({ hand, gameInfo, user }: GameRoundsProps) => {
   useEffect(() => {
     if (!hand) return;
 
-    const sorted = [...hand].sort((a, b) => {
-      if (a.suit === b.suit) {
-        if (a.rank === "A") return 1;
-        if (b.rank === "A") return -1;
-        if (a.rank === "K") return 1;
-        if (b.rank === "K") return -1;
-        if (a.rank === "Q") return 1;
-        if (b.rank === "Q") return -1;
-        if (a.rank === "J") return 1;
-        if (b.rank === "J") return -1;
-        return parseInt(a.rank) - parseInt(b.rank);
-      } else {
-        const suitOrder = ["hearts", "diamonds", "clubs", "spades"];
-        return suitOrder.indexOf(a.suit) - suitOrder.indexOf(b.suit);
-      }
-    });
-
-    setSortedCards(sorted);
+    setSortedCards(sortHand(hand));
   }, [hand]);
 
   useEffect(() => {
@@ -336,6 +337,31 @@ const GameRounds = ({ hand, gameInfo, user }: GameRoundsProps) => {
     hand,
     user?._id,
   ]);
+
+  useEffect(() => {
+    if (!socket || !gameInfo?.roomId || !user?._id) return;
+
+    const handleInvalidMove = (payload: {
+      roomId: string;
+      playerId: string;
+      hand?: PlayingCard[];
+    }) => {
+      if (
+        payload.roomId !== gameInfo.roomId ||
+        payload.playerId !== user._id ||
+        !Array.isArray(payload.hand)
+      ) {
+        return;
+      }
+
+      setSortedCards(sortHand(payload.hand));
+    };
+
+    socket.on("invalidMove", handleInvalidMove);
+    return () => {
+      socket.off("invalidMove", handleInvalidMove);
+    };
+  }, [socket, gameInfo?.roomId, user?._id]);
 
   const playableCardIdSet = useMemo(() => {
     return new Set(legalCardIds);

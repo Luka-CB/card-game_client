@@ -94,6 +94,13 @@ const GameRoom: React.FC = () => {
   });
 
   const [dealingCards, setDealingCards] = useState<Record<string, number>>({});
+  const [dealingBaseCount, setDealingBaseCount] = useState(0);
+  const activeDealRoundRef = useRef<number | null>(null);
+  const queuedDealRef = useRef<{
+    hand: PlayingCard[];
+    playerId: string;
+    round: number;
+  } | null>(null);
 
   const [visibleCards, setVisibleCards] = useState<
     Record<string, PlayingCard[]>
@@ -509,11 +516,13 @@ const GameRoom: React.FC = () => {
     if (status === "dealing") {
       setDealingCards({});
       setCurrentDealingRound(0);
+      setDealingBaseCount(0);
       return;
     }
 
     if (status !== "choosingTrump") {
       setDealingCards({});
+      setDealingBaseCount(0);
     }
   }, [gameInfo?.status]);
 
@@ -607,9 +616,16 @@ const GameRoom: React.FC = () => {
         pendingMyHandRef.current = data.hand;
       }
 
-      if (dealingLockRef.current) return;
+      if (dealingLockRef.current) {
+        // Ignore repeated events for this batch, but queue the next deal phase.
+        if (activeDealRoundRef.current !== data.round) {
+          queuedDealRef.current = data;
+        }
+        return;
+      }
 
       dealingLockRef.current = true;
+      activeDealRoundRef.current = data.round;
       setCurrentDealingRound(0);
       setDealingCards({});
 
@@ -623,6 +639,9 @@ const GameRoom: React.FC = () => {
       // the first nines deal (server always emits round=3 for the 3-card phase).
       const isNinesFirstDeal =
         roomRef.current?.type === "nines" && data.round === 3;
+      const baseDealtCards =
+        roomRef.current?.type === "nines" && data.round !== 3 ? 3 : 0;
+      setDealingBaseCount(baseDealtCards);
 
       animateDealing(playerIds, data.round, dealerId)
         .then(() => {
@@ -641,6 +660,7 @@ const GameRoom: React.FC = () => {
         .catch(() => {})
         .finally(() => {
           dealingLockRef.current = false;
+          activeDealRoundRef.current = null;
           // Clear dealing cards now that animation is done. The status cleanup
           // effect skips clearing while the lock is held, so if the game status
           // advanced (e.g. "bid") during the animation it would never clear.
@@ -649,6 +669,13 @@ const GameRoom: React.FC = () => {
           // once status moves past choosingTrump.
           if (!isNinesFirstDeal) {
             setDealingCards({});
+            setDealingBaseCount(0);
+          }
+
+          const queuedDeal = queuedDealRef.current;
+          if (queuedDeal) {
+            queuedDealRef.current = null;
+            onDealCards(queuedDeal);
           }
         });
     };
@@ -975,6 +1002,7 @@ const GameRoom: React.FC = () => {
             visibleCards={visibleCards}
             rotatedPlayers={rotatedPlayers as RoomUser[]}
             dealingCards={dealingCards}
+            dealingBaseCount={dealingBaseCount}
             socket={socket}
           >
             <Players

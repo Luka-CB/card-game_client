@@ -9,6 +9,7 @@ interface DrawnCardsProps {
   playerPositionIndex: number;
   playerId: string;
   dealingCards: Record<string, number>;
+  dealingBaseCount?: number;
   gameInfo: {
     dealerId: string | null;
     status: string;
@@ -23,6 +24,7 @@ const DrawnCards = ({
   playerPositionIndex,
   playerId,
   dealingCards,
+  dealingBaseCount = 0,
   gameInfo,
 }: DrawnCardsProps) => {
   const hasActiveDealing = Object.values(dealingCards).some(
@@ -62,13 +64,7 @@ const DrawnCards = ({
           playerId={playerId}
           currentPlayerId={gameInfo.currentPlayerId}
           status={gameInfo.status}
-          baseDealtCards={
-            gameInfo.status === "dealing" &&
-            gameInfo.currentHand === 9 &&
-            Boolean(gameInfo.trumpCard)
-              ? 3
-              : 0
-          }
+          baseDealtCards={dealingBaseCount}
         />
       )}
     </motion.div>

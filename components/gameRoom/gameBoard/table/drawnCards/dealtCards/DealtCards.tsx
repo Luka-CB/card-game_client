@@ -110,7 +110,11 @@ const DealtCards = ({
 
   // Nines UX: trump chooser "picks up" the first 3 cards while selecting trump.
   // After trump is chosen, those 3 are shown again and dealing continues.
-  if (status === "choosingTrump" && currentPlayerId === playerId) {
+  if (
+    status === "choosingTrump" &&
+    currentPlayerId === playerId &&
+    baseDealtCards === 0
+  ) {
     return null;
   }
 

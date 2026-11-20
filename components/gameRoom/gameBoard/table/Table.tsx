@@ -28,6 +28,7 @@ interface TableProps {
   visibleCards: { [key: string]: PlayingCard[] };
   rotatedPlayers: RoomUser[];
   dealingCards?: Record<string, number>;
+  dealingBaseCount?: number;
   socket?: Socket | null;
   children?: ReactNode;
 }
@@ -39,6 +40,7 @@ const Table: React.FC<TableProps> = ({
   visibleCards,
   rotatedPlayers,
   dealingCards,
+  dealingBaseCount,
   socket,
   children,
 }) => {
@@ -160,6 +162,7 @@ const Table: React.FC<TableProps> = ({
             playerPositionIndex={index}
             playerId={player.id}
             dealingCards={dealingCards || {}}
+            dealingBaseCount={dealingBaseCount}
             gameInfo={{
               dealerId: gameInfo?.dealerId as string | null,
               status: gameInfo?.status as string,
